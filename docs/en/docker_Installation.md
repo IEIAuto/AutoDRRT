@@ -73,10 +73,10 @@ xhost +
 ## 4. Download Images
 
 # For ARM architecture
-docker pull oncepursuit/autodrrt:humble_orin_cuda_20.04_release
+docker pull ieiauto/autodrrt:orin
 
 # For x86 architecture
-docker pull ghcr.io/autodrrtfoundation/autodrrt-universe:latest-cuda
+docker pull ieiauto/autodrrt:x86
 
 ## 5. Load Images
 
@@ -86,7 +86,7 @@ docker load -i ghcr.io/autodrrtfoundation/autodrrt-universe:latest-cuda
 
 git clone https://github.com/IEIAuto/AutoDRRT.git
 
-## 7.1 Start the Container (for ORIN/arm64)
+## 7.1 Start the Container (for Orin/arm64)
 
 docker run -it \
 --net=host \
@@ -97,7 +97,7 @@ docker run -it \
 -v /dev/shm:/dev/shm \
 -w ${workspace} \
 --name=autodrrt \
-oncepursuit/autodrrt:humble_orin_cuda_20.04_release
+ieiauto/autodrrt:orin
 
 ## 7.2 Start the Container (for x86)
 
@@ -110,7 +110,7 @@ docker run -it \
 -w ${workspace} \
 -v /dev/shm:/dev/shm \
 --name=autodrrt \
-ghcr.io/autodrrtfoundation/autodrrt-universe:latest-cuda
+docker pull ieiauto/autodrrt:x86
 
 
 ## 8. Enter the Container
