@@ -18,7 +18,7 @@ The AutoDRRT Foundation provides support only for the platforms listed below. Ot
 
 - arm64
 
-         recommend: NVIDIA ORIN OR NVIDIA Xavier
+        recommend: NVIDIA ORIN OR NVIDIA Xavier
 
 ### Recommended Platforms
 
