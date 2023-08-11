@@ -14,17 +14,17 @@ The AutoDRRT Foundation provides support only for the platforms listed below. Ot
 
 - amd64
 
-        recommend: X86+NVIDIA GPU (4GB RAM)
+        recommend: X86 + NVIDIA GPU (4GB RAM)
 
 - arm64
 
-        recommend: NVIDIA ORIN OR NVIDIA Xavier
+        recommend: NVIDIA Orin OR NVIDIA Xavier
 
 ### Recommended Platforms
 
 - [EIS400](./docs/en/EIS400.md)
 
-- NVIDIA ORIN
+- NVIDIA Orin
 
 ### Minimum System Requirements
 
