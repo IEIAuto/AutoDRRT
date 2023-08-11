@@ -14,11 +14,11 @@ The AutoDRRT Foundation provides support only for the platforms listed below. Ot
 
 - amd64
 
-        recommend: X86 + NVIDIA GPU (4GB RAM)
+        Recommend: X86 + NVIDIA GPU (4GB RAM)
 
 - arm64
 
-        recommend: NVIDIA Orin OR NVIDIA Xavier
+        Recommend: NVIDIA Orin OR NVIDIA Xavier
 
 ### Recommended Platforms
 
