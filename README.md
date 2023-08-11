@@ -14,13 +14,17 @@ The AutoDRRT Foundation provides support only for the platforms listed below. Ot
 
 - amd64
 
+        recommend: X86+NVIDIA GPU (4GB RAM)
+
 - arm64
+
+         recommend: NVIDIA ORIN OR NVIDIA Xavier
 
 ### Recommended Platforms
 
-- EIS400
+- [EIS400](./docs/en/EIS400.md)
 
-- ORIN
+- NVIDIA ORIN
 
 ### Minimum System Requirements
 
@@ -28,25 +32,27 @@ The AutoDRRT Foundation provides support only for the platforms listed below. Ot
 
 - 16GB RAM
 
-- [Optional] NVIDIA GPU (4GB RAM)
+- NVIDIA GPU (4GB RAM)
 
 ### Installation Instructions
 
 #### 1. Installation using DOCKER
 
-Docker ensures that all developers in the project have a consistent development environment. It is recommended for beginners, temporary users, and those unfamiliar with Ubuntu.
+ Docker ensures that all developers in the project have a consistent development environment. It is recommended for beginners, temporary users, and those unfamiliar with Ubuntu.
 
-[Installation Method](./docs/en/docker_Installation.md)
+- [Installation Method](./docs/en/docker_Installation.md)
 
 #### 2. Installation from SOURCE CODE
 
-##### Environmental Requirements
+  - Environmental Requirements
 
-- Ubuntu 22.04
+    - Ubuntu 22.04
 
-[Installation Method](./docs/en/source_Installation.md)
+- [Installation Method](./docs/en/source_Installation.md)
 
 ### Usage Instructions
 
 [Usage Instructions](./docs/en/tutorials.md)
 
+### Contact Us
+[AutoDRRT@ieisystem.com](AutoDRRT@ieisystem.com)

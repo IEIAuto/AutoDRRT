@@ -8,7 +8,6 @@ AutoDRRT是一个自动驾驶框架，基于[Autoware开源框架](https://githu
 
 AutoDRRT的目标平台如下所列。在未来版本的AutoDRRT中可能会有所变化。
 
-AutoDRRT基金会仅在下面列出的平台上提供支持，其他平台不予支持。
 
 ### 平台架构
 
