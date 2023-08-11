@@ -1,0 +1,9 @@
+std_msgs/Header header
+int32 ctrl_mode
+geometry_msgs/Vector3 acceleration
+geometry_msgs/Vector3 position
+geometry_msgs/Vector3 velocity
+geometry_msgs/Vector3 angular_velocity
+float32 heading
+int32 cmd_type
+SkidModel skid_model_report

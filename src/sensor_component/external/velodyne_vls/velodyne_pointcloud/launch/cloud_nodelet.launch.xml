@@ -1,0 +1,21 @@
+<!-- -*- mode: XML -*- -->
+<!-- run velodyne_pointcloud/CloudNodelet in a nodelet manager -->
+
+<launch>
+  <arg name="calibration" default="" />
+  <arg name="manager" default="velodyne_nodelet_manager" />
+  <arg name="max_range" default="130.0" />
+  <arg name="min_range" default="0.9" />
+  <arg name="num_points_threshold" default="300"/>
+  <arg name="invalid_intensity" default="[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"/>
+  <arg name="scan_phase" default="0.0"/>
+
+  <node pkg="velodyne_pointcloud" exec="cloud_node" name="$(var manager)_cloud">
+    <param name="calibration" value="$(var calibration)"/>
+    <param name="max_range" value="$(var max_range)"/>
+    <param name="min_range" value="$(var min_range)"/>
+    <param name="num_points_threshold" value="$(var num_points_threshold)"/>
+    <param name="invalid_intensity" value="$(var invalid_intensity)"/>
+    <param name="scan_phase" value="$(var scan_phase)"/>
+  </node>
+</launch>

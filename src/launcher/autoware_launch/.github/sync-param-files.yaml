@@ -1,0 +1,155 @@
+- repository: autowarefoundation/autoware.universe
+  files:
+    # tier4_autoware_api_launch
+
+    # tier4_control_launch
+    - source: launch/tier4_control_launch/config/shift_decider/shift_decider.param.yaml
+      dest: autoware_launch/config/tier4_control_launch/shift_decider/shift_decider.param.yaml
+    - source: launch/tier4_control_launch/config/operation_mode_transition_manager/operation_mode_transition_manager.param.yaml
+      dest: autoware_launch/config/tier4_control_launch/operation_mode_transition_manager/operation_mode_transition_manager.param.yaml
+    - source: launch/tier4_control_launch/config/vehicle_cmd_gate/vehicle_cmd_gate.param.yaml
+      dest: autoware_launch/config/tier4_control_launch/vehicle_cmd_gate/vehicle_cmd_gate.param.yaml
+    - source: launch/tier4_control_launch/config/obstacle_collision_checker/obstacle_collision_checker.param.yaml
+      dest: autoware_launch/config/tier4_control_launch/obstacle_collision_checker/obstacle_collision_checker.param.yaml
+    - source: launch/tier4_control_launch/config/trajectory_follower/lateral_controller.param.yaml
+      dest: autoware_launch/config/tier4_control_launch/trajectory_follower/lateral_controller.param.yaml
+    - source: launch/tier4_control_launch/config/trajectory_follower/longitudinal_controller.param.yaml
+      dest: autoware_launch/config/tier4_control_launch/trajectory_follower/longitudinal_controller.param.yaml
+    - source: launch/tier4_control_launch/config/common/nearest_search.param.yaml
+      dest: autoware_launch/config/tier4_control_launch/common/nearest_search.param.yaml
+
+    # tier4_localization_launch
+    - source: launch/tier4_localization_launch/config/localization_error_monitor.param.yaml
+      dest: autoware_launch/config/tier4_localization_launch/localization_error_monitor.param.yaml
+    - source: launch/tier4_localization_launch/config/random_downsample_filter.param.yaml
+      dest: autoware_launch/config/tier4_localization_launch/random_downsample_filter.param.yaml
+    - source: launch/tier4_localization_launch/config/ndt_scan_matcher.param.yaml
+      dest: autoware_launch/config/tier4_localization_launch/ndt_scan_matcher.param.yaml
+    - source: launch/tier4_localization_launch/config/crop_box_filter_measurement_range.param.yaml
+      dest: autoware_launch/config/tier4_localization_launch/crop_box_filter_measurement_range.param.yaml
+    - source: launch/tier4_localization_launch/config/voxel_grid_filter.param.yaml
+      dest: autoware_launch/config/tier4_localization_launch/voxel_grid_filter.param.yaml
+
+    # tier4_map_launch
+
+    # tier4_perception_launch
+    - source: launch/tier4_perception_launch/config/object_recognition/tracking/multi_object_tracker/data_association_matrix.param.yaml
+      dest: autoware_launch/config/tier4_perception_launch/object_recognition/tracking/multi_object_tracker/data_association_matrix.param.yaml
+    - source: launch/tier4_perception_launch/config/object_recognition/detection/object_position_filter.param.yaml
+      dest: autoware_launch/config/tier4_perception_launch/object_recognition/detection/object_position_filter.param.yaml
+    - source: launch/tier4_perception_launch/config/object_recognition/detection/pointcloud_map_filter.param.yaml
+      dest: autoware_launch/config/tier4_perception_launch/object_recognition/detection/pointcloud_map_filter.param.yaml
+    - source: launch/tier4_perception_launch/config/object_recognition/detection/object_lanelet_filter.param.yaml
+      dest: autoware_launch/config/tier4_perception_launch/object_recognition/detection/object_lanelet_filter.param.yaml
+    - source: launch/tier4_perception_launch/config/obstacle_segmentation/ground_segmentation/ground_segmentation.param.yaml
+      dest: autoware_launch/config/tier4_perception_launch/obstacle_segmentation/ground_segmentation/ground_segmentation.param.yaml
+
+    # tier4_planning_launch
+    - source: launch/tier4_planning_launch/config/scenario_planning/parking/freespace_planner/freespace_planner.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/parking/freespace_planner/freespace_planner.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/drivable_area_expansion.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/drivable_area_expansion.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/behavior_path_planner.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/behavior_path_planner.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/pull_out/pull_out.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/pull_out/pull_out.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/avoidance/avoidance.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/avoidance/avoidance.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/side_shift/side_shift.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/side_shift/side_shift.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/lane_change/lane_change.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/lane_change/lane_change.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/pull_over/pull_over.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/pull_over/pull_over.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/lane_following/lane_following.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_path_planner/lane_following/lane_following.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/rtc_auto_mode_manager/rtc_auto_mode_manager.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/rtc_auto_mode_manager/rtc_auto_mode_manager.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/run_out.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/run_out.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/no_stopping_area.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/no_stopping_area.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/virtual_traffic_light.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/virtual_traffic_light.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/occlusion_spot.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/occlusion_spot.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/blind_spot.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/blind_spot.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/crosswalk.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/crosswalk.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/stop_line.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/stop_line.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/detection_area.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/detection_area.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/traffic_light.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/traffic_light.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/behavior_velocity_planner.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/behavior_velocity_planner.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/intersection.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner/intersection.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/behavior_planning/lane_change_planner/lane_change_planner.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/behavior_planning/lane_change_planner/lane_change_planner.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/motion_planning/obstacle_velocity_limiter/obstacle_velocity_limiter.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/motion_planning/obstacle_velocity_limiter/obstacle_velocity_limiter.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/motion_planning/obstacle_stop_planner/adaptive_cruise_control.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/motion_planning/obstacle_stop_planner/adaptive_cruise_control.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/motion_planning/obstacle_stop_planner/obstacle_stop_planner.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/motion_planning/obstacle_stop_planner/obstacle_stop_planner.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner/obstacle_cruise_planner.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner/obstacle_cruise_planner.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/motion_planning/surround_obstacle_checker/surround_obstacle_checker.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/motion_planning/surround_obstacle_checker/surround_obstacle_checker.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/lane_driving/motion_planning/obstacle_avoidance_planner/obstacle_avoidance_planner.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/lane_driving/motion_planning/obstacle_avoidance_planner/obstacle_avoidance_planner.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/common/common.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/common/common.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/common/nearest_search.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/common/nearest_search.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/common/motion_velocity_smoother/L2.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/common/motion_velocity_smoother/L2.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/common/motion_velocity_smoother/motion_velocity_smoother.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/common/motion_velocity_smoother/motion_velocity_smoother.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/common/motion_velocity_smoother/Linf.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/common/motion_velocity_smoother/Linf.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/common/motion_velocity_smoother/JerkFiltered.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/common/motion_velocity_smoother/JerkFiltered.param.yaml
+    - source: launch/tier4_planning_launch/config/scenario_planning/common/motion_velocity_smoother/Analytical.param.yaml
+      dest: autoware_launch/config/tier4_planning_launch/scenario_planning/common/motion_velocity_smoother/Analytical.param.yaml
+
+    # tier4_sensing_launch
+
+    # tier4_simulator_launch
+    - source: launch/tier4_simulator_launch/config/fault_injection.param.yaml
+      dest: autoware_launch/config/tier4_simulator_launch/fault_injection.param.yaml
+
+    # tier4_system_launch
+    - source: launch/tier4_system_launch/config/system_monitor/voltage_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/voltage_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_monitor/cpu_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/cpu_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_monitor/process_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/process_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_monitor/hdd_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/hdd_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_monitor/ntp_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/ntp_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_monitor/gpu_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/gpu_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_monitor/mem_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/mem_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_monitor/net_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_monitor/net_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/ad_service_state_monitor/ad_service_state_monitor.planning_simulation.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/ad_service_state_monitor/ad_service_state_monitor.planning_simulation.param.yaml
+    - source: launch/tier4_system_launch/config/ad_service_state_monitor/ad_service_state_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/ad_service_state_monitor/ad_service_state_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/emergency_handler/emergency_handler.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/emergency_handler/emergency_handler.param.yaml
+    - source: launch/tier4_system_launch/config/system_error_monitor/system_error_monitor.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_error_monitor/system_error_monitor.param.yaml
+    - source: launch/tier4_system_launch/config/system_error_monitor/system_error_monitor.planning_simulation.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_error_monitor/system_error_monitor.planning_simulation.param.yaml
+    - source: launch/tier4_system_launch/config/system_error_monitor/diagnostic_aggregator/vehicle.param.yaml
+      dest: autoware_launch/config/tier4_system_launch/system_error_monitor/diagnostic_aggregator/vehicle.param.yaml
+
+    # tier4_vehicle_launch

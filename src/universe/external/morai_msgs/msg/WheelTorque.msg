@@ -1,0 +1,4 @@
+bool left_front_wheel_torque_off
+bool left_rear_wheel_torque_off
+bool right_front_wheel_torque_off
+bool right_rear_wheel_torque_off

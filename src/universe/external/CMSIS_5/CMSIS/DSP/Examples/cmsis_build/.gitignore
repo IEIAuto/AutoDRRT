@@ -1,0 +1,6 @@
+*_IntDir/
+*_OutDir/
+*@*
+.*@*
+*.cbuild.yml 
+

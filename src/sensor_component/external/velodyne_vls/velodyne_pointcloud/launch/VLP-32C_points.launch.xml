@@ -1,0 +1,55 @@
+<!-- -*- mode: XML -*- -->
+<!-- run velodyne_pointcloud/CloudNodelet in a nodelet manager for an VLP-32C -->
+
+<launch>
+
+  <!-- declare arguments with default values -->
+  <arg name="launch_driver" default="true"/>
+
+  <arg name="calibration" default="$(find-pkg-share velodyne_pointcloud)/params/VeloView-VLP-32C.yaml"/>
+  <arg name="device_ip" default="" />
+  <arg name="frame_id" default="velodyne" />
+  <arg name="manager" default="$(var frame_id)_nodelet_manager" />
+  <arg name="max_range" default="130.0" />
+  <arg name="min_range" default="0.4" />
+  <arg name="pcap" default="" />
+  <arg name="port" default="2368" />
+  <arg name="read_fast" default="false" />
+  <arg name="read_once" default="false" />
+  <arg name="repeat_delay" default="0.0" />
+  <arg name="rpm" default="600.0" />
+  <arg name="scan_phase" default="0.0" />
+  <arg name="sensor_timestamp" default="false" />
+  <arg name="laserscan_ring" default="-1" />
+  <arg name="laserscan_resolution" default="0.007" />
+  <arg name="num_points_threshold" default="300"/>
+  <arg name="invalid_intensity" default="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"/>
+
+  <!-- start nodelet manager -->
+  <include file="$(find-pkg-share velodyne_driver)/launch/nodelet_manager.launch.xml" if="$(var launch_driver)">
+    <arg name="device_ip" value="$(var device_ip)"/>
+    <arg name="frame_id" value="$(var frame_id)"/>
+    <arg name="manager" value="$(var manager)" />
+    <arg name="model" value="32C"/>
+    <arg name="pcap" value="$(var pcap)"/>
+    <arg name="port" value="$(var port)"/>
+    <arg name="read_fast" value="$(var read_fast)"/>
+    <arg name="read_once" value="$(var read_once)"/>
+    <arg name="repeat_delay" value="$(var repeat_delay)"/>
+    <arg name="rpm" value="$(var rpm)"/>
+    <arg name="scan_phase" value="$(var scan_phase)"/>
+    <arg name="sensor_timestamp" value="$(var sensor_timestamp)" />
+  </include>
+
+  <!-- start cloud nodelet -->
+  <include file="$(find-pkg-share velodyne_pointcloud)/launch/cloud_nodelet.launch.xml">
+    <arg name="calibration" value="$(var calibration)"/>
+    <arg name="manager" value="$(var manager)" />
+    <arg name="max_range" value="$(var max_range)"/>
+    <arg name="min_range" value="$(var min_range)"/>
+    <arg name="num_points_threshold" value="$(var num_points_threshold)"/>
+    <arg name="invalid_intensity" value="$(var invalid_intensity)"/>
+    <arg name="scan_phase" value="$(var scan_phase)"/>
+  </include>
+
+</launch>

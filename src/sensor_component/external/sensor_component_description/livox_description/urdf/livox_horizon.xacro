@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="livox_horizon_macro" params="name parent x y z roll pitch yaw">
+    <xacro:property name="sensor_box" value="0.1"/>
+    <xacro:property name="mass" value="0.01"/>
+
+    <joint name="${name}_base_mount_joint" type="fixed">
+      <origin rpy="${roll} ${pitch} ${yaw}" xyz="${x} ${y} ${z}"/>
+      <parent link="${parent}"/>
+      <child link="${name}_base_link"/>
+    </joint>
+
+    <link name="${name}_base_link">
+      <visual>
+        <geometry>
+          <box size="${sensor_box} ${sensor_box} ${sensor_box}"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <material name="red">
+          <color rgba="1.0 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <mass value="${mass}"/>
+        <inertia
+          ixx="${(sensor_box*sensor_box+sensor_box*sensor_box)*mass/12.0}"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="${(sensor_box*sensor_box+sensor_box*sensor_box)*mass/12.0}"
+          iyz="0.0"
+          izz="${(sensor_box*sensor_box+sensor_box*sensor_box)*mass/12.0}"
+        />
+      </inertial>
+      <!-- <collision>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <box size="${sensor_box} ${sensor_box} ${sensor_box}"/>
+        </geometry>
+      </collision> -->
+    </link>
+    <joint name="${name}_base_scan_joint" type="fixed">
+      <origin xyz="0 0 0.0377" rpy="0 0 0"/>
+      <parent link="${name}_base_link"/>
+      <child link="${name}"/>
+    </joint>
+    <link name="${name}">
+      <inertial>
+        <mass value="0.0"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+</robot>

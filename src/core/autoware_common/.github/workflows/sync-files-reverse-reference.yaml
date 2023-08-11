@@ -1,0 +1,24 @@
+name: sync-files-reverse-reference
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync-files-reverse-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Run sync-files
+        uses: autowarefoundation/autoware-github-actions/sync-files@v1
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          config: .github/sync-files-reverse-reference.yaml
+          pr-branch: sync-files-reverse-reference
+          pr-title: "chore: sync files of reverse references"
+          pr-commit-message: "chore: sync files of reverse references"

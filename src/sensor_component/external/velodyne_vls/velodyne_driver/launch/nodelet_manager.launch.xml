@@ -1,0 +1,39 @@
+<!-- -*- mode: XML -*- -->
+<!-- start velodyne_driver/DriverNodelet in a nodelet manager -->
+
+<launch>
+
+  <arg name="device_ip" default="" />
+  <arg name="frame_id" default="velodyne" />
+  <arg name="manager" default="$(var frame_id)_nodelet_manager" />
+  <arg name="model" default="64E" />
+  <arg name="pcap" default="" />
+  <arg name="port" default="2368" />
+  <arg name="npackets" default="" />
+  <arg name="read_fast" default="false" />
+  <arg name="read_once" default="false" />
+  <arg name="repeat_delay" default="0.0" />
+  <arg name="rpm" default="600.0" />
+  <arg name="scan_phase" default="0.0" />
+  <arg name="sensor_timestamp" default="false" />
+
+  <!-- start nodelet manager -->
+  <!-- <node pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" /> -->
+
+  <!-- load driver nodelet into it -->
+  <node pkg="velodyne_driver" exec="velodyne_driver_node" name="$(var manager)_driver">
+    <param name="device_ip" value="$(var device_ip)" />
+    <param name="frame_id" value="$(var frame_id)"/>
+    <param name="model" value="$(var model)"/>
+    <param name="pcap" value="$(var pcap)"/>
+    <param name="port" value="$(var port)" />
+    <param name="npackets" value="$(var npackets)" />
+    <param name="read_fast" value="$(var read_fast)"/>
+    <param name="read_once" value="$(var read_once)"/>
+    <param name="repeat_delay" value="$(var repeat_delay)"/>
+    <param name="rpm" value="$(var rpm)"/>
+    <param name="scan_phase" value="$(var scan_phase)"/>
+    <param name="sensor_timestamp" value="$(var sensor_timestamp)" />
+  </node>
+
+</launch>

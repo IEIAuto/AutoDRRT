@@ -1,0 +1,39 @@
+- repository: autowarefoundation/autoware.universe
+  files:
+    - source: .github/workflows/build-and-test.yaml
+      pre-commands: |
+        sd -s '${{ matrix.container-suffix }}' '' {source}
+        sd -f ms 'container-suffix:.*include:' 'include:' {source}
+
+        sd "container: ghcr.io/autowarefoundation/autoware-universe:(\w+)-latest.*" "container: ros:\$1" {source}
+        sd "build_depends.humble.repos" "build_depends.repos" {source}
+    - source: .github/workflows/build-and-test-differential.yaml
+      pre-commands: |
+        sd -s '${{ matrix.container-suffix }}' '' {source}
+        sd -f ms 'container-suffix:.*include:' 'include:' {source}
+
+        sd "container: ghcr.io/autowarefoundation/autoware-universe:(\w+)-latest.*" "container: ros:\$1" {source}
+        sd "build_depends.humble.repos" "build_depends.repos" {source}
+    - source: .github/workflows/build-and-test-differential-self-hosted.yaml
+      pre-commands: |
+        sd -s '${{ matrix.container-suffix }}' '' {source}
+        sd -f ms 'container-suffix:.*include:' 'include:' {source}
+
+        sd "container: ghcr.io/autowarefoundation/autoware-universe:(\w+)-latest.*" "container: ros:\$1" {source}
+        sd "build_depends.humble.repos" "build_depends.repos" {source}
+    - source: .github/workflows/build-and-test-self-hosted.yaml
+      pre-commands: |
+        sd -s '${{ matrix.container-suffix }}' '' {source}
+        sd -f ms 'container-suffix:.*include:' 'include:' {source}
+
+        sd "container: ghcr.io/autowarefoundation/autoware-universe:(\w+)-latest.*" "container: ros:\$1" {source}
+        sd "build_depends.humble.repos" "build_depends.repos" {source}
+    - source: .github/workflows/check-build-depends.yaml
+      pre-commands: |
+        sd "container: ghcr.io/autowarefoundation/autoware-universe:(\w+)-latest.*" "container: ros:\$1" {source}
+        sd "build_depends.humble.repos" "build_depends.repos" {source}
+    - source: .github/workflows/clang-tidy-pr-comments.yaml
+    - source: .github/workflows/clang-tidy-pr-comments-manually.yaml
+    - source: .github/workflows/update-codeowners-from-packages.yaml
+    - source: .pre-commit-config.yaml
+    - source: codecov.yaml

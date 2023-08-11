@@ -1,0 +1,28 @@
+/**:
+  ros__parameters:
+    # setup parameters
+    base_frame_id: "base_link"
+    command_timeout_ms: 1000
+    loop_rate: 30.0
+
+    # parameters for vehicle specifications
+    vgr_coef_a: 15.713
+    vgr_coef_b: 0.053
+    vgr_coef_c: 0.042
+
+    # parameters for steer test
+    test_amplitude: 8.5
+    test_delta_amplitude: 0.0
+    test_frequency: 0.1
+    test_steer_offset: 0.0
+    test_steer_rate: 6.0
+    test_stopping: true
+    accel_value: 0.0
+    brake_value: 0.0
+    test_mode: 2
+    ## test_mode:
+    ### SineWave = 0,
+    ### IncreasedSineWave = 1,
+    ### StepWithTwoValue = 2,
+    ### StepWithThreeValue = 3,
+    ### IncreasedStepWithTwoValue = 4

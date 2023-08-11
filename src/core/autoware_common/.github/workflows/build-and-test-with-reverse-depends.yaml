@@ -1,0 +1,52 @@
+name: build-and-test-with-reverse-depends
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-test-with-reverse-depends:
+    runs-on: ubuntu-latest
+    container: ros:humble
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up yq
+        uses: chrisdickinson/setup-yq@v1.0.1
+        with:
+          yq-version: v4.25.1
+
+      - name: Clone reverse depends
+        run: |
+          git clone https://github.com/autowarefoundation/autoware.universe.git reverse_depends
+
+      - name: Remove exec_depend
+        uses: autowarefoundation/autoware-github-actions/remove-exec-depend@v1
+
+      - name: Get self packages
+        id: get-self-packages
+        uses: autowarefoundation/autoware-github-actions/get-self-packages@v1
+
+      - name: Import depends of reverse depends
+        run: |
+          yq -i 'del(.repositories.* | select(.url == "https://github.com/autowarefoundation/autoware_common.git"))' reverse_depends/build_depends.repos
+          yq -i 'del(.repositories.* | select(.url == "https://github.com/tier4/autoware_auto_msgs.git"))' reverse_depends/build_depends.repos
+          vcs import reverse_depends < reverse_depends/build_depends.repos
+          rm -rf reverse_depends/map/lanelet2_extension
+
+      - name: Build
+        if: ${{ steps.get-self-packages.outputs.self-packages != '' }}
+        uses: autowarefoundation/autoware-github-actions/colcon-build@v1
+        with:
+          rosdistro: humble
+          target-packages: ${{ steps.get-self-packages.outputs.self-packages }}
+          build-depends-repos: build_depends.repos
+
+      - name: Test
+        if: ${{ steps.get-self-packages.outputs.self-packages != '' }}
+        id: test
+        uses: autowarefoundation/autoware-github-actions/colcon-test@v1
+        with:
+          rosdistro: humble
+          target-packages: ${{ steps.get-self-packages.outputs.self-packages }}
+          build-depends-repos: build_depends.repos

@@ -1,0 +1,7 @@
+string sensor_config_file_name
+string publisher_list
+string subscriber_list
+string service_list
+string camera_list
+string gps_list
+string imu_list
