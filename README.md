@@ -1,6 +1,22 @@
 # Autonomous Driving Computing Framework AutoDRRT
 AutoDRRT is an autonomous driving framework developed based on the [Autoware open-source framework](https://github.com/autowarefoundation/autoware/tree/main), with targeted optimizations for the EIS400 onboard domain controller. These optimizations enhance the framework's real-time performance, distributability, and fault tolerance. A set of tools is provided to facilitate users in making use of these new features more easily. This framework is built upon the Robot Operating System 2 (ROS2). It encompasses all necessary functionalities from localization and target detection to path planning and control, striving to lower the entry barrier and aiming to involve as many individuals and organizations as possible in the open innovation of autonomous driving technology.
-![avatar](./docs/imgs/Architecture_Diagram.png)
+![avatar](./docs/imgs/Architecture_Diagram_en.png)
+## Features
+
+- Distributed
+
+This framework supports transforming single-node applications into distributed applications with zero code changes.
+
+- Enhanced Real time performance
+  
+  Significant Reduction in End-to-End Latency Achieved Through Multi-Faceted Optimization Strategies and Hardware-Software Co-design.
+  ![avatar](./docs/imgs/Real_time_performance.png)
+  <span style="font-size: small;">The test data corresponds to the 'logging_simulator' scenario used in the Autoware framework</span>
+
+  
+- Fault Tolerance
+
+The framework supports concurrent startup of multiple identical algorithm nodes, capable of receiving and processing data simultaneously. In the event of a primary node failure due to faults, backup nodes seamlessly take over data transmission with millisecond-level switchover time.
 
 ## Installation
 

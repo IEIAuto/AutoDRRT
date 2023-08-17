@@ -29,7 +29,7 @@ ORIN
 
 16GB RAM
 
-[可选] NVIDIA GPU (4GB RAM)
+NVIDIA GPU (4GB RAM)
 
 ### 安装说明
 
