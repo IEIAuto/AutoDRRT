@@ -1,5 +1,5 @@
 # 自动驾驶计算框架AutoDRRT
-AutoDRRT是一个自动驾驶框架，基于[Autoware开源框架](https://github.com/autowarefoundation/autoware/tree/main)开发，针对EIS400车载域控制器进行了针对性优化，提升了框架的实时性、可分布性及容错性。提供了一系列工具来方便用户更轻松地使用这些新增特性。该框架基于机器人操作系统2（ROS2）。它包含了从定位和目标检测到路径规划和控制的所有必要功能，并努力降低入门门槛，旨在让尽可能多的个人和组织参与到自动驾驶技术的开放创新中。
+AutoDRRT是一个自动驾驶框架，基于[Autoware开源框架](https://github.com/autowarefoundation/autoware/tree/main)开发，针对EIS400车载域控制器进行了软硬件协同优化，提升了框架的实时性、可分布性及容错性。提供了一系列工具来方便用户更轻松地使用这些新增特性。该框架基于机器人操作系统2（ROS2）。它包含了从定位和目标检测到路径规划和控制的所有必要功能，并努力降低入门门槛，旨在让尽可能多的个人和组织参与到自动驾驶技术的开放创新中。
 ![avatar](./docs/imgs/Architecture_Diagram.png)
 
 ## 安装
