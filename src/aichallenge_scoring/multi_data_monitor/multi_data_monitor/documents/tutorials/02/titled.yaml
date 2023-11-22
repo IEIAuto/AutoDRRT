@@ -1,0 +1,9 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/titled.css, target: Titled }
+
+widgets:
+  - class: Titled
+    title: Title
+    input: { class: subscription, topic: /example/count/uint32, field: data }

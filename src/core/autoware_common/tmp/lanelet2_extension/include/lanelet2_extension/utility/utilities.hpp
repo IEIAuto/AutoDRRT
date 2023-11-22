@@ -1,4 +1,4 @@
-// Copyright 2015-2019 Autoware Foundation. All rights reserved.
+// Copyright 2015-2023 Autoware Foundation. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 #include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 
+#include <lanelet2_core/geometry/Point.h>
 #include <lanelet2_routing/Route.h>
 #include <lanelet2_routing/RoutingGraph.h>
 
@@ -45,6 +46,33 @@ lanelet::ConstLanelet getExpandedLanelet(
 
 lanelet::ConstLanelets getExpandedLanelets(
   const lanelet::ConstLanelets & lanelet_obj, const double left_offset, const double right_offset);
+
+/// @brief copy the z values between 2 containers based on the 2D arc lengths
+/// @tparam T1 a container of 3D points
+/// @tparam T2 a container of 3D points
+/// @param from points from which the z values will be copied
+/// @param to points to which the z values will be copied
+template <typename T1, typename T2>
+void copyZ(const T1 & from, T2 & to)
+{
+  if (from.empty() || to.empty()) return;
+  to.front().z() = from.front().z();
+  if (from.size() < 2 || to.size() < 2) return;
+  to.back().z() = from.back().z();
+  auto i_from = 1lu;
+  auto s_from = lanelet::geometry::distance2d(from[0], from[1]);
+  auto s_to = 0.0;
+  auto s_from_prev = 0.0;
+  for (auto i_to = 1lu; i_to + 1 < to.size(); ++i_to) {
+    s_to += lanelet::geometry::distance2d(to[i_to - 1], to[i_to]);
+    for (; s_from < s_to && i_from + 1 < from.size(); ++i_from) {
+      s_from_prev = s_from;
+      s_from += lanelet::geometry::distance2d(from[i_from], from[i_from + 1]);
+    }
+    const auto ratio = (s_to - s_from_prev) / (s_from - s_from_prev);
+    to[i_to].z() = from[i_from - 1].z() + ratio * (from[i_from].z() - from[i_from - 1].z());
+  }
+}
 
 /**
  * @brief  Apply a patch for centerline because the original implementation

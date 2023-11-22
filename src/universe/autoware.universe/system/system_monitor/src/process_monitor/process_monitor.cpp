@@ -22,7 +22,7 @@
 #include "system_monitor/system_monitor_utility.hpp"
 
 #include <tier4_autoware_utils/system/stop_watch.hpp>
-#define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 
 #include <memory>

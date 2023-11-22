@@ -24,11 +24,6 @@
 
 #include <memory>
 
-  
-// Include Debuger
-#include "autoware_debuger.hpp"
-  
-
 using autoware_auto_perception_msgs::msg::DetectedObjects;
 using tier4_perception_msgs::msg::DetectedObjectsWithFeature;
 class ShapeEstimationNode : public rclcpp::Node
@@ -43,10 +38,6 @@ private:
   std::unique_ptr<ShapeEstimator> estimator_;
   bool use_vehicle_reference_yaw_;
   bool use_vehicle_reference_shape_size_;
-
-    //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
 
 public:
   explicit ShapeEstimationNode(const rclcpp::NodeOptions & node_options);

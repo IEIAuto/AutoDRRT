@@ -1,0 +1,7 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/documents/tutorials/05/style2.css, target: Simple }
+
+widgets:
+  - { class: Simple, value: dummy }

@@ -104,7 +104,7 @@ Change history
 * Modified velodyne_point_cloud/src/lib/rawdata.cc to address warning
   that last_azimuth_diff variable may be used uninitialized.  Variable
   is now initialized to 0 at creation.
-  velodyne/velodyne_pointcloud/src/lib/rawdata.cc:328:57: error: ‘last_azimuth_diff’ may be used uninitialized in this function [ =maybe-uninitialized]
+  velodyne/velodyne_pointcloud/src/lib/rawdata.cc:328:57: error: ‘last_azimuth_diff’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
   azimuth_corrected_f = azimuth + (azimuth_diff * ((dsr*VLP16_DSR_TOFFSET) + (firing*VLP16_FIRING_TOFFSET)) / VLP16_BLOCK_TDURATION);
 * Modified  velodyne_pointcloud/src/conversion/colors.cc to remove
   address build warning for strict-aliasing.

@@ -39,6 +39,8 @@ set(msg_files
   "msg/PRStatus.msg"
   "msg/RadarTrack.msg"
   "msg/RadarTracks.msg"
+  "msg/RadarDetection.msg"
+  "msg/RadarDetections.msg"
   "msg/ReplayInfo.msg"
   "msg/SaveSensorData.msg"
   "msg/ScenarioLoad.msg"

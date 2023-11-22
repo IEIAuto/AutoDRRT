@@ -25,7 +25,6 @@
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <std_msgs/msg/header.hpp>
-// #include <pcl/search/impl/kdtree_omp.hpp>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/exact_time.h>
@@ -33,17 +32,12 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
-
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/message_filter.h>
 #include <tf2_ros/transform_listener.h>
 
 #include <memory>
 #include <string>
-// Include Debuger
-#include "autoware_debuger.hpp"
-  
 
 namespace occupancy_grid_map_outlier_filter
 {
@@ -69,10 +63,8 @@ private:
   float min_points_and_distance_ratio_;
   int min_points_;
   int max_points_;
-  std::unique_ptr<tier4_autoware_utils::StopWatch<std::chrono::milliseconds>> stop_watch_ptr_;
+  long unsigned int max_filter_points_nb_;
   pcl::search::Search<pcl::PointXY>::Ptr kd_tree_;
-  // pcl::search::Search<pcl::PointXY>::Ptr kd_tree_stand_;
-  // pcl::KdTreeFLANN<pcl::PointXY>::Ptr kd_tree_;
 };
 
 class OccupancyGridMapOutlierFilterComponent : public rclcpp::Node
@@ -86,8 +78,9 @@ private:
     const PointCloud2::ConstSharedPtr & input_pointcloud);
   void filterByOccupancyGridMap(
     const OccupancyGrid & occupancy_grid_map, const PointCloud2 & pointcloud,
-    PclPointCloud & high_confidence, PclPointCloud & low_confidence);
-  
+    PclPointCloud & high_confidence, PclPointCloud & low_confidence, PclPointCloud & out_ogm);
+  void splitPointCloudFrontBack(
+    const PointCloud2::ConstSharedPtr & input_pc, PointCloud2 & front_pc, PointCloud2 & behind_pc);
 
 private:
   class Debugger
@@ -109,7 +102,6 @@ private:
 
 private:
   // publishers and subscribers
-  rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_;
   rclcpp::Publisher<PointCloud2>::SharedPtr pointcloud_pub_;
   message_filters::Subscriber<OccupancyGrid> occupancy_grid_map_sub_;
   message_filters::Subscriber<PointCloud2> pointcloud_sub_;
@@ -129,9 +121,6 @@ private:
   std::unique_ptr<tier4_autoware_utils::StopWatch<std::chrono::milliseconds>> stop_watch_ptr_;
   std::unique_ptr<tier4_autoware_utils::DebugPublisher> debug_publisher_;
 
-    //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
   // ROS Parameters
   std::string map_frame_;
   std::string base_link_frame_;

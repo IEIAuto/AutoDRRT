@@ -87,7 +87,7 @@ def generate_launch_description():
             ],
             parameters=[
                 {
-                    "map_resolution": 0.5,
+                    "map_resolution": 0.1,
                     "use_height_filter": True,
                     "input_obstacle_pointcloud": LaunchConfiguration("input_obstacle_pointcloud"),
                     "input_obstacle_and_raw_pointcloud": LaunchConfiguration(

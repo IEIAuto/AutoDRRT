@@ -1,0 +1,18 @@
+- name: Install pre-commit
+  ansible.builtin.pip:
+    name: pre-commit
+    state: latest
+    executable: pip3
+
+- name: Install clang-format
+  ansible.builtin.pip:
+    name: clang-format
+    version: "{{ clang_format_version }}"
+    executable: pip3
+
+- name: Install Go
+  become: true
+  ansible.builtin.apt:
+    name: golang
+    state: latest
+    update_cache: true

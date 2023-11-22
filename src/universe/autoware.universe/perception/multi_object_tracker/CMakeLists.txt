@@ -41,15 +41,9 @@ ament_auto_add_library(multi_object_tracker_node SHARED
   ${MULTI_OBJECT_TRACKER_SRC}
 )
 
-find_library(MULTI_OBJECT_TRACKER_OPT multi_object_tracker_opt
-            PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/)
-
-
-
 target_link_libraries(multi_object_tracker_node
   mu_successive_shortest_path
   Eigen3::Eigen
-  ${MULTI_OBJECT_TRACKER_OPT}
 )
 
 rclcpp_components_register_node(multi_object_tracker_node

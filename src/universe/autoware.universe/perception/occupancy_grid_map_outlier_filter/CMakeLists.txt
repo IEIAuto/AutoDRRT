@@ -26,24 +26,19 @@ ament_auto_add_library(occupancy_grid_map_outlier_filter SHARED
   src/occupancy_grid_map_outlier_filter_nodelet.cpp
 )
 
-find_library(OCCUPANCY_GRID_MAP_OUTLIER_OPT occupancy_grid_map_outlier_filter_opt
-            PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/)
-
 target_link_libraries(occupancy_grid_map_outlier_filter
   ${Boost_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${PCL_LIBRARIES}
-  ${OCCUPANCY_GRID_MAP_OUTLIER_OPT}
 )
+
 if(OPENMP_FOUND)
-  message(STATUS,"OPENMP ENABLED")
   set_target_properties(occupancy_grid_map_outlier_filter PROPERTIES
     COMPILE_FLAGS ${OpenMP_CXX_FLAGS}
     LINK_FLAGS ${OpenMP_CXX_FLAGS}
   )
 endif()
 
-target_compile_options(occupancy_grid_map_outlier_filter PUBLIC -fopenmp -march=native -ffast-math -ftree-loop-vectorize -ftree-vectorizer-verbose=2 -fopt-info-vec -O3 -ftree-vectorize)
 # -- Occupancy Grid Map Outlier Filter --
 rclcpp_components_register_node(occupancy_grid_map_outlier_filter
   PLUGIN "occupancy_grid_map_outlier_filter::OccupancyGridMapOutlierFilterComponent"

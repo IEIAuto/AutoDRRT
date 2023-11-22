@@ -23,8 +23,7 @@
 #include <tier4_perception_msgs/msg/detected_objects_with_feature.hpp>
 
 #include <memory>
-// Include Debuger
-#include "autoware_debuger.hpp"
+
 namespace euclidean_cluster
 {
 class VoxelGridBasedEuclideanClusterNode : public rclcpp::Node
@@ -40,9 +39,6 @@ private:
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr debug_pub_;
 
   std::shared_ptr<VoxelGridBasedEuclideanCluster> cluster_;
-     //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
 };
 
 }  // namespace euclidean_cluster

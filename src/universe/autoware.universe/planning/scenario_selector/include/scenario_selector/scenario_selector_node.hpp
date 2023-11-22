@@ -24,6 +24,15 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <tier4_planning_msgs/msg/scenario.hpp>
+#include "autoware_auto_system_msgs/msg/autoware_state.hpp"
+#include "autoware_auto_vehicle_msgs/msg/engage.hpp"
+
+#include <std_msgs/msg/string.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
+
+
+
 
 #include <lanelet2_core/LaneletMap.h>
 #include <lanelet2_routing/RoutingGraph.h>
@@ -37,7 +46,7 @@
 
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-
+#include <rclcpp/parameter_client.hpp>
 #include <deque>
 #include <memory>
 #include <string>
@@ -51,7 +60,10 @@ public:
   void onRoute(const autoware_planning_msgs::msg::LaneletRoute::ConstSharedPtr msg);
   void onOdom(const nav_msgs::msg::Odometry::ConstSharedPtr msg);
   void onParkingState(const std_msgs::msg::Bool::ConstSharedPtr msg);
-
+  void onSpecialPosition(const std_msgs::msg::Bool::ConstSharedPtr msg);
+  void change_pid_param();
+  void change_freespace_param(const int & num);
+  void change_freespace_param_width(const double & num);
   bool isDataReady();
   void onTimer();
   void onLaneDrivingTrajectory(
@@ -65,8 +77,12 @@ public:
     const std::string & scenario);
 
 private:
+  using AutowareState = autoware_auto_system_msgs::msg::AutowareState;
+  using Engage = autoware_auto_vehicle_msgs::msg::Engage;
+  using PoseStamped = geometry_msgs::msg::PoseStamped;
   rclcpp::TimerBase::SharedPtr timer_;
-
+  std::shared_ptr<rclcpp::SyncParametersClient> parameter_client_pid;
+  std::shared_ptr<rclcpp::SyncParametersClient> parameter_client_freespace;
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
 
@@ -78,15 +94,29 @@ private:
   rclcpp::Subscription<autoware_auto_planning_msgs::msg::Trajectory>::SharedPtr
     sub_parking_trajectory_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_parking_state_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_special_position;
   rclcpp::Publisher<autoware_auto_planning_msgs::msg::Trajectory>::SharedPtr pub_trajectory_;
   rclcpp::Publisher<tier4_planning_msgs::msg::Scenario>::SharedPtr pub_scenario_;
 
+
+
+  // Publishers
+  rclcpp::Publisher<Engage>::SharedPtr engage_publisher;
+  rclcpp::Publisher<PoseStamped>::SharedPtr goal_pos_publisher;
+  // Subscribers
+  rclcpp::Subscription<AutowareState>::SharedPtr state_subscriber;
+
+  void initPreSetedPose();
+  void goalCallback(const AutowareState& msg);
+  size_t arrivedWhichGoal(const geometry_msgs::msg::Pose & current_pose, const double th_dist);
+  bool inSpecialPosition();
   autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr lane_driving_trajectory_;
   autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr parking_trajectory_;
   autoware_planning_msgs::msg::LaneletRoute::ConstSharedPtr route_;
   geometry_msgs::msg::PoseStamped::ConstSharedPtr current_pose_;
   geometry_msgs::msg::TwistStamped::ConstSharedPtr twist_;
-
+  std::vector<geometry_msgs::msg::PoseStamped> pre_seted_pose_vector;
+  std::vector<geometry_msgs::msg::PoseStamped> pre_seted_special_pose_vector;
   std::string current_scenario_;
   std::deque<geometry_msgs::msg::TwistStamped::ConstSharedPtr> twist_buffer_;
 
@@ -94,7 +124,7 @@ private:
   std::shared_ptr<lanelet::routing::RoutingGraph> routing_graph_ptr_;
   std::shared_ptr<lanelet::traffic_rules::TrafficRules> traffic_rules_ptr_;
   std::shared_ptr<route_handler::RouteHandler> route_handler_;
-
+  
   // Parameters
   double update_rate_;
   double th_max_message_delay_sec_;
@@ -102,6 +132,11 @@ private:
   double th_stopped_time_sec_;
   double th_stopped_velocity_mps_;
   bool is_parking_completed_;
+  bool is_special_position;
+  int drive_stage;
+  bool is_published_goal;
+  bool is_engaged_goal;
+  std::shared_ptr<rclcpp::SyncParametersClient> parameter_client;
 };
 
 #endif  // SCENARIO_SELECTOR__SCENARIO_SELECTOR_NODE_HPP_

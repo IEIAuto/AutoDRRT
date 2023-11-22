@@ -1,0 +1,23 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+  - { path: package://multi_data_monitor/css/plugins/titled.css, target: Titled }
+  - { path: package://multi_data_monitor/css/colors.css }
+
+widgets:
+  - class: Simple
+    input: { class: subscription, label: data, topic: /test/uint32, field: data }
+    rules: test-func
+
+filters:
+  - class: function
+    label: test-func
+    rules:
+      - class: SetFirstIf
+        type: text
+        list:
+          - { eq: 1, value: A, attrs: { back-color: red } }
+          - { eq: 2, value: B, attrs: { back-color: lime } }
+          - { eq: 3, value: C, attrs: { back-color: blue } }
+          - { value: ERROR, attrs: { back-color: none } }

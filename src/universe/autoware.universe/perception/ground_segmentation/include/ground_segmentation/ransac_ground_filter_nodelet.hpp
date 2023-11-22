@@ -25,7 +25,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf2/transform_datatypes.h>
-#include <tier4_autoware_utils/system/stop_watch.hpp>
+
 #ifdef ROS_DISTRO_GALACTIC
 #include <tf2_eigen/tf2_eigen.h>
 #else
@@ -37,9 +37,6 @@
 #include <chrono>
 #include <string>
 #include <vector>
-
-// #include "cuda_runtime.h"
-// #include "lib/cudaSegmentation.h"
 
 namespace ground_segmentation
 {
@@ -66,8 +63,6 @@ protected:
     const PointCloud2ConstPtr & input, const IndicesPtr & indices, PointCloud2 & output) override;
 
 private:
-// debugger
-  std::unique_ptr<tier4_autoware_utils::StopWatch<std::chrono::milliseconds>> stop_watch_ptr_{nullptr};
   rclcpp::Publisher<geometry_msgs::msg::PoseArray>::SharedPtr debug_pose_array_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr debug_ground_cloud_pub_;
 
@@ -113,7 +108,7 @@ private:
 
   Eigen::Affine3d getPlaneAffine(
     const pcl::PointCloud<PointType> segment_ground_cloud, const Eigen::Vector3d & plane_normal);
-  void testCUDA(pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud, pcl::PointIndices::Ptr & output_inliers, pcl::ModelCoefficients::Ptr & output_coefficients);
+
   void applyRANSAC(
     const pcl::PointCloud<PointType>::Ptr & input, pcl::PointIndices::Ptr & output_inliers,
     pcl::ModelCoefficients::Ptr & output_coefficients);

@@ -16,4 +16,4 @@ rclcpp_components_register_nodes(${PROJECT_NAME}
   "internal_api::Velocity"
 )
 
-ament_auto_package()
+ament_auto_package(INSTALL_TO_SHARE launch)

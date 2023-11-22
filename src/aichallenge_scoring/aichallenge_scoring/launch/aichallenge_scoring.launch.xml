@@ -1,0 +1,18 @@
+<launch>
+  <!-- vehicle info -->
+  <arg name="vehicle_info_param_file" default="$(find-pkg-share ymc_golfcart_description)/config/vehicle_info.param.yaml"/>
+
+  <!-- AIChallenge config param path -->
+  <arg name="aichallenge_scoring_param_path" default="$(find-pkg-share aichallenge_scoring)/config/aichallenge_scoring.param.yaml"/>
+  
+  <!-- Topic names -->
+  <arg name="vehicle_footprint_marker_topic" default="/aichallenge_scoring/vehicle_footprint"/>
+  <arg name="result_score_topic" default="/aichallenge_scoring/score"/>
+
+  <node pkg="aichallenge_scoring" exec="aichallenge_scoring_node" name="aichallenge_scoring_node" output="screen">
+    <param from="$(var vehicle_info_param_file)"/>
+    <param from="$(var aichallenge_scoring_param_path)"/>
+    <remap from="output/footprint_marker" to="$(var vehicle_footprint_marker_topic)"/>
+    <remap from="output/score" to="$(var result_score_topic)"/>
+  </node>
+</launch>

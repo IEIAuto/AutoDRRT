@@ -14,7 +14,7 @@
 
 #ifndef POSE_INITIALIZER__COPY_VECTOR_TO_ARRAY_HPP_
 #define POSE_INITIALIZER__COPY_VECTOR_TO_ARRAY_HPP_
-#define FMT_HEADER_ONLY
+
 #include <fmt/core.h>
 
 #include <algorithm>

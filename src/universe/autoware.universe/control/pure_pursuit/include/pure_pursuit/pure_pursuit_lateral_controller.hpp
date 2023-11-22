@@ -35,8 +35,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_listener.h"
-#include "tier4_autoware_utils/ros/self_pose_listener.hpp"
-#include "trajectory_follower/lateral_controller_base.hpp"
+#include "trajectory_follower_base/lateral_controller_base.hpp"
 
 #include <motion_utils/resample/resample.hpp>
 #include <motion_utils/trajectory/tmp_conversion.hpp>
@@ -48,7 +47,7 @@
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "tier4_debug_msgs/msg/float32_multi_array_stamped.hpp"
-
+#include <tier4_planning_msgs/msg/scenario.hpp>
 #include <boost/optional.hpp>  // To be replaced by std::optional in C++17
 
 #include <memory>
@@ -105,13 +104,15 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node_;
-  tier4_autoware_utils::SelfPoseListener self_pose_listener_;
-  boost::optional<std::vector<TrajectoryPoint>> output_tp_array_;
+  std::vector<TrajectoryPoint> output_tp_array_;
   autoware_auto_planning_msgs::msg::Trajectory::SharedPtr trajectory_resampled_;
-  autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr trajectory_;
-  nav_msgs::msg::Odometry::ConstSharedPtr current_odometry_;
-  autoware_auto_vehicle_msgs::msg::SteeringReport::ConstSharedPtr current_steering_;
+  autoware_auto_planning_msgs::msg::Trajectory trajectory_;
+  nav_msgs::msg::Odometry current_odometry_;
+  autoware_auto_vehicle_msgs::msg::SteeringReport current_steering_;
   boost::optional<AckermannLateralCommand> prev_cmd_;
+
+  // tier4_planning_msgs::msg::Scenario::ConstSharedPtr scenario_;
+  std::string current_scenario;
 
   // Debug Publisher
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_debug_marker_;
@@ -119,8 +120,8 @@ private:
   // Predicted Trajectory publish
   rclcpp::Publisher<autoware_auto_planning_msgs::msg::Trajectory>::SharedPtr
     pub_predicted_trajectory_;
-
-  bool isDataReady();
+  
+  rclcpp::Subscription<tier4_planning_msgs::msg::Scenario>::SharedPtr sub_scenario_;
 
   void onTrajectory(const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr msg);
 
@@ -131,21 +132,19 @@ private:
   // TF
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
-  geometry_msgs::msg::PoseStamped::ConstSharedPtr current_pose_;
+  geometry_msgs::msg::Pose current_pose_;
 
   void publishDebugMarker() const;
+  
+  void onScenario(const tier4_planning_msgs::msg::Scenario::ConstSharedPtr msg);
 
   /**
    * @brief compute control command for path follow with a constant control period
    */
-  boost::optional<LateralOutput> run() override;
+  bool isReady([[maybe_unused]] const InputData & input_data) override;
+  LateralOutput run(const InputData & input_data) override;
 
   AckermannLateralCommand generateCtrlCmdMsg(const double target_curvature);
-
-  /**
-   * @brief set input data
-   */
-  void setInputData(InputData const & input_data) override;
 
   // Parameter
   Param param_{};
@@ -166,7 +165,7 @@ private:
 
   boost::optional<Trajectory> generatePredictedTrajectory();
 
-  boost::optional<AckermannLateralCommand> generateOutputControlCmd();
+  AckermannLateralCommand generateOutputControlCmd();
 
   bool calcIsSteerConverged(const AckermannLateralCommand & cmd);
 

@@ -37,9 +37,6 @@ using Label = autoware_auto_perception_msgs::msg::ObjectClassification;
 ShapeEstimationNode::ShapeEstimationNode(const rclcpp::NodeOptions & node_options)
 : Node("shape_estimation", node_options)
 {
-
-  //debug_pub
-    CREATE_PUBLISH_DEBUGGER_MICRO
   using std::placeholders::_1;
   sub_ = create_subscription<DetectedObjectsWithFeature>(
     "input", rclcpp::QoS{1}, std::bind(&ShapeEstimationNode::callback, this, _1));
@@ -61,8 +58,7 @@ void ShapeEstimationNode::callback(const DetectedObjectsWithFeature::ConstShared
   if (pub_->get_subscription_count() < 1) {
     return;
   }
-  SET_STAMP_IN_CALLBACK
-  GET_STAMP(input_msg);
+
   // Create output msg
   DetectedObjectsWithFeature output_msg;
   output_msg.header = input_msg->header;
@@ -112,7 +108,6 @@ void ShapeEstimationNode::callback(const DetectedObjectsWithFeature::ConstShared
 
   // Publish
   pub_->publish(output_msg);
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

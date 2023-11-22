@@ -181,7 +181,11 @@ CostmapGenerator::CostmapGenerator(const rclcpp::NodeOptions & node_options)
   use_parkinglot_ = this->declare_parameter<bool>("use_parkinglot", true);
   expand_polygon_size_ = this->declare_parameter<double>("expand_polygon_size", 1.0);
   size_of_expansion_kernel_ = this->declare_parameter<int>("size_of_expansion_kernel", 9);
-
+  using tier4_autoware_utils::StopWatch;
+  stop_watch_ptr_ = std::make_unique<StopWatch<std::chrono::milliseconds>>();
+  stop_watch_ptr_->tic("ontimer_time");
+  stop_watch_ptr_->tic("processing_time");
+  stop_watch_ptr_->tic("inter_time");
   // Wait for first tf
   // We want to do this before creating subscriptions
   while (rclcpp::ok()) {
@@ -295,10 +299,11 @@ void CostmapGenerator::onScenario(const tier4_planning_msgs::msg::Scenario::Cons
 
 void CostmapGenerator::onTimer()
 {
-  if (!isActive()) {
-    return;
-  }
-
+  // if (!isActive()) {
+  //   return;
+  // }
+  stop_watch_ptr_->toc("ontimer_time",true);
+  stop_watch_ptr_->toc("inter_time",true);
   // Get current pose
   geometry_msgs::msg::TransformStamped tf;
   try {
@@ -308,7 +313,7 @@ void CostmapGenerator::onTimer()
     RCLCPP_ERROR(this->get_logger(), "%s", ex.what());
     return;
   }
-
+  // RCLCPP_INFO(rclcpp::get_logger("costmap_generator"), "lookupTransform time is %f ms",stop_watch_ptr_->toc("inter_time",true));
   // Set grid center
   grid_map::Position p;
   p.x() = tf.transform.translation.x;
@@ -318,22 +323,27 @@ void CostmapGenerator::onTimer()
   if ((use_wayarea_ || use_parkinglot_) && lanelet_map_) {
     costmap_[LayerName::primitives] = generatePrimitivesCostmap();
   }
-
+  // RCLCPP_INFO(rclcpp::get_logger("costmap_generator"), "generatePrimitivesCostmap time is %f ms",stop_watch_ptr_->toc("inter_time",true));
   if (use_objects_ && objects_) {
     costmap_[LayerName::objects] = generateObjectsCostmap(objects_);
   }
-
+  // RCLCPP_INFO(rclcpp::get_logger("costmap_generator"), "generateObjectsCostmap time is %f ms",stop_watch_ptr_->toc("inter_time",true));
   if (use_points_ && points_) {
     costmap_[LayerName::points] = generatePointsCostmap(points_);
   }
-
+  // RCLCPP_INFO(rclcpp::get_logger("costmap_generator"), "generatePointsCostmap time is %f ms",stop_watch_ptr_->toc("inter_time",true));
   costmap_[LayerName::combined] = generateCombinedCostmap();
-
+  // RCLCPP_INFO(rclcpp::get_logger("costmap_generator"), "generateCombinedCostmap time is %f ms",stop_watch_ptr_->toc("inter_time",true));
   publishCostmap(costmap_);
+  // RCLCPP_INFO(rclcpp::get_logger("costmap_generator"), "compute time is %f ms, ontimer timer is %f ms, updaterate is %f",stop_watch_ptr_->toc("ontimer_time",true),stop_watch_ptr_->toc("processing_time",true),update_rate_);
 }
 
 bool CostmapGenerator::isActive()
 {
+  if (!lanelet_map_) {
+    return false;
+  }
+
   if (activate_by_scenario_) {
     if (scenario_) {
       const auto & s = scenario_->activating_scenarios;

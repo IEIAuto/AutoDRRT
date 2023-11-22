@@ -14,7 +14,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DiagnosticHeader.idl"
   "msg/DrivingCapability.idl"
   "msg/EmergencyState.idl"
-  "msg/Float32MultiArrayDiagnostic.idl"
   "msg/HazardStatus.idl"
   "msg/HazardStatusStamped.idl"
   DEPENDENCIES

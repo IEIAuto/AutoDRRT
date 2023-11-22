@@ -46,19 +46,13 @@
 #include <memory>
 #include <string>
 #include <vector>
-// Include Debuger
-#include "autoware_debuger.hpp"
-  
+
 class MultiObjectTracker : public rclcpp::Node
 {
 public:
   explicit MultiObjectTracker(const rclcpp::NodeOptions & node_options);
 
 private:
-  //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
-  // INIT_EXTRA_STAMP_STRING
   rclcpp::Publisher<autoware_auto_perception_msgs::msg::TrackedObjects>::SharedPtr
     tracked_objects_pub_;
   rclcpp::Subscription<autoware_auto_perception_msgs::msg::DetectedObjects>::SharedPtr
@@ -77,15 +71,15 @@ private:
   std::string world_frame_id_;  // tracking frame
   std::list<std::shared_ptr<Tracker>> list_tracker_;
   std::unique_ptr<DataAssociation> data_association_;
-  
+
   void checkTrackerLifeCycle(
     std::list<std::shared_ptr<Tracker>> & list_tracker, const rclcpp::Time & time,
     const geometry_msgs::msg::Transform & self_transform);
   void sanitizeTracker(
     std::list<std::shared_ptr<Tracker>> & list_tracker, const rclcpp::Time & time);
   std::shared_ptr<Tracker> createNewTracker(
-    const autoware_auto_perception_msgs::msg::DetectedObject & object,
-    const rclcpp::Time & time) const;
+    const autoware_auto_perception_msgs::msg::DetectedObject & object, const rclcpp::Time & time,
+    const geometry_msgs::msg::Transform & self_transform) const;
 
   void publish(const rclcpp::Time & time) const;
   inline bool shouldTrackerPublish(const std::shared_ptr<const Tracker> tracker) const;

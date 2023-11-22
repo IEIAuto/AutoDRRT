@@ -147,25 +147,49 @@ DetectionByTracker::DetectionByTracker(const rclcpp::NodeOptions & node_options)
   tf_listener_(tf_buffer_)
 {
   // Create publishers and subscribers
- 
+  trackers_sub_ = create_subscription<autoware_auto_perception_msgs::msg::TrackedObjects>(
+    "~/input/tracked_objects", rclcpp::QoS{1},
+    std::bind(&TrackerHandler::onTrackedObjects, &tracker_handler_, std::placeholders::_1));
   initial_objects_sub_ =
     create_subscription<tier4_perception_msgs::msg::DetectedObjectsWithFeature>(
       "~/input/initial_objects", rclcpp::QoS{1},
       std::bind(&DetectionByTracker::onObjects, this, std::placeholders::_1));
   objects_pub_ = create_publisher<autoware_auto_perception_msgs::msg::DetectedObjects>(
     "~/output", rclcpp::QoS{1});
-    
-  //  this->sub_ownership_strenth = 10;
-  trackers_sub_ = create_subscription<autoware_auto_perception_msgs::msg::TrackedObjects>(
-    "~/input/tracked_objects", rclcpp::QoS{1},
-    std::bind(&TrackerHandler::onTrackedObjects, &tracker_handler_, std::placeholders::_1));
-  
+
   ignore_unknown_tracker_ = declare_parameter<bool>("ignore_unknown_tracker", true);
+
+  // set maximum search setting for merger/divider
+  setMaxSearchRange();
 
   shape_estimator_ = std::make_shared<ShapeEstimator>(true, true);
   cluster_ = std::make_shared<euclidean_cluster::VoxelGridBasedEuclideanCluster>(
     false, 10, 10000, 0.7, 0.3, 0);
   debugger_ = std::make_shared<Debugger>(this);
+}
+
+void DetectionByTracker::setMaxSearchRange()
+{
+  using Label = autoware_auto_perception_msgs::msg::ObjectClassification;
+  // set max search distance for merger
+  max_search_distance_for_merger_[Label::UNKNOWN] = 5.0;
+  max_search_distance_for_merger_[Label::CAR] = 5.0;
+  max_search_distance_for_merger_[Label::TRUCK] = 8.0;
+  max_search_distance_for_merger_[Label::BUS] = 8.0;
+  max_search_distance_for_merger_[Label::TRAILER] = 10.0;
+  max_search_distance_for_merger_[Label::MOTORCYCLE] = 2.0;
+  max_search_distance_for_merger_[Label::BICYCLE] = 1.0;
+  max_search_distance_for_merger_[Label::PEDESTRIAN] = 1.0;
+
+  // set max search distance for divider
+  max_search_distance_for_divider_[Label::UNKNOWN] = 6.0;
+  max_search_distance_for_divider_[Label::CAR] = 6.0;
+  max_search_distance_for_divider_[Label::TRUCK] = 9.0;
+  max_search_distance_for_divider_[Label::BUS] = 9.0;
+  max_search_distance_for_divider_[Label::TRAILER] = 11.0;
+  max_search_distance_for_divider_[Label::MOTORCYCLE] = 3.0;
+  max_search_distance_for_divider_[Label::BICYCLE] = 2.0;
+  max_search_distance_for_divider_[Label::PEDESTRIAN] = 2.0;
 }
 
 void DetectionByTracker::onObjects(
@@ -225,7 +249,6 @@ void DetectionByTracker::divideUnderSegmentedObjects(
 {
   constexpr float recall_min_threshold = 0.4;
   constexpr float precision_max_threshold = 0.5;
-  constexpr float max_search_range = 6.0;
   constexpr float min_score_threshold = 0.4;
 
   out_objects.header = in_cluster_objects.header;
@@ -234,6 +257,9 @@ void DetectionByTracker::divideUnderSegmentedObjects(
   for (const auto & tracked_object : tracked_objects.objects) {
     const auto & label = tracked_object.classification.front().label;
     if (ignore_unknown_tracker_ && (label == Label::UNKNOWN)) continue;
+
+    // change search range according to label type
+    const float max_search_range = max_search_distance_for_divider_[label];
 
     std::optional<tier4_perception_msgs::msg::DetectedObjectWithFeature>
       highest_score_divided_object = std::nullopt;
@@ -360,13 +386,15 @@ void DetectionByTracker::mergeOverSegmentedObjects(
   tier4_perception_msgs::msg::DetectedObjectsWithFeature & out_objects)
 {
   constexpr float precision_threshold = 0.5;
-  constexpr float max_search_range = 5.0;
   out_objects.header = in_cluster_objects.header;
   out_no_found_tracked_objects.header = tracked_objects.header;
 
   for (const auto & tracked_object : tracked_objects.objects) {
     const auto & label = tracked_object.classification.front().label;
     if (ignore_unknown_tracker_ && (label == Label::UNKNOWN)) continue;
+
+    // change search range according to label type
+    const float max_search_range = max_search_distance_for_merger_[label];
 
     // extend shape
     autoware_auto_perception_msgs::msg::DetectedObject extended_tracked_object = tracked_object;

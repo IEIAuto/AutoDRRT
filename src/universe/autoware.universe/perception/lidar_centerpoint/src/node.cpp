@@ -126,8 +126,6 @@ LidarCenterPointNode::LidarCenterPointNode(const rclcpp::NodeOptions & node_opti
 void LidarCenterPointNode::pointCloudCallback(
   const sensor_msgs::msg::PointCloud2::ConstSharedPtr input_pointcloud_msg)
 {
-  SET_STAMP_IN_CALLBACK
-  GET_STAMP(input_pointcloud_msg)
   const auto objects_sub_count =
     objects_pub_->get_subscription_count() + objects_pub_->get_intra_process_subscription_count();
   if (objects_sub_count < 1) {
@@ -161,9 +159,8 @@ void LidarCenterPointNode::pointCloudCallback(
   if (objects_sub_count > 0) {
     objects_pub_->publish(output_msg);
   }
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
-  // add processing time for debug
 
+  // add processing time for debug
   if (debug_publisher_ptr_ && stop_watch_ptr_) {
     const double cyclic_time_ms = stop_watch_ptr_->toc("cyclic_time", true);
     const double processing_time_ms = stop_watch_ptr_->toc("processing_time", true);

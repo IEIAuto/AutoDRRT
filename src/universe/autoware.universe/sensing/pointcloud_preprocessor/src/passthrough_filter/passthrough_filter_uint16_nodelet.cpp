@@ -21,6 +21,11 @@
 #include <string>
 #include <vector>
 
+#include <pcl/conversions.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+
 namespace pointcloud_preprocessor
 {
 PassThroughFilterUInt16Component::PassThroughFilterUInt16Component(
@@ -45,18 +50,67 @@ PassThroughFilterUInt16Component::PassThroughFilterUInt16Component(
     std::bind(&PassThroughFilterUInt16Component::paramCallback, this, _1));
 }
 
+
 void PassThroughFilterUInt16Component::filter(
   const PointCloud2ConstPtr & input, const IndicesPtr & indices, PointCloud2 & output)
 {
   std::scoped_lock lock(mutex_);
+  
+  rclcpp::Time start_time = this->get_clock()->now();
 
+  const std::vector<int> &unused_indices = *indices;
+
+  // pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
+  // pcl_conversions::toPCL(*(input), *(pcl_input));
+  // impl_.setInputCloud(pcl_input);
+  // impl_.setIndices(indices);
+  // pcl::PCLPointCloud2 pcl_output;
+  // impl_.filter(pcl_output);
+  // pcl_conversions::moveFromPCL(pcl_output, output);
   pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
-  pcl_conversions::toPCL(*(input), *(pcl_input));
-  impl_.setInputCloud(pcl_input);
-  impl_.setIndices(indices);
+  pcl_conversions::toPCL(*input, *pcl_input);
+
+  // 转换pcl::PCLPointCloud2到pcl::PointCloud<pcl::PointXYZI>
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+  pcl::fromPCLPointCloud2(*pcl_input, cloud);
+
+  // 创建一个索引数组，用于保存满足条件的点
+  std::vector<int> point_indices;
+
+  int total_points = 0;
+  int filtered_points = 0;
+
+  // 遍历点云，找到满足强度条件的点的索引
+  for (size_t i = 0; i < cloud.size(); ++i) {
+      
+      total_points++;
+
+      if (cloud.points[i].intensity > 10) { // 设置强度阈值
+          point_indices.push_back(i);
+          filtered_points++;
+      }
+  }
+  
+   
+
+  // 创建一个新的点云，只包含满足条件的点
+  pcl::PointCloud<pcl::PointXYZI> filtered_cloud;
+  pcl::copyPointCloud(cloud, point_indices, filtered_cloud);
+
+  // 如果需要将结果转换回sensor_msgs/PointCloud2消息，可以执行以下操作
   pcl::PCLPointCloud2 pcl_output;
-  impl_.filter(pcl_output);
-  pcl_conversions::moveFromPCL(pcl_output, output);
+  pcl::toPCLPointCloud2(filtered_cloud, pcl_output);
+  // sensor_msgs::PointCloud2 filtered_cloud_msg;
+  pcl_conversions::fromPCL(pcl_output, output);
+
+  rclcpp::Time end_time = this->get_clock()->now();
+
+  rclcpp::Duration duration = end_time - start_time;  // 计算时间差
+
+  double elapsed_time_ms = duration.seconds() * 1000.0;  // 转换为毫秒
+
+  
+
 }
 
 rcl_interfaces::msg::SetParametersResult PassThroughFilterUInt16Component::paramCallback(

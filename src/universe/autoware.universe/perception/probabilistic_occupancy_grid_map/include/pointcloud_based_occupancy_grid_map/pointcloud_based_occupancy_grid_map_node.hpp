@@ -16,7 +16,6 @@
 #define POINTCLOUD_BASED_OCCUPANCY_GRID_MAP__POINTCLOUD_BASED_OCCUPANCY_GRID_MAP_NODE_HPP_
 
 #include "pointcloud_based_occupancy_grid_map/occupancy_grid_map.hpp"
-#include "pointcloud_based_occupancy_grid_map/occupancy_grid_map_opt.hpp"
 #include "updater/occupancy_grid_map_binary_bayes_filter_updater.hpp"
 #include "updater/occupancy_grid_map_updater_interface.hpp"
 
@@ -38,8 +37,7 @@
 
 #include <memory>
 #include <string>
-// Include Debuger
-#include "autoware_debuger.hpp"
+
 namespace occupancy_grid_map
 {
 using builtin_interfaces::msg::Time;
@@ -80,12 +78,11 @@ private:
   std::shared_ptr<Sync> sync_ptr_;
 
   std::shared_ptr<OccupancyGridMapUpdaterInterface> occupancy_grid_map_updater_ptr_;
-      //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
+
   // ROS Parameters
   std::string map_frame_;
   std::string base_link_frame_;
+  std::string output_frame_;
   bool use_height_filter_;
   bool enable_single_frame_mode_;
 };

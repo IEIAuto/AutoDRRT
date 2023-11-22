@@ -1,0 +1,56 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-xml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0-alpha.6
+    hooks:
+      - id: prettier
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.30.0
+    hooks:
+      - id: yamllint
+
+  - repo: https://github.com/tier4/pre-commit-hooks-ros
+    rev: v0.8.0
+    hooks:
+      - id: prettier-launch-xml
+      - id: prettier-package-xml
+      - id: ros-include-guard
+      - id: sort-package-xml
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.2
+    hooks:
+      - id: shellcheck
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        args: [--line-length=120]
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v16.0.0
+    hooks:
+      - id: clang-format
+        types_or: [c++, c]
+
+  - repo: https://github.com/cpplint/cpplint
+    rev: 1.6.1
+    hooks:
+      - id: cpplint
+        args: [--quiet]

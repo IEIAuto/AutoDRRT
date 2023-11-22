@@ -1,7 +1,7 @@
 ### Copied from .github/CODEOWNERS-manual ###
 
 ### Automatically generated from package.xml ###
-autoware_cmake/** kenji.miyake@tier4.jp @autowarefoundation/autoware-global-codeowners
-autoware_lint_common/** kenji.miyake@tier4.jp @autowarefoundation/autoware-global-codeowners
-autoware_utils/** kenji.miyake@tier4.jp @autowarefoundation/autoware-global-codeowners
+autoware_cmake/** esteve.fernandez@tier4.jp kenji.miyake@tier4.jp @autowarefoundation/autoware-global-codeowners
+autoware_lint_common/** esteve.fernandez@tier4.jp kenji.miyake@tier4.jp @autowarefoundation/autoware-global-codeowners
+autoware_utils/** esteve.fernandez@tier4.jp kenji.miyake@tier4.jp @autowarefoundation/autoware-global-codeowners
 tmp/lanelet2_extension/** ryohsuke.mitsudome@tier4.jp @autowarefoundation/autoware-global-codeowners

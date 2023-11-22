@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include "ground_segmentation/scan_ground_filter_nodelet.hpp"
-#include "ground_segmentation/scan_ground_filter_opt.hpp"
 
 #include <tier4_autoware_utils/geometry/geometry.hpp>
 #include <tier4_autoware_utils/math/normalization.hpp>
@@ -21,20 +20,8 @@
 #include <vehicle_info_util/vehicle_info_util.hpp>
 
 #include <memory>
-/*******************************swpld****************************/
 #include <string>
 #include <vector>
-#include <time.h>
-#include <sys/time.h>
-
-#include <thread>
-#include <mutex>
-#include <unistd.h>
-#include <stdlib.h>
-#include <omp.h>
-
-#define thread_num 8
-/*******************************swpld****************************/
 
 namespace ground_segmentation
 {
@@ -44,27 +31,6 @@ using tier4_autoware_utils::deg2rad;
 using tier4_autoware_utils::normalizeDegree;
 using tier4_autoware_utils::normalizeRadian;
 using vehicle_info_util::VehicleInfoUtil;
-
-  float ScanGroundFilterComponent::non_ground_height_threshold_ = 0.0f;
-  float ScanGroundFilterComponent::grid_size_rad_ = 0.0f;
-  float ScanGroundFilterComponent::grid_size_m_ = 0.0f;
-  float ScanGroundFilterComponent::low_priority_region_x_ = 0.0f;
-  uint16_t ScanGroundFilterComponent::gnd_grid_buffer_size_ = 0.0f;
-  float ScanGroundFilterComponent::grid_mode_switch_grid_id_ = 0.0f;
-  float ScanGroundFilterComponent::grid_mode_switch_angle_rad_ = 0.0f;
-  float ScanGroundFilterComponent::virtual_lidar_z_ = 0.0f;
-  float ScanGroundFilterComponent::detection_range_z_max_ = 0.0f;
-  float ScanGroundFilterComponent::center_pcl_shift_ = 0.0f;
-  float ScanGroundFilterComponent::grid_mode_switch_radius_ = 0.0f;
-  double ScanGroundFilterComponent::global_slope_max_angle_rad_ = 0.0f;
-  double ScanGroundFilterComponent::radial_divider_angle_rad_ = 0.0f;
-  double ScanGroundFilterComponent::split_points_distance_tolerance_ = 0.0f;
-  size_t ScanGroundFilterComponent::radial_dividers_num_ = 0.0f;
-  VehicleInfo ScanGroundFilterComponent::vehicle_info_;
-
-  std::atomic<int> ScanGroundFilterComponent::FramebusyBus(0);
-  std::atomic<int> ScanGroundFilterComponent::SortbusyBus(0);
-  std::atomic<int> ScanGroundFilterComponent::ClassifybusyBus(0);
 
 ScanGroundFilterComponent::ScanGroundFilterComponent(const rclcpp::NodeOptions & options)
 : Filter("ScanGroundFilter", options)
@@ -112,12 +78,10 @@ ScanGroundFilterComponent::ScanGroundFilterComponent(const rclcpp::NodeOptions &
   }
 }
 
-void ScanGroundFilterComponent::convertPointcloudGridScanFrame(
+void ScanGroundFilterComponent::convertPointcloudGridScan(
   const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud,
-  std::vector<PointCloudRefVector> & out_radial_ordered_points,
-  size_t thread_ID)
-{ 
-  // RCLCPP_INFO(rclcpp::get_logger("convertPointcloudGridScanFrame"), "threadPoolFrame %ld step in", thread_ID);
+  std::vector<PointCloudRefVector> & out_radial_ordered_points)
+{
   out_radial_ordered_points.resize(radial_dividers_num_);
   PointRef current_point;
   uint16_t back_steps_num = 1;
@@ -125,21 +89,20 @@ void ScanGroundFilterComponent::convertPointcloudGridScanFrame(
   grid_size_rad_ =
     normalizeRadian(std::atan2(grid_mode_switch_radius_ + grid_size_m_, virtual_lidar_z_)) -
     normalizeRadian(std::atan2(grid_mode_switch_radius_, virtual_lidar_z_));
-
-//  for (size_t i = 0; i < in_cloud->points.size(); ++i) {
-  for (size_t i = in_cloud->points.size() / thread_num * thread_ID; i < in_cloud->points.size() / thread_num * (thread_ID + 1); ++i) {
-    auto x {in_cloud->points[i].x - vehicle_info_.wheel_base_m / 2.0f - center_pcl_shift_};  // base on front wheel center
+  for (size_t i = 0; i < in_cloud->points.size(); ++i) {
+    auto x{
+      in_cloud->points[i].x - vehicle_info_.wheel_base_m / 2.0f -
+      center_pcl_shift_};  // base on front wheel center
     // auto y{in_cloud->points[i].y};
-    auto radius {static_cast<float>(std::hypot(x, in_cloud->points[i].y))};
-    auto theta {normalizeRadian(std::atan2(x, in_cloud->points[i].y), 0.0)};
+    auto radius{static_cast<float>(std::hypot(x, in_cloud->points[i].y))};
+    auto theta{normalizeRadian(std::atan2(x, in_cloud->points[i].y), 0.0)};
 
     // divide by vertical angle
-    auto gamma {normalizeRadian(std::atan2(radius, virtual_lidar_z_), 0.0f)};
-    auto radial_div {static_cast<size_t>(std::floor(normalizeDegree(theta / radial_divider_angle_rad_, 0.0)))};
-
+    auto gamma{normalizeRadian(std::atan2(radius, virtual_lidar_z_), 0.0f)};
+    auto radial_div{
+      static_cast<size_t>(std::floor(normalizeDegree(theta / radial_divider_angle_rad_, 0.0)))};
     uint16_t grid_id = 0;
     float curr_grid_size = 0.0f;
-
     if (radius <= grid_mode_switch_radius_) {
       grid_id = static_cast<uint16_t>(radius / grid_size_m_);
       curr_grid_size = grid_size_m_;
@@ -148,11 +111,10 @@ void ScanGroundFilterComponent::convertPointcloudGridScanFrame(
       if (grid_id <= grid_mode_switch_grid_id_ + back_steps_num) {
         curr_grid_size = grid_size_m_;
       } else {
-         curr_grid_size = std::tan(gamma) - std::tan(gamma - grid_size_rad_);
-         curr_grid_size *= virtual_lidar_z_;
+        curr_grid_size = std::tan(gamma) - std::tan(gamma - grid_size_rad_);
+        curr_grid_size *= virtual_lidar_z_;
       }
     }
-
     current_point.grid_id = grid_id;
     current_point.grid_size = curr_grid_size;
     current_point.radius = radius;
@@ -165,26 +127,14 @@ void ScanGroundFilterComponent::convertPointcloudGridScanFrame(
     // radial divisions
     out_radial_ordered_points[radial_div].emplace_back(current_point);
   }
-  FramebusyBus--;
-  // RCLCPP_INFO(rclcpp::get_logger("convertPointcloudGridScanFrame"), "threadPoolFrame %ld step out ", thread_ID);
-}
 
-
-void ScanGroundFilterComponent::convertPointcloudGridScanSort(
-  std::vector<PointCloudRefVector> & out_radial_ordered_points,
-  size_t thread_ID)
-{
   // sort by distance
-//#pragma omp for
-//  for (size_t i = 0; i < radial_dividers_num_; ++i) {
-  for (size_t i = radial_dividers_num_ / thread_num * thread_ID; i < radial_dividers_num_ / thread_num * (thread_ID + 1); ++i) {
-    std::sort( out_radial_ordered_points[i].begin(), out_radial_ordered_points[i].end(),
+  for (size_t i = 0; i < radial_dividers_num_; ++i) {
+    std::sort(
+      out_radial_ordered_points[i].begin(), out_radial_ordered_points[i].end(),
       [](const PointRef & a, const PointRef & b) { return a.radius < b.radius; });
   }
-  SortbusyBus--;
 }
-
-
 void ScanGroundFilterComponent::convertPointcloud(
   const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud,
   std::vector<PointCloudRefVector> & out_radial_ordered_points)
@@ -289,7 +239,6 @@ void ScanGroundFilterComponent::checkContinuousGndGrid(
     p.point_state = PointLabel::NON_GROUND;
   }
 }
-
 void ScanGroundFilterComponent::checkDiscontinuousGndGrid(
   PointRef & p, const std::vector<GridCenter> & gnd_grids_list)
 {
@@ -333,15 +282,12 @@ void ScanGroundFilterComponent::recheckGroundCluster(
     }
   }
 }
-
 void ScanGroundFilterComponent::classifyPointCloudGridScan(
   std::vector<PointCloudRefVector> & in_radial_ordered_clouds,
-  pcl::PointIndices & out_no_ground_indices, size_t thread_ID)
+  pcl::PointIndices & out_no_ground_indices)
 {
   out_no_ground_indices.indices.clear();
-
-//  for (size_t i = 0; i < in_radial_ordered_clouds.size(); ++i) {
-  for (size_t i = in_radial_ordered_clouds.size() / thread_num * thread_ID; i < in_radial_ordered_clouds.size() / thread_num * (thread_ID + 1); i++) {
+  for (size_t i = 0; i < in_radial_ordered_clouds.size(); ++i) {
     PointsCentroid ground_cluster;
     ground_cluster.initialize();
     std::vector<GridCenter> gnd_grids;
@@ -592,129 +538,32 @@ void ScanGroundFilterComponent::filter(
   const PointCloud2ConstPtr & input, [[maybe_unused]] const IndicesPtr & indices,
   PointCloud2 & output)
 {
-
   std::scoped_lock lock(mutex_);
-  ground_segmentation_opt::filter(input,indices,output, 2,vehicle_info_);
-//   stop_watch_ptr_->toc("processing_time", true);
+  stop_watch_ptr_->toc("processing_time", true);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr current_sensor_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::fromROSMsg(*input, *current_sensor_cloud_ptr);
 
-//   pcl::PointCloud<pcl::PointXYZ>::Ptr current_sensor_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
-//   pcl::fromROSMsg(*input, *current_sensor_cloud_ptr);
+  std::vector<PointCloudRefVector> radial_ordered_points;
 
-//   std::vector<PointCloudRefVector> radial_ordered_points;
-//   std::vector<PointCloudRefVector> radial_ordered_point[thread_num];
+  pcl::PointIndices no_ground_indices;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr no_ground_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+  no_ground_cloud_ptr->points.reserve(current_sensor_cloud_ptr->points.size());
 
-//   radial_ordered_points.resize(radial_dividers_num_);
+  if (elevation_grid_mode_) {
+    convertPointcloudGridScan(current_sensor_cloud_ptr, radial_ordered_points);
+    classifyPointCloudGridScan(radial_ordered_points, no_ground_indices);
+  } else {
+    convertPointcloud(current_sensor_cloud_ptr, radial_ordered_points);
+    classifyPointCloud(radial_ordered_points, no_ground_indices);
+  }
 
-//   pcl::PointIndices no_ground_indices;
-//   pcl::PointIndices no_ground_indice[thread_num];
+  extractObjectPoints(current_sensor_cloud_ptr, no_ground_indices, no_ground_cloud_ptr);
 
-//   pcl::PointCloud<pcl::PointXYZ>::Ptr no_ground_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
-//   no_ground_cloud_ptr->points.reserve(current_sensor_cloud_ptr->points.size());
+  auto no_ground_cloud_msg_ptr = std::make_shared<PointCloud2>();
+  pcl::toROSMsg(*no_ground_cloud_ptr, *no_ground_cloud_msg_ptr);
 
-//   // RCLCPP_INFO(get_logger(), "threadPoolFrame start");
-
-//   if (elevation_grid_mode_) {
-
-//       struct timeval checkpoint0;
-//       gettimeofday(&checkpoint0, NULL);
-
-//       for (size_t i = 0; i < thread_num; i++) { 
-//           threadPoolFrame.submit(ScanGroundFilterComponent::convertPointcloudGridScanFrame, std::ref(current_sensor_cloud_ptr), std::ref(radial_ordered_point[i]), i);
-//           FramebusyBus++;
-//       }
-
-//       // RCLCPP_INFO(get_logger(), "threadPoolFrame end");
-
-//       while (FramebusyBus != 0) {
-//           usleep(1000);
-//       }
-
-//       // struct timeval checkpoint1;
-//       // gettimeofday(&checkpoint1, NULL);
-
-//       // long double checkDT1;
-//       // checkDT1 = (checkpoint1.tv_sec - checkpoint0.tv_sec) * 1000 + double(checkpoint1.tv_usec - checkpoint0.tv_usec) / 1000;
-
-//       // RCLCPP_INFO(rclcpp::get_logger("ScanTest.cpp"), "PDthread = %Lf ms", checkDT1);
-
-//       omp_set_num_threads(thread_num);
-// #pragma omp parallel for
-//       for (size_t i = 0; i < radial_dividers_num_; i++) {
-//          // std::cout << "omp_get_num_threads = " << omp_get_num_threads() << std::endl;
-//          for (size_t j = 0; j < thread_num; j++) {
-//             radial_ordered_points[i].insert(radial_ordered_points[i].end(), radial_ordered_point[j][i].begin(), radial_ordered_point[j][i].end());
-//          }
-//       }
-
-//       // struct timeval checkpoint2;
-//       // gettimeofday(&checkpoint2, NULL);
-
-//       // long double checkDT2;
-//       // checkDT2 = (checkpoint2.tv_sec - checkpoint1.tv_sec) * 1000 + double(checkpoint2.tv_usec - checkpoint1.tv_usec) / 1000;
-
-//       // RCLCPP_INFO(rclcpp::get_logger("ScanTest.cpp"), "PDmerge = %Lf ms", checkDT2);
-
-//       // RCLCPP_INFO(get_logger(), "convertPointcloudGridScanSort start");
-
-//       for (size_t i = 0; i < thread_num; i++) {
-//           threadPoolSort.submit(ScanGroundFilterComponent::convertPointcloudGridScanSort, std::ref(radial_ordered_points), i);
-//           SortbusyBus++;
-//       }
-
-//       while (SortbusyBus != 0) {
-//           usleep(1000);
-//       }
-
-//       // struct timeval checkpoint3;
-//       // gettimeofday(&checkpoint3, NULL);
-
-//       // long double checkDT3;
-//       // checkDT3 = (checkpoint3.tv_sec - checkpoint2.tv_sec) * 1000 + double(checkpoint3.tv_usec - checkpoint2.tv_usec) / 1000;
-
-//       // RCLCPP_INFO(rclcpp::get_logger("ScanTest.cpp"), "PDsort = %Lf ms", checkDT3);
-
-//       // RCLCPP_INFO(get_logger(), "convertPointcloudGridScanSort end");
-
-//       // RCLCPP_INFO(get_logger(), "classifyPointCloudGridScan start");
-
-//       std::vector<std::thread> classthreads;
-
-//       for (size_t i = 0; i < thread_num; i++) {
-//           classthreads.push_back(std::thread(&ScanGroundFilterComponent::classifyPointCloudGridScan, this, std::ref(radial_ordered_points), std::ref(no_ground_indice[i]), i)); 
-//       }
- 
-//       for (auto iter = classthreads.begin(); iter != classthreads.end(); iter++) {
-//           iter->join();
-//       }
-
-//       // RCLCPP_INFO(get_logger(), "classifyPointCloudGridScan end");
-
-//       for (size_t i = 0; i < thread_num; i++) { 
-//           no_ground_indices.indices.insert(no_ground_indices.indices.end(), no_ground_indice[i].indices.begin(), no_ground_indice[i].indices.end());
-//       }
-
-//       // struct timeval checkpoint4;
-//       // gettimeofday(&checkpoint4, NULL);
-
-//       // long double checkDT4;
-//       // checkDT4 = (checkpoint4.tv_sec - checkpoint3.tv_sec) * 1000 + double(checkpoint4.tv_usec - checkpoint3.tv_usec) / 1000;
-
-//       // RCLCPP_INFO(rclcpp::get_logger("ScanTest.cpp"), "PDclassify = %Lf ms", checkDT4);
-
-//       // RCLCPP_INFO(get_logger(), "insert end");
-
-//   } else {
-//       convertPointcloud(current_sensor_cloud_ptr, radial_ordered_points);
-//       classifyPointCloud(radial_ordered_points, no_ground_indices);
-//   }
-
-//   extractObjectPoints(current_sensor_cloud_ptr, no_ground_indices, no_ground_cloud_ptr);
-
-//   auto no_ground_cloud_msg_ptr = std::make_shared<PointCloud2>();
-//   pcl::toROSMsg(*no_ground_cloud_ptr, *no_ground_cloud_msg_ptr);
-
-//   no_ground_cloud_msg_ptr->header = input->header;
-//   output = *no_ground_cloud_msg_ptr;
+  no_ground_cloud_msg_ptr->header = input->header;
+  output = *no_ground_cloud_msg_ptr;
 
   if (debug_publisher_ptr_ && stop_watch_ptr_) {
     const double cyclic_time_ms = stop_watch_ptr_->toc("cyclic_time", true);

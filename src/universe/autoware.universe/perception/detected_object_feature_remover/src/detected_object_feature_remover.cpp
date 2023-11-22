@@ -19,8 +19,6 @@ namespace detected_object_feature_remover
 DetectedObjectFeatureRemover::DetectedObjectFeatureRemover(const rclcpp::NodeOptions & node_options)
 : Node("detected_object_feature_remover", node_options)
 {
-  //debug_pub
-    CREATE_PUBLISH_DEBUGGER_MICRO
   using std::placeholders::_1;
   pub_ = this->create_publisher<DetectedObjects>("~/output", rclcpp::QoS(1));
   sub_ = this->create_subscription<DetectedObjectsWithFeature>(
@@ -30,13 +28,9 @@ DetectedObjectFeatureRemover::DetectedObjectFeatureRemover(const rclcpp::NodeOpt
 void DetectedObjectFeatureRemover::objectCallback(
   const DetectedObjectsWithFeature::ConstSharedPtr input)
 {
-  SET_STAMP_IN_CALLBACK
   DetectedObjects output;
   convert(*input, output);
-  output.header = input->header;
   pub_->publish(output);
-  GET_STAMP(input)
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
 }
 
 void DetectedObjectFeatureRemover::convert(

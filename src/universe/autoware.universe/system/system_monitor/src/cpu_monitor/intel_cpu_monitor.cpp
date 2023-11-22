@@ -26,7 +26,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/filesystem.hpp>
-#define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 #include <netinet/in.h>
 #include <sys/socket.h>

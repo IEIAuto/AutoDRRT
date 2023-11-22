@@ -38,15 +38,11 @@ EuclideanClusterNode::EuclideanClusterNode(const rclcpp::NodeOptions & options)
   cluster_pub_ = this->create_publisher<tier4_perception_msgs::msg::DetectedObjectsWithFeature>(
     "output", rclcpp::QoS{1});
   debug_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("debug/clusters", 1);
-
-    //debug_pub
-    CREATE_PUBLISH_DEBUGGER_MICRO
 }
 
 void EuclideanClusterNode::onPointCloud(
   const sensor_msgs::msg::PointCloud2::ConstSharedPtr input_msg)
 {
-  SET_STAMP_IN_CALLBACK
   // convert ros to pcl
   pcl::PointCloud<pcl::PointXYZ>::Ptr raw_pointcloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg(*input_msg, *raw_pointcloud_ptr);
@@ -58,20 +54,8 @@ void EuclideanClusterNode::onPointCloud(
   // build output msg
   tier4_perception_msgs::msg::DetectedObjectsWithFeature output;
   convertPointCloudClusters2Msg(input_msg->header, clusters, output);
-  int nanosec,sec;
-  std::stringstream stream;
-  stream << debuger_string.substr(0,10);
-  stream >> sec;
-  stream << debuger_string.substr(11,17);
-  stream >> nanosec;
-
-  output.header.stamp.nanosec = nanosec;
-  output.header.stamp.sec = sec;
-
-
   cluster_pub_->publish(output);
-  GET_STAMP(input_msg);
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
+
   // build debug msg
   if (debug_pub_->get_subscription_count() < 1) {
     return;

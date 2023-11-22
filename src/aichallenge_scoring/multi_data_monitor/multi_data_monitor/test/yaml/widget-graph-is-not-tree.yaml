@@ -1,0 +1,7 @@
+version: 2.0
+
+widgets:
+  - { class: Matrix, label: w1, items: [w2, w3] }
+  - { class: Matrix, label: w2, items: [w4] }
+  - { class: Matrix, label: w3, items: [w4] }
+  - { class: Simple, label: w4 }

@@ -50,8 +50,6 @@ ObjectLaneletFilterNode::ObjectLaneletFilterNode(const rclcpp::NodeOptions & nod
     "input/object", rclcpp::QoS{1}, std::bind(&ObjectLaneletFilterNode::objectCallback, this, _1));
   object_pub_ = this->create_publisher<autoware_auto_perception_msgs::msg::DetectedObjects>(
     "output/object", rclcpp::QoS{1});
-      //debug_pub
-    CREATE_PUBLISH_DEBUGGER_MICRO
 }
 
 void ObjectLaneletFilterNode::mapCallback(
@@ -65,10 +63,8 @@ void ObjectLaneletFilterNode::mapCallback(
 }
 
 void ObjectLaneletFilterNode::objectCallback(
-  
   const autoware_auto_perception_msgs::msg::DetectedObjects::ConstSharedPtr input_msg)
 {
-  SET_STAMP_IN_CALLBACK
   // Guard
   if (object_pub_->get_subscription_count() < 1) return;
 
@@ -112,8 +108,6 @@ void ObjectLaneletFilterNode::objectCallback(
     ++index;
   }
   object_pub_->publish(output_object_msg);
-  GET_STAMP_VIA_ENTITY(output_object_msg);
-START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
 }
 
 LinearRing2d ObjectLaneletFilterNode::getConvexHull(

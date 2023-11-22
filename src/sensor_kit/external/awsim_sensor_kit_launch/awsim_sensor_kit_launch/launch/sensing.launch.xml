@@ -4,7 +4,7 @@
   <arg name="vehicle_mirror_param_file" description="path to the file of vehicle mirror position yaml"/>
   <arg name="use_pointcloud_container" default="false" description="launch pointcloud container"/>
   <arg name="pointcloud_container_name" default="pointcloud_container"/>
-  <arg name="use_distortion_corrector" default="true" description="compensate the point cloud distortion caused by vehicle movement"/>
+  <arg name="use_distortion_corrector" default="false" description="compensate the point cloud distortion caused by vehicle movement"/>
 
   <group>
     <!-- LiDAR Driver -->

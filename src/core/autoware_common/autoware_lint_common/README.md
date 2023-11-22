@@ -22,6 +22,8 @@ if(BUILD_TESTING)
 endif()
 ```
 
+For ROS 2 messages and services, you need to remove the `ADD_LINTER_TESTS` argument in the `rosidl_generate_interfaces()` function in the `CMakelists.txt` file.
+
 Then, the following linters will run during `colcon test`.
 
 - [ament_cmake_copyright](https://github.com/ament/ament_lint/blob/master/ament_cmake_copyright/doc/index.rst)

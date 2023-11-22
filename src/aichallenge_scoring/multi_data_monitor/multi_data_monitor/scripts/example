@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+import rclpy
+import rclpy.node
+import std_msgs.msg
+
+
+class TestNode(rclpy.node.Node):
+    def __init__(self):
+        super().__init__("example")
+        self.pub_header = self.create_publisher(std_msgs.msg.Header, "/example/header", 1)
+        self.pub_uint32 = self.create_publisher(std_msgs.msg.UInt32, "/example/count/uint32", 1)
+        self.pub_double = self.create_publisher(std_msgs.msg.Float64, "/example/count/double", 1)
+        self.pub_vector = self.create_publisher(std_msgs.msg.UInt64MultiArray, "/example/count/vector", 1)
+        self.count = 0
+        self.timer = self.create_timer(1.0, self.on_timer)
+
+    def on_timer(self):
+        self.publish_header()
+        self.publish_uint32()
+        self.publish_double()
+        self.publish_vector()
+        self.count += 1
+
+    def publish_header(self):
+        msg = std_msgs.msg.Header()
+        msg.stamp = self.get_clock().now().to_msg()
+        msg.frame_id = f"Frame {self.count}"
+        self.pub_header.publish(msg)
+
+    def publish_uint32(self):
+        msg = std_msgs.msg.UInt32()
+        msg.data = self.count % 5
+        self.pub_uint32.publish(msg)
+
+    def publish_double(self):
+        msg = std_msgs.msg.Float64()
+        msg.data = 1.0 * (self.count % 11)
+        self.pub_double.publish(msg)
+
+    def publish_vector(self):
+        msg = std_msgs.msg.UInt64MultiArray()
+        msg.data = range(0, self.count % 5 + 1)
+        self.pub_vector.publish(msg)
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = TestNode()
+    rclpy.spin(node)
+    rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass

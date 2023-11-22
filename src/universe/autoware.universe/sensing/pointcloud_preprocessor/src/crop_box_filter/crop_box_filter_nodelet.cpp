@@ -50,8 +50,7 @@
  */
 
 #include "pointcloud_preprocessor/crop_box_filter/crop_box_filter_nodelet.hpp"
-#include "pointcloud_preprocessor/crop_box_filter/crop_box_cuda.hpp"
-#include "pointcloud_preprocessor/crop_box_filter/crop_box_filter_opt.hpp"
+
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 
 #include <vector>
@@ -81,6 +80,9 @@ CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & optio
     p.max_y = static_cast<float>(declare_parameter("max_y", 1.0));
     p.max_z = static_cast<float>(declare_parameter("max_z", 1.0));
     p.negative = static_cast<float>(declare_parameter("negative", false));
+    if (tf_input_frame_.empty()) {
+      throw std::invalid_argument("Crop box requires non-empty input_frame");
+    }
   }
 
   // set additional publishers
@@ -97,78 +99,81 @@ CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & optio
   }
 }
 
+// TODO(sykwer): Temporary Implementation: Delete this function definition when all the filter nodes
+// conform to new API.
 void CropBoxFilterComponent::filter(
-  const PointCloud2ConstPtr & input, [[maybe_unused]] const IndicesPtr & indices,
-  PointCloud2 & output)
+  const PointCloud2ConstPtr & input, const IndicesPtr & indices, PointCloud2 & output)
 {
-  
-  crop_box_filter_opt::CropBoxParam pram_trans{};
-  pram_trans.min_x = param_.min_x;
-  pram_trans.min_y = param_.min_y;
-  pram_trans.min_z = param_.min_z;
-  pram_trans.max_x = param_.max_x;
-  pram_trans.max_y = param_.max_y;
-  pram_trans.max_z = param_.max_z;
-  pram_trans.negative = param_.negative;
-  crop_box_filter_opt::filter(input,indices,output,pram_trans);
-   // stop_watch_ptr_->toc("processing_time", true);
-        //  std::scoped_lock lock(mutex_);
-        // const auto data_size = input->data.size();
-        // const auto point_step = input->point_step;
-        // output.data.resize(input->data.size());
-        // Eigen::Vector3f pt(Eigen::Vector3f::Zero());
-        // size_t j = 0;
-        // int count =0;
-        // // If inside the cropbox
-        // if (!param_.negative) {
-        //   for (size_t i = 0; i + point_step < data_size; i += point_step) {
-        //     memcpy(pt.data(), &input->data[i], sizeof(float) * 3);
-        //     // if(i == 0)
-        //     // {
-        //     //    std::cout << "input_xyz is " << pt.x()<<" "<<pt.y()<< " " <<pt.z() << std::endl;;
-        //     // }
-        //     if (
-        //       param_.min_z < pt.z() && pt.z() < param_.max_z && param_.min_y < pt.y() &&
-        //       pt.y() < param_.max_y && param_.min_x < pt.x() && pt.x() < param_.max_x) {
-        //       memcpy(&output.data[j], &input->data[i], point_step);
-        //       j += point_step;
-        //     }
-        //     else{
-        //       //  std::cout << i << " " << pt.x()<<" "<<pt.y()<< " " <<pt.z() << " "<<param_.negative << std::endl;
-        //        count++;
-        //     }
-        //   }
-        //   // If outside the cropbox
-        // } else {
-        //   for (size_t i = 0; i + point_step < data_size; i += point_step) {
-        //     memcpy(pt.data(), &input->data[i], sizeof(float) * 3);
-        //     if (
-        //       param_.min_z > pt.z() || pt.z() > param_.max_z || param_.min_y > pt.y() ||
-        //       pt.y() > param_.max_y || param_.min_x > pt.x() || pt.x() > param_.max_x) {
-        //       memcpy(&output.data[j], &input->data[i], point_step);
-        //       j += point_step;
-        //     }
-        //     // else{
-        //     //   //  std::cout << i << " " << pt.x()<<" "<<pt.y()<< " " <<pt.z() << " "<<param_.negative<< std::endl;
-        //     //    count++;
-        //     // }
-        //   } 
-        // }
-        // output.data.resize(j);
-        // output.header.frame_id = input->header.frame_id;
-        // output.height = 1;
-        // output.fields = input->fields;
-        // output.is_bigendian = input->is_bigendian;
-        // output.point_step = input->point_step;
-        // output.is_dense = input->is_dense;
-        // output.width = static_cast<uint32_t>(output.data.size() / output.height / output.point_step);
-        // output.row_step = static_cast<uint32_t>(output.data.size() / output.height);
-  //--------------------------original----------------------------//
+  (void)input;
+  (void)indices;
+  (void)output;
+}
 
+// TODO(sykwer): Temporary Implementation: Rename this function to `filter()` when all the filter
+// nodes conform to new API. Then delete the old `filter()` defined above.
+void CropBoxFilterComponent::faster_filter(
+  const PointCloud2ConstPtr & input, [[maybe_unused]] const IndicesPtr & indices,
+  PointCloud2 & output, const TransformInfo & transform_info)
+{
+  std::scoped_lock lock(mutex_);
+  stop_watch_ptr_->toc("processing_time", true);
 
+  int x_offset = input->fields[pcl::getFieldIndex(*input, "x")].offset;
+  int y_offset = input->fields[pcl::getFieldIndex(*input, "y")].offset;
+  int z_offset = input->fields[pcl::getFieldIndex(*input, "z")].offset;
+
+  output.data.resize(input->data.size());
+  size_t output_size = 0;
+
+  for (size_t global_offset = 0; global_offset + input->point_step <= input->data.size();
+       global_offset += input->point_step) {
+    Eigen::Vector4f point(
+      *reinterpret_cast<const float *>(&input->data[global_offset + x_offset]),
+      *reinterpret_cast<const float *>(&input->data[global_offset + y_offset]),
+      *reinterpret_cast<const float *>(&input->data[global_offset + z_offset]), 1);
+
+    if (transform_info.need_transform) {
+      if (std::isfinite(point[0]) && std::isfinite(point[1]), std::isfinite(point[2])) {
+        point = transform_info.eigen_transform * point;
+      } else {
+        // TODO(sykwer): Implement the appropriate logic for `max range point` and `invalid point`.
+        // https://github.com/ros-perception/perception_pcl/blob/628aaec1dc73ef4adea01e9d28f11eb417b948fd/pcl_ros/src/transforms.cpp#L185-L201
+        RCLCPP_ERROR(this->get_logger(), "Not implemented logic");
+      }
+    }
+
+    bool point_is_inside = point[2] > param_.min_z && point[2] < param_.max_z &&
+                           point[1] > param_.min_y && point[1] < param_.max_y &&
+                           point[0] > param_.min_x && point[0] < param_.max_x;
+    if ((!param_.negative && point_is_inside) || (param_.negative && !point_is_inside)) {
+      memcpy(&output.data[output_size], &input->data[global_offset], input->point_step);
+
+      if (transform_info.need_transform) {
+        *reinterpret_cast<float *>(&output.data[output_size + x_offset]) = point[0];
+        *reinterpret_cast<float *>(&output.data[output_size + y_offset]) = point[1];
+        *reinterpret_cast<float *>(&output.data[output_size + z_offset]) = point[2];
+      }
+
+      output_size += input->point_step;
+    }
+  }
+
+  output.data.resize(output_size);
+
+  // Note that `input->header.frame_id` is data before converted when `transform_info.need_transform
+  // == true`
+  output.header.frame_id = !tf_input_frame_.empty() ? tf_input_frame_ : tf_input_orig_frame_;
+
+  output.height = 1;
+  output.fields = input->fields;
+  output.is_bigendian = input->is_bigendian;
+  output.point_step = input->point_step;
+  output.is_dense = input->is_dense;
+  output.width = static_cast<uint32_t>(output.data.size() / output.height / output.point_step);
+  output.row_step = static_cast<uint32_t>(output.data.size() / output.height);
 
   publishCropBoxPolygon();
-  // RCLCPP_INFO(get_logger(), "publishCropBoxPolygon time is %f",stop_watch_ptr_->toc("processing_time",true));
+
   // add processing time for debug
   if (debug_publisher_) {
     const double cyclic_time_ms = stop_watch_ptr_->toc("cyclic_time", true);
@@ -178,7 +183,6 @@ void CropBoxFilterComponent::filter(
     debug_publisher_->publish<tier4_debug_msgs::msg::Float64Stamped>(
       "debug/processing_time_ms", processing_time_ms);
   }
- 
 }
 
 void CropBoxFilterComponent::publishCropBoxPolygon()

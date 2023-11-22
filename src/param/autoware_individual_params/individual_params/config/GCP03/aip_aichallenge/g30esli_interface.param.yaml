@@ -1,0 +1,7 @@
+/**:
+  ros__parameters:
+    speed_scale_factor: 1.0
+    steering_offset_deg: 2.8  # [degree]
+    steering_compensator_coeff0: 0.9593
+    steering_compensator_coeff1: -0.036
+    steering_compensator_coeff2: -0.148

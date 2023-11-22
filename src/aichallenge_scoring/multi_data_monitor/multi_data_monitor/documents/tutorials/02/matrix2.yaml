@@ -1,0 +1,30 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+  - { path: package://multi_data_monitor/css/plugins/titled.css, target: Titled }
+
+widgets:
+  - class: Matrix
+    items: [top, bottom]
+
+  - class: Titled
+    label: top
+    title: Title
+    input: { class: subscription, topic: /example/count/uint32, field: data }
+
+  - class: Matrix
+    label: bottom
+    rows: 1
+    items: [w1, w2-to-w5]
+
+  - class: Matrix
+    label: w2-to-w5
+    cols: 2
+    items: [w2, w3, w4, w5]
+
+  - { class: Simple, label: w1, value: dummy1 }
+  - { class: Simple, label: w2, value: dummy2 }
+  - { class: Simple, label: w3, value: dummy3 }
+  - { class: Simple, label: w4, value: dummy4 }
+  - { class: Simple, label: w5, value: dummy5 }

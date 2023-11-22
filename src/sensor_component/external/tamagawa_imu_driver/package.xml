@@ -16,6 +16,7 @@
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
+  <depend>libboost-dev</depend>
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
   <depend>can_msgs</depend>

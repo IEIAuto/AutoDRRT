@@ -99,7 +99,7 @@ PointCloudConcatenateDataSynchronizerComponent::PointCloudConcatenateDataSynchro
 
     // Optional parameters
     maximum_queue_size_ = static_cast<int>(declare_parameter("max_queue_size", 5));
-    timeout_sec_ = static_cast<double>(declare_parameter("timeout_sec", 0.01));
+    timeout_sec_ = static_cast<double>(declare_parameter("timeout_sec", 0.1));
 
     input_offset_ = declare_parameter("input_offset", std::vector<double>{});
     if (!input_offset_.empty() && input_topics_.size() != input_offset_.size()) {
@@ -134,8 +134,6 @@ PointCloudConcatenateDataSynchronizerComponent::PointCloudConcatenateDataSynchro
       "output", rclcpp::SensorDataQoS().keep_last(maximum_queue_size_));
   }
 
-  CREATE_PUBLISH_DEBUGGER_MICRO
-
   // Subscribers
   {
     RCLCPP_INFO_STREAM(
@@ -143,7 +141,6 @@ PointCloudConcatenateDataSynchronizerComponent::PointCloudConcatenateDataSynchro
     for (auto & input_topic : input_topics_) {
       RCLCPP_INFO_STREAM(get_logger(), " - " << input_topic);
     }
-    RCLCPP_INFO_STREAM(get_logger(), " -time_out is: " << std::to_string(timeout_sec_));
 
     // Subscribe to the filters
     filters_.resize(input_topics_.size());
@@ -153,13 +150,13 @@ PointCloudConcatenateDataSynchronizerComponent::PointCloudConcatenateDataSynchro
       cloud_stdmap_.insert(std::make_pair(input_topics_[d], nullptr));
       cloud_stdmap_tmp_ = cloud_stdmap_;
 
-        // CAN'T use auto type here.
+      // CAN'T use auto type here.
       std::function<void(const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg)> cb = std::bind(
         &PointCloudConcatenateDataSynchronizerComponent::cloud_callback, this,
         std::placeholders::_1, input_topics_[d]);
 
       filters_[d].reset();
-        filters_[d] = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+      filters_[d] = this->create_subscription<sensor_msgs::msg::PointCloud2>(
         input_topics_[d], rclcpp::SensorDataQoS().keep_last(maximum_queue_size_), cb);
     }
     auto twist_cb = std::bind(
@@ -208,7 +205,6 @@ void PointCloudConcatenateDataSynchronizerComponent::combineClouds(
   const PointCloud2::ConstSharedPtr & in1, const PointCloud2::ConstSharedPtr & in2,
   PointCloud2::SharedPtr & out)
 {
-    
   if (twist_ptr_queue_.empty()) {
     pcl::concatenatePointCloud(*in1, *in2, *out);
     out->header.stamp = std::min(rclcpp::Time(in1->header.stamp), rclcpp::Time(in2->header.stamp));
@@ -280,11 +276,6 @@ void PointCloudConcatenateDataSynchronizerComponent::combineClouds(
 
 void PointCloudConcatenateDataSynchronizerComponent::publish()
 {
-  if(timeStamp_debug_start == 0)
-  {
-     SET_STAMP_IN_CALLBACK
-  }
- 
   stop_watch_ptr_->toc("processing_time", true);
   sensor_msgs::msg::PointCloud2::SharedPtr concat_cloud_ptr_ = nullptr;
   not_subscribed_topic_names_.clear();
@@ -304,25 +295,15 @@ void PointCloudConcatenateDataSynchronizerComponent::publish()
     } else {
       not_subscribed_topic_names_.insert(e.first);
     }
-    
   }
-   
-  // debuger_string = "";
+
   if (concat_cloud_ptr_) {
     auto output = std::make_unique<sensor_msgs::msg::PointCloud2>(*concat_cloud_ptr_);
-    timeStamp_debug_start = time_map[std::to_string(rclcpp::Time(output->header.stamp).seconds())] == 0 ? timeStamp_debug_start:time_map[std::to_string(rclcpp::Time(output->header.stamp).seconds())];
-    RCLCPP_INFO(get_logger(), "timeStamp_debug_start %lld" ,timeStamp_debug_start);
-    debuger_string = debuger_string + ":" +std::to_string(rclcpp::Time(output->header.stamp).seconds());
-    START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
-    
     pub_output_->publish(std::move(output));
-    debuger_string="";
-    timeStamp_debug_start=0;
-    time_map.clear();
   } else {
     RCLCPP_WARN(this->get_logger(), "concat_cloud_ptr_ is nullptr, skipping pointcloud publish.");
   }
-  
+
   updater_.force_update();
 
   cloud_stdmap_ = cloud_stdmap_tmp_;
@@ -338,24 +319,7 @@ void PointCloudConcatenateDataSynchronizerComponent::publish()
     debug_publisher_->publish<tier4_debug_msgs::msg::Float64Stamped>(
       "debug/processing_time_ms", processing_time_ms);
   }
-  
 }
-
-
-void PointCloudConcatenateDataSynchronizerComponent::clean_map()
-{
-    debuger_string="";
-    timeStamp_debug_start=0;
-    time_map.clear();
-  
-  updater_.force_update();
-  cloud_stdmap_ = cloud_stdmap_tmp_;
-  std::for_each(std::begin(cloud_stdmap_tmp_), std::end(cloud_stdmap_tmp_), [](auto & e) {
-    e.second = nullptr;
-  });
-}
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void PointCloudConcatenateDataSynchronizerComponent::convertToXYZICloud(
@@ -415,12 +379,7 @@ void PointCloudConcatenateDataSynchronizerComponent::setPeriod(const int64_t new
 void PointCloudConcatenateDataSynchronizerComponent::cloud_callback(
   const sensor_msgs::msg::PointCloud2::ConstSharedPtr & input_ptr, const std::string & topic_name)
 {
-  RCLCPP_INFO(get_logger(), "cloud_callback COMING IN %s" ,std::to_string(rclcpp::Time(input_ptr->header.stamp).seconds()).c_str());
   std::lock_guard<std::mutex> lock(mutex_);
-  if(timeStamp_debug_start == 0)
-  {
-     SET_STAMP_IN_CALLBACK
-  }
   auto input = std::make_shared<sensor_msgs::msg::PointCloud2>(*input_ptr);
   sensor_msgs::msg::PointCloud2::SharedPtr xyzi_input_ptr(new sensor_msgs::msg::PointCloud2());
   convertToXYZICloud(input, xyzi_input_ptr);
@@ -429,15 +388,6 @@ void PointCloudConcatenateDataSynchronizerComponent::cloud_callback(
   const bool is_already_subscribed_tmp = std::any_of(
     std::begin(cloud_stdmap_tmp_), std::end(cloud_stdmap_tmp_),
     [](const auto & e) { return e.second != nullptr; });
-  debuger_string=":" + std::to_string(rclcpp::Time(input_ptr->header.stamp).seconds()) + debuger_string;
-  time_map.insert(std::make_pair(std::to_string(rclcpp::Time(input_ptr->header.stamp).seconds()), std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
-
-  // auto timeStamp_debug_tmp =std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-  // std::string namespace_tmp(this->get_namespace());
-  // std::string out_strtmp(namespace_tmp + "/" + this->get_name() + ":" + std::to_string(timeStamp_debug_tmp) + " :" + debuger_string);
-  // RCLCPP_INFO(rclcpp::get_logger("debug_topic_consumer"), out_strtmp.c_str());
-
- 
 
   if (is_already_subscribed_this) {
     cloud_stdmap_tmp_[topic_name] = xyzi_input_ptr;
@@ -455,14 +405,11 @@ void PointCloudConcatenateDataSynchronizerComponent::cloud_callback(
   } else {
     cloud_stdmap_[topic_name] = xyzi_input_ptr;
 
-    
-
     const bool is_subscribed_all = std::all_of(
       std::begin(cloud_stdmap_), std::end(cloud_stdmap_),
       [](const auto & e) { return e.second != nullptr; });
 
-    // if (is_subscribed_all) {
-    if (is_subscribed_all || main_lidar==topic_name) { //if the top lidar arrived, publish.
+    if (is_subscribed_all) {
       for (const auto & e : cloud_stdmap_tmp_) {
         if (e.second != nullptr) {
           cloud_stdmap_[e.first] = e.second;
@@ -471,11 +418,10 @@ void PointCloudConcatenateDataSynchronizerComponent::cloud_callback(
       std::for_each(std::begin(cloud_stdmap_tmp_), std::end(cloud_stdmap_tmp_), [](auto & e) {
         e.second = nullptr;
       });
-      RCLCPP_INFO(get_logger(), "ALL is_subscribed_all is True");
+
       timer_->cancel();
       publish();
     } else if (offset_map_.size() > 0) {
-       RCLCPP_INFO(get_logger(), "offset_map_ SIZE %d" ,offset_map_.size());
       timer_->cancel();
       auto period = std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::duration<double>(timeout_sec_ - offset_map_[topic_name]));
@@ -487,9 +433,6 @@ void PointCloudConcatenateDataSynchronizerComponent::cloud_callback(
       timer_->reset();
     }
   }
-  // timer_->cancel();
-  // publish();
-  // RCLCPP_INFO(get_logger(), "cloud_callback OVER %s" ,std::to_string(rclcpp::Time(input_ptr->header.stamp).seconds()).c_str());
 }
 
 void PointCloudConcatenateDataSynchronizerComponent::timer_callback()
@@ -497,9 +440,7 @@ void PointCloudConcatenateDataSynchronizerComponent::timer_callback()
   using std::chrono_literals::operator""ms;
   timer_->cancel();
   if (mutex_.try_lock()) {
-    RCLCPP_INFO(get_logger(), "timer_callback is True");
     publish();
-    clean_map();
     mutex_.unlock();
   } else {
     try {
@@ -509,7 +450,6 @@ void PointCloudConcatenateDataSynchronizerComponent::timer_callback()
       RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 5000, "%s", ex.what());
     }
     timer_->reset();
-    RCLCPP_INFO(get_logger(), "mutex_.try_lock() failed");
   }
 }
 
@@ -540,6 +480,7 @@ void PointCloudConcatenateDataSynchronizerComponent::twist_callback(
   twist_ptr->twist.angular.z = input->heading_rate;
   twist_ptr_queue_.push_back(twist_ptr);
 }
+
 void PointCloudConcatenateDataSynchronizerComponent::checkConcatStatus(
   diagnostic_updater::DiagnosticStatusWrapper & stat)
 {

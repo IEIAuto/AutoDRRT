@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "utils.hpp"
-#define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 
 bool sphereAndBoxOverlapExists(

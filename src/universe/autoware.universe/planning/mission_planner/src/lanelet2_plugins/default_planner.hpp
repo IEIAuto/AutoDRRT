@@ -36,6 +36,7 @@ namespace mission_planner::lanelet2
 struct DefaultPlannerParameters
 {
   double goal_angle_threshold_deg;
+  bool enable_correct_goal_pose;
 };
 
 class DefaultPlanner : public mission_planner::PlannerPlugin
@@ -66,6 +67,7 @@ private:
   rclcpp::Subscription<HADMapBin>::SharedPtr map_subscriber_;
   rclcpp::Publisher<MarkerArray>::SharedPtr pub_goal_footprint_marker_;
 
+  void initialize_common(rclcpp::Node * node);
   void map_callback(const HADMapBin::ConstSharedPtr msg);
   bool check_goal_footprint(
     const lanelet::ConstLanelet & current_lanelet,

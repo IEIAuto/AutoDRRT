@@ -90,6 +90,9 @@ struct NodeParam
   double th_stopped_velocity_mps;
   double th_course_out_distance_m;  // collision margin [m]
   double vehicle_shape_margin_m;
+  double vehicle_shape_margin_width_m;
+  double vehicle_shape_margin_length_m;
+  double vehicle_base_link_margin;
   bool replan_when_obstacle_found;
   bool replan_when_course_out;
 };
@@ -131,6 +134,8 @@ private:
   size_t prev_target_index_;
   size_t target_index_;
   bool is_completed_ = false;
+  bool is_already_moved_ = false;
+  int jump_size;
 
   LaneletRoute::ConstSharedPtr route_;
   OccupancyGrid::ConstSharedPtr occupancy_grid_;
@@ -156,7 +161,7 @@ private:
   void planTrajectory();
   void updateTargetIndex();
   void initializePlanningAlgorithm();
-
+  // rcl_interfaces::msg::SetParametersResult parameter_callback(const std::vector<rclcpp::Parameter> & parameters);
   TransformStamped getTransform(const std::string & from, const std::string & to);
 };
 }  // namespace freespace_planner

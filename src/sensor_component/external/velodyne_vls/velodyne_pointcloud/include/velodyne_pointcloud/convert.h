@@ -33,16 +33,13 @@
 
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
-#include "std_msgs/msg/string.hpp"
+
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 #include <velodyne_msgs/msg/velodyne_scan.hpp>
 
 #include <velodyne_pointcloud/pointcloudXYZIRADT.h>
 #include <velodyne_pointcloud/rawdata.h>
-
-// Include Debuger
-#include "autoware_debuger.hpp"
 
 namespace velodyne_pointcloud
 {
@@ -65,12 +62,8 @@ private:
   rclcpp::Subscription<velodyne_msgs::msg::VelodyneScan>::SharedPtr velodyne_scan_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_points_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_points_ex_pub_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_points_invalid_near_pub_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_points_combined_ex_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_array_pub_;
-  
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
+
   // tf2_ros::Buffer tf2_buffer_;
   // tf2_ros::TransformListener tf2_listener_;
 
@@ -80,10 +73,11 @@ private:
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr set_param_res_;
 
   std::shared_ptr<velodyne_rawdata::RawData> data_;
+
   int num_points_threshold_;
   std::vector<float> invalid_intensity_array_;
   std::string base_link_frame_;
-  int downsampled_rate = 1;
+
   /// configuration parameters
   typedef struct
   {

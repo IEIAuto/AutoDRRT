@@ -26,7 +26,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/thread.hpp>
-#define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 
 #include <algorithm>

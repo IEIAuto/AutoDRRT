@@ -54,12 +54,11 @@
 
 #include <nav2_costmap_2d/costmap_2d.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <tier4_autoware_utils/system/stop_watch.hpp>
+
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
-#include "pointcloud_based_occupancy_grid_map/threadPool.hpp"
 namespace costmap_2d
 {
 using geometry_msgs::msg::Pose;
@@ -73,7 +72,7 @@ public:
 
   void updateWithPointCloud(
     const PointCloud2 & raw_pointcloud, const PointCloud2 & obstacle_pointcloud,
-    const Pose & robot_pose);
+    const Pose & robot_pose, const Pose & gridmap_origin);
 
   void updateOrigin(double new_origin_x, double new_origin_y) override;
 
@@ -82,15 +81,12 @@ public:
   void raytrace(
     const double source_x, const double source_y, const double target_x, const double target_y,
     const unsigned char cost);
-  // ThreadPool thread_pools; //init threadpools
 
 private:
   bool worldToMap(double wx, double wy, unsigned int & mx, unsigned int & my) const;
-  // const int n_threads = 360;
-  
+
   rclcpp::Logger logger_{rclcpp::get_logger("pointcloud_based_occupancy_grid_map")};
   rclcpp::Clock clock_{RCL_ROS_TIME};
-  std::unique_ptr<tier4_autoware_utils::StopWatch<std::chrono::milliseconds>> stop_watch_ptr_;
 };
 
 }  // namespace costmap_2d

@@ -1,0 +1,7 @@
+version: 2.0
+
+widgets:
+  - { class: Matrix, items: [w1] }
+  - { class: relay, label: w1, refer: w2 }
+  - { class: relay, label: w2, refer: w3 }
+  - { class: relay, label: w3, refer: w1 }

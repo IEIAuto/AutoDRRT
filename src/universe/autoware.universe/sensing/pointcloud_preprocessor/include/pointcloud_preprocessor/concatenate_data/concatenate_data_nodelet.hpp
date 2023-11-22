@@ -83,7 +83,7 @@
 #include <message_filters/synchronizer.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-#include "autoware_debuger.hpp"
+
 namespace pointcloud_preprocessor
 {
 using autoware_point_types::PointXYZI;
@@ -115,15 +115,10 @@ private:
   /** \brief The output PointCloud publisher. */
   rclcpp::Publisher<PointCloud2>::SharedPtr pub_output_;
 
-     //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  // std::string debuger_string;
-  INIT_STAMP_STRING
-
   /** \brief The maximum number of messages that we can store in the queue. */
   int maximum_queue_size_ = 3;
 
-  double timeout_sec_ = 0.05;
+  double timeout_sec_ = 0.1;
 
   std::set<std::string> not_subscribed_topic_names_;
 
@@ -150,18 +145,17 @@ private:
 
   std::map<std::string, sensor_msgs::msg::PointCloud2::ConstSharedPtr> cloud_stdmap_;
   std::map<std::string, sensor_msgs::msg::PointCloud2::ConstSharedPtr> cloud_stdmap_tmp_;
-  std::map<std::string, long long> time_map;
   std::mutex mutex_;
 
   std::vector<double> input_offset_;
   std::map<std::string, double> offset_map_;
-  std::string main_lidar = "/sensing/lidar/top/outlier_filtered/pointcloud";
+
   void transformPointCloud(const PointCloud2::ConstSharedPtr & in, PointCloud2::SharedPtr & out);
   void combineClouds(
     const PointCloud2::ConstSharedPtr & in1, const PointCloud2::ConstSharedPtr & in2,
     PointCloud2::SharedPtr & out);
   void publish();
-  void clean_map();
+
   void convertToXYZICloud(
     const sensor_msgs::msg::PointCloud2::SharedPtr & input_ptr,
     sensor_msgs::msg::PointCloud2::SharedPtr & output_ptr);

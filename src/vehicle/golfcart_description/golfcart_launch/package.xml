@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>golfcart_launch</name>
+  <version>0.1.0</version>
+  <description>The golfcart_launch package</description>
+
+  <maintainer email="kenji.miyake@tier4.jp">Kenji Miyake</maintainer>
+  <maintainer email="taiki.tanaka@tier4.jp">Taiki Tanaka</maintainer>
+  <license>Apache2</license>
+
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+  <exec_depend>individual_params</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

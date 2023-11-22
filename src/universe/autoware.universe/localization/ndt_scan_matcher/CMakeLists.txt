@@ -23,9 +23,7 @@ else()
 endif()
 
 find_package(PCL REQUIRED COMPONENTS common io registration)
-include_directories(
-  include
-  ${PCL_INCLUDE_DIRS})
+include_directories(${PCL_INCLUDE_DIRS})
 
 ament_auto_add_executable(ndt_scan_matcher
   src/debug.cpp
@@ -36,15 +34,11 @@ ament_auto_add_executable(ndt_scan_matcher
   src/tf2_listener_module.cpp
   src/map_module.cpp
   src/pose_initialization_module.cpp
+  src/map_update_module.cpp
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
-
-find_library(NDT_SCAN_MATCHER_OPT ndt_scan_matcher_opt
-            PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/)
-
-
-target_link_libraries(ndt_scan_matcher ${PCL_LIBRARIES} ${NDT_SCAN_MATCHER_OPT})
+target_link_libraries(ndt_scan_matcher ${PCL_LIBRARIES})
 
 ament_auto_package(
   INSTALL_TO_SHARE

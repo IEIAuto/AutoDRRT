@@ -12,15 +12,15 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
+
 ament_auto_find_build_dependencies()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/FaultInjectionEvent.msg"
-  "msg/SimulationEvents.msg"
-  DEPENDENCIES
-    builtin_interfaces
-    std_msgs
-)
+  msg/FaultInjectionEvent.msg
+  msg/SimulationEvents.msg
+  msg/UserDefinedValue.msg
+  msg/UserDefinedValueType.msg
+  DEPENDENCIES builtin_interfaces std_msgs)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

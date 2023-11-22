@@ -81,9 +81,6 @@
 #include <tier4_autoware_utils/ros/debug_publisher.hpp>
 #include <tier4_autoware_utils/system/stop_watch.hpp>
 
-// Include Debuger
-#include "autoware_debuger.hpp"
-
 namespace pointcloud_preprocessor
 {
 namespace sync_policies = message_filters::sync_policies;
@@ -137,16 +134,24 @@ public:
     const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
 
 protected:
+  struct TransformInfo
+  {
+    TransformInfo()
+    {
+      eigen_transform = Eigen::Matrix4f::Identity(4, 4);
+      need_transform = false;
+    }
+
+    Eigen::Matrix4f eigen_transform;
+    bool need_transform;
+  };
+
   /** \brief The input PointCloud2 subscriber. */
   rclcpp::Subscription<PointCloud2>::SharedPtr sub_input_;
 
   /** \brief The output PointCloud2 publisher. */
   rclcpp::Publisher<PointCloud2>::SharedPtr pub_output_;
 
-  //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
-  INIT_EXTRA_STAMP_STRING
   /** \brief The message filter subscriber for PointCloud2. */
   message_filters::Subscriber<PointCloud2> sub_input_filter_;
 
@@ -192,7 +197,15 @@ protected:
   virtual void filter(
     const PointCloud2ConstPtr & input, const IndicesPtr & indices, PointCloud2 & output) = 0;
 
+  // TODO(sykwer): Temporary Implementation: Remove this interface when all the filter nodes conform
+  // to new API. It's not pure virtual function so that a child class does not have to implement
+  // this function.
+  virtual void faster_filter(
+    const PointCloud2ConstPtr & input, const IndicesPtr & indices, PointCloud2 & output,
+    const TransformInfo & transform_info);  // != 0
+
   /** \brief Lazy transport subscribe routine. */
+  virtual void subscribe(const std::string & filter_name);
   virtual void subscribe();
 
   /** \brief Lazy transport unsubscribe routine. */
@@ -278,6 +291,22 @@ private:
 
   /** \brief PointCloud2 + Indices data callback. */
   void input_indices_callback(const PointCloud2ConstPtr cloud, const PointIndicesConstPtr indices);
+
+  /** \brief Get a matrix for conversion from the original frame to the target frame */
+  bool calculate_transform_matrix(
+    const std::string & target_frame, const sensor_msgs::msg::PointCloud2 & from,
+    TransformInfo & transform_info /*output*/);
+
+  bool _calculate_transform_matrix(
+    const std::string & target_frame, const sensor_msgs::msg::PointCloud2 & from,
+    const tf2_ros::Buffer & tf_buffer, Eigen::Matrix4f & eigen_transform /*output*/);
+
+  bool convert_output_costly(std::unique_ptr<PointCloud2> & output);
+
+  // TODO(sykwer): Temporary Implementation: Remove this interface when all the filter nodes conform
+  // to new API.
+  void faster_input_indices_callback(
+    const PointCloud2ConstPtr cloud, const PointIndicesConstPtr indices);
 
   void setupTF();
 };

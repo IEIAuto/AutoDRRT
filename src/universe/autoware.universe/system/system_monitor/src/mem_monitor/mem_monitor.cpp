@@ -22,7 +22,7 @@
 #include "system_monitor/system_monitor_utility.hpp"
 
 #include <boost/process.hpp>
-#define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 
 #include <string>

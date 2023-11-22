@@ -1,0 +1,30 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+  - { path: package://multi_data_monitor/css/colors.css }
+
+widgets:
+  - class: Matrix
+    rows: 1
+    items:
+      - class: Simple
+        value: UNKNOWN
+        input: state
+      - class: Simple
+        value: UNKNOWN
+        input: state
+        rules:
+          class: SetFirstIf
+          type: uint
+          list:
+            - { eq: 1, value: ONE, attrs: { back-color: yellow } }
+            - { eq: 2, value: TWO, attrs: { back-color: lime } }
+            - { eq: 3, value: THREE, attrs: { back-color: cyan } }
+            - { value: ERROR }
+
+streams:
+  - class: subscription
+    label: state
+    topic: /example/count/uint32
+    field: data
