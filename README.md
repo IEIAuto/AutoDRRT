@@ -1,7 +1,7 @@
 # Autonomous Driving Computing Framework AutoDRRT
 AutoDRRT is an autonomous driving framework developed based on the [Autoware open-source framework](https://github.com/autowarefoundation/autoware/tree/main), with targeted optimizations for the EIS400 onboard domain controller. These optimizations enhance the framework's real-time performance, distributability, and fault tolerance. A set of tools is provided to facilitate users in making use of these new features more easily. This framework is built upon the Robot Operating System 2 (ROS2). It encompasses all necessary functionalities from localization and target detection to path planning and control, striving to lower the entry barrier and aiming to involve as many individuals and organizations as possible in the open innovation of autonomous driving technology.
 
-Based on the AutoDRRT framework, IEI secured the dual championship in both simulation and real vehicle races at the 5th Japan Automotive AI Challenge. This solution is tailored for factory scenarios and provides a [Level 4 autonomous driving solution](../../tree/factory-scene).
+Based on the AutoDRRT framework, IEI secured the dual championship in both simulation and real vehicle races at the 5th Japan Automotive AI Challenge. This solution is tailored for factory scenarios and provides a [Level 4 autonomous driving solution](../../tree/factory_scene).
 
 ![avatar](./docs/imgs/Architecture_Diagram_en.png)
 ## Features
