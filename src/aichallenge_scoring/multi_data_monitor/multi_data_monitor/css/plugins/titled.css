@@ -1,0 +1,11 @@
+QLabel.value {
+  font-size: 18px;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid;
+}
+
+QLabel.title {
+  font-size: 12px;
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+}

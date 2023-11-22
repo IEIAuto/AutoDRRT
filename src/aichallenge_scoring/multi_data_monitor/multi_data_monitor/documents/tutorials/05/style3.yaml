@@ -1,0 +1,40 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+  - { path: package://multi_data_monitor/css/colors.css }
+
+widgets:
+  - class: Matrix
+    cols: 1
+    items:
+      - class: Simple
+        value: UNKNOWN
+        input: state
+      - class: Matrix
+        rows: 1
+        items: [s1, s2, s3]
+
+  - class: Simple
+    label: s1
+    const: ONE
+    input: state
+    rules: { class: SetIf, type: uint, eq: 1, attrs: { back-color: magenta } }
+
+  - class: Simple
+    label: s2
+    const: TWO
+    input: state
+    rules: { class: SetIf, type: uint, eq: 2, attrs: { back-color: magenta } }
+
+  - class: Simple
+    label: s3
+    const: THREE
+    input: state
+    rules: { class: SetIf, type: uint, eq: 3, attrs: { back-color: magenta } }
+
+streams:
+  - class: subscription
+    label: state
+    topic: /example/count/uint32
+    field: data

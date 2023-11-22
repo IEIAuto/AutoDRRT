@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include "ndt_scan_matcher/ndt_scan_matcher_core.hpp"
-#include "ndt_scan_matcher/ndt_scan_matcher_opt.hpp"
 
 #include "ndt_scan_matcher/matrix_type.hpp"
 #include "ndt_scan_matcher/particle.hpp"
@@ -78,10 +77,11 @@ bool validate_local_optimal_solution_oscillation(
   return false;
 }
 
+// cspell: ignore degrounded
 NDTScanMatcher::NDTScanMatcher()
 : Node("ndt_scan_matcher"),
   tf2_broadcaster_(*this),
-  ndt_ptr_(new pclomp::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ),
+  ndt_ptr_(new NormalDistributionsTransform),
   state_ptr_(new std::map<std::string, std::string>),
   base_frame_("base_link"),
   ndt_base_frame_("ndt_base_link"),
@@ -94,7 +94,10 @@ NDTScanMatcher::NDTScanMatcher()
   initial_pose_distance_tolerance_m_(10.0),
   inversion_vector_threshold_(-0.9),
   oscillation_threshold_(10),
-  regularization_enabled_(declare_parameter("regularization_enabled", false))
+  regularization_enabled_(declare_parameter("regularization_enabled", false)),
+  estimate_scores_for_degrounded_scan_(
+    declare_parameter("estimate_scores_for_degrounded_scan", false)),
+  z_margin_for_ground_removal_(declare_parameter("z_margin_for_ground_removal", 0.8))
 {
   (*state_ptr_)["state"] = "Initializing";
   is_activated_ = false;
@@ -114,18 +117,16 @@ NDTScanMatcher::NDTScanMatcher()
   ndt_params.step_size = this->declare_parameter<double>("step_size");
   ndt_params.resolution = this->declare_parameter<double>("resolution");
   ndt_params.max_iterations = this->declare_parameter<int>("max_iterations");
-  int search_method = this->declare_parameter<int>("neighborhood_search_method");
-  ndt_params.search_method = static_cast<pclomp::NeighborSearchMethod>(search_method);
   ndt_params.num_threads = this->declare_parameter<int>("num_threads");
   ndt_params.num_threads = std::max(ndt_params.num_threads, 1);
   ndt_params.regularization_scale_factor =
     this->declare_parameter<float>("regularization_scale_factor");
   ndt_ptr_->setParams(ndt_params);
-  ndt_scan_matcher_opt::acc_ndt(ndt_ptr_,ndt_params);
+
   RCLCPP_INFO(
-    get_logger(), "trans_epsilon: %lf, step_size: %lf, resolution: %lf, max_iterations: %d,num_threads:%d ,search_method:%d",
+    get_logger(), "trans_epsilon: %lf, step_size: %lf, resolution: %lf, max_iterations: %d",
     ndt_params.trans_epsilon, ndt_params.step_size, ndt_params.resolution,
-    ndt_params.max_iterations,ndt_params.num_threads,search_method );
+    ndt_params.max_iterations);
 
   int converged_param_type_tmp = this->declare_parameter("converged_param_type", 0);
   converged_param_type_ = static_cast<ConvergedParamType>(converged_param_type_tmp);
@@ -172,9 +173,11 @@ NDTScanMatcher::NDTScanMatcher()
     this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
       "regularization_pose_with_covariance", 100,
       std::bind(&NDTScanMatcher::callback_regularization_pose, this, std::placeholders::_1));
-  CREATE_PUBLISH_DEBUGGER_MICRO 
+
   sensor_aligned_pose_pub_ =
     this->create_publisher<sensor_msgs::msg::PointCloud2>("points_aligned", 10);
+  no_ground_points_aligned_pose_pub_ =
+    this->create_publisher<sensor_msgs::msg::PointCloud2>("points_aligned_no_ground", 10);
   ndt_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("ndt_pose", 10);
   ndt_pose_with_covariance_pub_ =
     this->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
@@ -188,6 +191,12 @@ NDTScanMatcher::NDTScanMatcher()
   nearest_voxel_transformation_likelihood_pub_ =
     this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>(
       "nearest_voxel_transformation_likelihood", 10);
+  no_ground_transform_probability_pub_ =
+    this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>(
+      "no_ground_transform_probability", 10);
+  no_ground_nearest_voxel_transformation_likelihood_pub_ =
+    this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>(
+      "no_ground_nearest_voxel_transformation_likelihood", 10);
   iteration_num_pub_ =
     this->create_publisher<tier4_debug_msgs::msg::Int32Stamped>("iteration_num", 10);
   initial_to_result_distance_pub_ =
@@ -212,15 +221,17 @@ NDTScanMatcher::NDTScanMatcher()
   diagnostic_thread_.detach();
 
   tf2_listener_module_ = std::make_shared<Tf2ListenerModule>(this);
-  map_module_ = std::make_unique<MapModule>(this, &ndt_ptr_mtx_, ndt_ptr_, main_callback_group);
-  pose_init_module_ = std::make_unique<PoseInitializationModule>(
-    this, &ndt_ptr_mtx_, ndt_ptr_, tf2_listener_module_, map_frame_, main_callback_group,
-    state_ptr_);
 
-
-  using tier4_autoware_utils::StopWatch;
-  stop_watch_ptr_ = std::make_unique<StopWatch<std::chrono::milliseconds>>();
-  stop_watch_ptr_->tic("processing_time_debuger");
+  if (this->declare_parameter<bool>("use_dynamic_map_loading")) {
+    map_update_module_ = std::make_unique<MapUpdateModule>(
+      this, &ndt_ptr_mtx_, ndt_ptr_, tf2_listener_module_, map_frame_, main_callback_group,
+      state_ptr_);
+  } else {
+    map_module_ = std::make_unique<MapModule>(this, &ndt_ptr_mtx_, ndt_ptr_, main_callback_group);
+    pose_init_module_ = std::make_unique<PoseInitializationModule>(
+      this, &ndt_ptr_mtx_, ndt_ptr_, tf2_listener_module_, map_frame_, main_callback_group,
+      state_ptr_);
+  }
 }
 
 void NDTScanMatcher::timer_diagnostic()
@@ -317,12 +328,9 @@ void NDTScanMatcher::callback_regularization_pose(
 void NDTScanMatcher::callback_sensor_points(
   sensor_msgs::msg::PointCloud2::ConstSharedPtr sensor_points_sensorTF_msg_ptr)
 {
-  SET_STAMP_IN_CALLBACK
-  GET_STAMP(sensor_points_sensorTF_msg_ptr)
-  stop_watch_ptr_->toc("processing_time_debuger",true);
   // mutex ndt_ptr_
   std::lock_guard<std::mutex> lock(ndt_ptr_mtx_);
-  RCLCPP_INFO(this->get_logger(), "lock time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
+
   const auto exe_start_time = std::chrono::system_clock::now();
   const rclcpp::Time sensor_ros_time = sensor_points_sensorTF_msg_ptr->header.stamp;
 
@@ -339,8 +347,6 @@ void NDTScanMatcher::callback_sensor_points(
   ndt_ptr_->setInputSource(sensor_points_baselinkTF_ptr);
   if (!is_activated_) return;
 
-  RCLCPP_INFO(this->get_logger(), "transform_sensor_measurement time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
-
   // calculate initial pose
   std::unique_lock<std::mutex> initial_pose_array_lock(initial_pose_array_mtx_);
   if (initial_pose_msg_ptr_array_.size() <= 1) {
@@ -354,8 +360,6 @@ void NDTScanMatcher::callback_sensor_points(
   pop_old_pose(initial_pose_msg_ptr_array_, sensor_ros_time);
   initial_pose_array_lock.unlock();
 
-  RCLCPP_INFO(this->get_logger(), "initial_pose_array_lock time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
-
   // if regularization is enabled and available, set pose to NDT for regularization
   if (regularization_enabled_) add_regularization_pose(sensor_ros_time);
 
@@ -364,21 +368,14 @@ void NDTScanMatcher::callback_sensor_points(
     return;
   }
 
-
-  RCLCPP_INFO(this->get_logger(), "getInputTarget time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
-
   // perform ndt scan matching
   (*state_ptr_)["state"] = "Aligning";
   const Eigen::Matrix4f initial_pose_matrix =
     pose_to_matrix4f(interpolator.get_current_pose().pose.pose);
-    RCLCPP_INFO(this->get_logger(), "pose_to_matrix4f time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
   auto output_cloud = std::make_shared<pcl::PointCloud<PointSource>>();
   ndt_ptr_->align(*output_cloud, initial_pose_matrix);
   const pclomp::NdtResult ndt_result = ndt_ptr_->getResult();
   (*state_ptr_)["state"] = "Sleeping";
-
-  RCLCPP_INFO(this->get_logger(), "ndt scan matching time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
-
 
   const auto exe_end_time = std::chrono::system_clock::now();
   const double exe_time =
@@ -391,9 +388,6 @@ void NDTScanMatcher::callback_sensor_points(
     geometry_msgs::msg::Pose pose_ros = matrix4f_to_pose(pose_matrix);
     transformation_msg_array.push_back(pose_ros);
   }
-
-  RCLCPP_INFO(this->get_logger(), "matrix4f_to_pose time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
-
 
   // perform several validations
   /*****************************************************************************
@@ -426,10 +420,6 @@ void NDTScanMatcher::callback_sensor_points(
     RCLCPP_WARN(get_logger(), "Not Converged");
   }
 
-
-  RCLCPP_INFO(this->get_logger(), "is_ok_iteration_num time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
-
-
   // publish
   initial_pose_with_covariance_pub_->publish(interpolator.get_current_pose());
   exe_time_pub_->publish(make_float32_stamped(sensor_ros_time, exe_time));
@@ -445,10 +435,41 @@ void NDTScanMatcher::callback_sensor_points(
     sensor_ros_time, result_pose_msg, interpolator.get_current_pose(), interpolator.get_old_pose(),
     interpolator.get_new_pose());
 
-  auto sensor_points_mapTF_ptr = std::make_shared<pcl::PointCloud<PointSource>>();
+  pcl::shared_ptr<pcl::PointCloud<PointSource>> sensor_points_mapTF_ptr(
+    new pcl::PointCloud<PointSource>);
   pcl::transformPointCloud(
     *sensor_points_baselinkTF_ptr, *sensor_points_mapTF_ptr, ndt_result.pose);
   publish_point_cloud(sensor_ros_time, map_frame_, sensor_points_mapTF_ptr);
+
+  // whether use de-grounded points calculate score
+  if (estimate_scores_for_degrounded_scan_) {
+    // remove ground
+    pcl::shared_ptr<pcl::PointCloud<PointSource>> no_ground_points_mapTF_ptr(
+      new pcl::PointCloud<PointSource>);
+    for (std::size_t i = 0; i < sensor_points_mapTF_ptr->size(); i++) {
+      if (
+        sensor_points_mapTF_ptr->points[i].z - matrix4f_to_pose(ndt_result.pose).position.z >
+        z_margin_for_ground_removal_) {
+        no_ground_points_mapTF_ptr->points.push_back(sensor_points_mapTF_ptr->points[i]);
+      }
+    }
+    // pub remove-ground points
+    sensor_msgs::msg::PointCloud2 no_ground_points_mapTF_msg;
+    pcl::toROSMsg(*no_ground_points_mapTF_ptr, no_ground_points_mapTF_msg);
+    no_ground_points_mapTF_msg.header.stamp = sensor_ros_time;
+    no_ground_points_mapTF_msg.header.frame_id = map_frame_;
+    no_ground_points_aligned_pose_pub_->publish(no_ground_points_mapTF_msg);
+    // calculate score
+    const float no_ground_transform_probability =
+      ndt_ptr_->calculateTransformationProbability(*no_ground_points_mapTF_ptr);
+    const float no_ground_nearest_voxel_transformation_likelihood =
+      ndt_ptr_->calculateNearestVoxelTransformationLikelihood(*no_ground_points_mapTF_ptr);
+    // pub score
+    no_ground_transform_probability_pub_->publish(
+      make_float32_stamped(sensor_ros_time, no_ground_transform_probability));
+    no_ground_nearest_voxel_transformation_likelihood_pub_->publish(
+      make_float32_stamped(sensor_ros_time, no_ground_nearest_voxel_transformation_likelihood));
+  }
 
   (*state_ptr_)["transform_probability"] = std::to_string(ndt_result.transform_probability);
   (*state_ptr_)["nearest_voxel_transformation_likelihood"] =
@@ -460,16 +481,6 @@ void NDTScanMatcher::callback_sensor_points(
   } else {
     (*state_ptr_)["is_local_optimal_solution_oscillation"] = "0";
   }
-
-  RCLCPP_INFO(this->get_logger(), "publish_point_cloud time is %f",stop_watch_ptr_->toc("processing_time_debuger",true));
-
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_EXTRA_MICRO
-  // auto timeStamp_debug =std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-  //           std_msgs::msg::String output_result_string;
-  //           std::string namespace_(this->get_namespace());
-  //           output_result_string.data = namespace_ + "/" + this->get_name() + ":" + std::to_string(timeStamp_debug) + " :" + debuger_string+":"+debuger_time_string;
-  //           auto output_result = std::make_unique<std_msgs::msg::String>(output_result_string);
-  //           debug_pub->publish(std::move(output_result));
 }
 
 void NDTScanMatcher::transform_sensor_measurement(
@@ -518,13 +529,11 @@ void NDTScanMatcher::publish_pose(
     ndt_pose_pub_->publish(result_pose_stamped_msg);
     ndt_pose_with_covariance_pub_->publish(result_pose_with_cov_msg);
   }
-  GET_STAMP_VIA_ENTITY_EXTRA(result_pose_with_cov_msg)
-  //  debuger_time_string = std::to_string(rclcpp::Time(sensor_ros_time).seconds());
 }
 
 void NDTScanMatcher::publish_point_cloud(
   const rclcpp::Time & sensor_ros_time, const std::string & frame_id,
-  const std::shared_ptr<const pcl::PointCloud<PointSource>> & sensor_points_mapTF_ptr)
+  const pcl::shared_ptr<pcl::PointCloud<PointSource>> & sensor_points_mapTF_ptr)
 {
   sensor_msgs::msg::PointCloud2 sensor_points_mapTF_msg;
   pcl::toROSMsg(*sensor_points_mapTF_ptr, sensor_points_mapTF_msg);

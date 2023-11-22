@@ -9,10 +9,9 @@
   <!-- Map -->
   <arg name="lanelet2_map_file" default="lanelet2_map.osm" description="lanelet2 map file name"/>
   <arg name="pointcloud_map_file" default="pointcloud_map.pcd" description="pointcloud map file name"/>
-  <!-- Control -->
-  <arg name="enable_obstacle_collision_checker" default="false" description="use obstacle_collision_checker"/>
   <!-- System -->
   <arg name="launch_system_monitor" default="false" description="launch system monitor"/>
+  <arg name="launch_dummy_diag_publisher" default="false" description="launch dummy diag publisher"/>
   <!-- Tools -->
   <arg name="rviz" default="true" description="launch rviz"/>
   <arg name="rviz_config" default="$(find-pkg-share autoware_launch)/rviz/autoware.rviz" description="rviz config"/>
@@ -46,16 +45,13 @@
       <!-- System -->
       <arg name="system_run_mode" value="planning_simulation"/>
       <arg name="launch_system_monitor" value="$(var launch_system_monitor)"/>
+      <arg name="launch_dummy_diag_publisher" value="$(var launch_dummy_diag_publisher)"/>
       <!-- Map -->
       <arg name="lanelet2_map_file" value="$(var lanelet2_map_file)"/>
       <arg name="pointcloud_map_file" value="$(var pointcloud_map_file)"/>
-      <!-- Control -->
-      <arg name="enable_obstacle_collision_checker" value="$(var enable_obstacle_collision_checker)"/>
       <!-- Tools -->
       <arg name="rviz" value="$(var rviz)"/>
       <arg name="rviz_config" value="$(var rviz_config)"/>
-      <!-- Control -->
-      <arg name="check_external_emergency_heartbeat" value="false"/>
     </include>
   </group>
 
@@ -66,11 +62,13 @@
     <let name="launch_dummy_vehicle" value="false" if="$(var scenario_simulation)"/>
     <let name="launch_dummy_vehicle" value="true" unless="$(var scenario_simulation)"/>
     <let name="launch_dummy_localization" value="true"/>
+    <let name="launch_diagnostic_converter" value="$(var scenario_simulation)"/>
 
-    <include file="$(find-pkg-share tier4_simulator_launch)/launch/simulator.launch.xml">
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_simulator_component.launch.xml">
       <arg name="launch_dummy_perception" value="$(var launch_dummy_perception)"/>
       <arg name="launch_dummy_vehicle" value="$(var launch_dummy_vehicle)"/>
       <arg name="launch_dummy_localization" value="$(var launch_dummy_localization)"/>
+      <arg name="launch_diagnostic_converter" value="$(var launch_diagnostic_converter)"/>
       <arg name="perception/enable_detection_failure" value="$(var perception/enable_detection_failure)"/>
       <arg name="perception/enable_object_recognition" value="$(var perception/enable_object_recognition)"/>
       <arg name="sensing/visible_range" value="$(var sensing/visible_range)"/>

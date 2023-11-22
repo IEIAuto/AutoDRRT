@@ -32,8 +32,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-// Include Debuger
-#include "autoware_debuger.hpp"
+
 namespace centerpoint
 {
 
@@ -59,9 +58,7 @@ private:
   DetectionClassRemapper detection_class_remapper_;
 
   std::unique_ptr<CenterPointTRT> detector_ptr_{nullptr};
-  //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
+
   // debugger
   std::unique_ptr<tier4_autoware_utils::StopWatch<std::chrono::milliseconds>> stop_watch_ptr_{
     nullptr};

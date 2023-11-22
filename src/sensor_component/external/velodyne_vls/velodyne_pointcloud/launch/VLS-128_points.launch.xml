@@ -26,7 +26,7 @@
   <arg name="invalid_intensity" default="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"/>
 
   <!-- start nodelet manager -->
-  <!-- <include file="$(find-pkg-share velodyne_driver)/launch/nodelet_manager.launch.xml" if="$(var launch_driver)">
+  <include file="$(find-pkg-share velodyne_driver)/launch/nodelet_manager.launch.xml" if="$(var launch_driver)">
     <arg name="device_ip" value="$(var device_ip)"/>
     <arg name="frame_id" value="$(var frame_id)"/>
     <arg name="manager" value="$(var manager)" />
@@ -39,7 +39,7 @@
     <arg name="rpm" value="$(var rpm)"/>
     <arg name="scan_phase" value="$(var scan_phase)"/>
     <arg name="sensor_timestamp" value="$(var sensor_timestamp)" />
-  </include> -->
+  </include>
 
   <!-- start cloud nodelet -->
   <include file="$(find-pkg-share velodyne_pointcloud)/launch/cloud_nodelet.launch.xml">

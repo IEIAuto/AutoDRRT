@@ -1,0 +1,18 @@
+extends: default
+
+rules:
+  line-length:
+    level: error
+    max: 120
+  document-start:
+    level: error
+    present: false # Don't need document start markers
+  comments:
+    level: error
+    min-spaces-from-content: 1 # To be compatible with C++ and Python
+  braces:
+    level: error
+    max-spaces-inside: 1 # To format with Prettier
+  quoted-strings:
+    level: error
+    required: only-when-needed # To keep consistent style

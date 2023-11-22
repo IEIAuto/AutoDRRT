@@ -40,7 +40,7 @@ private:
 
   /** \brief Parameter service callback result : needed to be hold */
   OnSetParametersCallbackHandle::SharedPtr set_param_res_;
-  void ring_outlier_filter_omp(PointCloud2Modifier<PointXYZI> & output_modifier, std::vector<std::vector<std::size_t>> & test_indices,std::vector<std::vector<std::size_t>> &  result_indices, sensor_msgs::msg::PointCloud2::SharedPtr & input_ptr, int thread_index);
+
   /** \brief Parameter service callback */
   rcl_interfaces::msg::SetParametersResult paramCallback(const std::vector<rclcpp::Parameter> & p);
 
@@ -58,8 +58,7 @@ private:
            (x_diff * x_diff) + (y_diff * y_diff) + (z_diff * z_diff) >=
              object_length_threshold_ * object_length_threshold_;
   }
-  int _thread_total_num{4};
-  int _total_rings_num{128};
+
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
   explicit RingOutlierFilterComponent(const rclcpp::NodeOptions & options);

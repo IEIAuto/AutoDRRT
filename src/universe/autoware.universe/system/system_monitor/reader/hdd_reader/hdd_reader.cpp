@@ -26,7 +26,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/process.hpp>
 #include <boost/serialization/vector.hpp>
-#define FMT_HEADER_ONLY
+
 #include <fcntl.h>
 #include <fmt/format.h>
 #include <getopt.h>

@@ -20,6 +20,10 @@
     <remap from="output/scenario" to="$(var output_scenario)"/>
     <remap from="output/trajectory" to="$(var output_trajectory)"/>
 
+    <remap from="input/state" to="/autoware/state" />
+    <remap from="output/engage" to="/autoware/engage" />
+    <remap from="output/goal" to="/planning/mission_planning/goal" />
+
     <param name="update_rate" value="10.0"/>
     <param name="th_max_message_delay_sec" value="1.0"/>
     <param name="th_arrived_distance_m" value="1.0"/>

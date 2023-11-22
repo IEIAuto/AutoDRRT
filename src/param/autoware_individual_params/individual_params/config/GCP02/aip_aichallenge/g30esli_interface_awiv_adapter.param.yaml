@@ -1,0 +1,4 @@
+/**:
+  ros__parameters:
+    twist_stddev_vx: 0.2 # [m/sec]
+    twist_stddev_wz: 0.1 # [rad/sec]

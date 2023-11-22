@@ -22,7 +22,7 @@
 
 #include <fmt/format.h>
 #include <gtest/gtest.h>
-#define FMT_HEADER_ONLY
+
 #include <fstream>
 #include <memory>
 #include <string>

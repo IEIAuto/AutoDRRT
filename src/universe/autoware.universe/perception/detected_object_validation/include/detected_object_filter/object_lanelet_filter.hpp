@@ -29,8 +29,6 @@
 #include <tf2_ros/transform_listener.h>
 
 #include <string>
-// Include Debuger
-#include "autoware_debuger.hpp"
 
 namespace object_lanelet_filter
 {
@@ -55,9 +53,6 @@ private:
   lanelet::LaneletMapPtr lanelet_map_ptr_;
   lanelet::ConstLanelets road_lanelets_;
   std::string lanelet_frame_id_;
-     //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
 
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;

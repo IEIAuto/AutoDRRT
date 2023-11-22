@@ -43,10 +43,6 @@
 #include <memory>
 #include <string>
 
-#include "std_msgs/msg/string.hpp"
-#include "autoware_debuger.hpp"
-
-
 namespace pointcloud_preprocessor
 {
 using rcl_interfaces::msg::SetParametersResult;
@@ -65,17 +61,13 @@ private:
   bool getTransform(
     const std::string & target_frame, const std::string & source_frame,
     tf2::Transform * tf2_transform_ptr);
-  void undistortPointCloud_omp(const tf2::Transform & tf2_base_link_to_sensor, PointCloud2 & points, int thread_index);
+
   bool undistortPointCloud(const tf2::Transform & tf2_base_link_to_sensor, PointCloud2 & points);
-  int _thread_total_num;
+
   rclcpp::Subscription<PointCloud2>::SharedPtr input_points_sub_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
   rclcpp::Subscription<geometry_msgs::msg::TwistWithCovarianceStamped>::SharedPtr twist_sub_;
   rclcpp::Publisher<PointCloud2>::SharedPtr undistorted_points_pub_;
-
-   //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
 
   std::unique_ptr<tier4_autoware_utils::StopWatch<std::chrono::milliseconds>> stop_watch_ptr_;
   std::unique_ptr<tier4_autoware_utils::DebugPublisher> debug_publisher_;

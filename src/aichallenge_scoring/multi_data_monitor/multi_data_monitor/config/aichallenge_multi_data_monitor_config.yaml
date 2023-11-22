@@ -1,0 +1,35 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/aichallenge.css, target: Simple }
+  - { path: package://multi_data_monitor/css/plugins/titled.css, target: Titled }
+  - { path: package://multi_data_monitor/css/colors.css }
+
+widgets:
+  - class: Matrix
+    cols: 1
+    items:
+      - class: Matrix
+        rows: 1
+        items:
+          - class: Simple
+            value: "DISTANCE SCORE"
+          - class: Simple
+            input: { class: subscription, topic: /aichallenge_scoring/score, field: distance_score }
+
+      - class: Simple
+        input: { class: subscription, topic: /aichallenge_scoring/score, field: is_outside_lane }
+        rules:
+          class: SetFirstIf
+          type: text
+          list:
+            - { eq: "false", value: "WITHIN LANE", attrs: { back-color: lime } }
+            - { eq: "true", value: "EXITED LANE", attrs: { back-color: red } }
+
+      - class: Matrix
+        rows: 1
+        items:
+          - class: Simple
+            value: "RESULT SCORE"
+          - class: Simple
+            input: { class: subscription, topic: /aichallenge_scoring/result, field: distance_score_when_overridden }

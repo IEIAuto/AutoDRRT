@@ -125,5 +125,23 @@ else()
   message(WARNING "OpenMP not found")
 endif()
 
+#############################
+## ROS 2 multigrid ndt_omp ##
+#############################
+ament_auto_add_library(multigrid_ndt_omp SHARED
+  src/multigrid_pclomp/multi_voxel_grid_covariance_omp.cpp
+  src/multigrid_pclomp/multigrid_ndt_omp.cpp
+)
+target_link_libraries(multigrid_ndt_omp ${PCL_LIBRARIES})
+if(OpenMP_CXX_FOUND)
+  target_link_libraries(multigrid_ndt_omp OpenMP::OpenMP_CXX)
+else()
+  message(WARNING "OpenMP not found")
+endif()
+###################################
+## ROS 2 multigrid ndt_omp (end) ##
+###################################
+
 ament_auto_package()
+
 endif()

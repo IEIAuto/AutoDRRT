@@ -434,19 +434,18 @@ lanelet::ConstLanelet getExpandedLanelet(
       orig_left_bound_2d.back().y() - left_offset * std::sin(theta);
   }
 
-  const auto toPoints3d = [](const lanelet::BasicLineString2d & ls2d, const double z) {
+  const auto toPoints3d = [](const lanelet::BasicLineString2d & ls2d) {
     lanelet::Points3d output;
     for (const auto & pt : ls2d) {
-      output.push_back(lanelet::Point3d(lanelet::InvalId, pt.x(), pt.y(), z));
+      output.push_back(lanelet::Point3d(lanelet::InvalId, pt.x(), pt.y(), 0.0));
     }
     return output;
   };
 
-  // Original z value cannot be used directly since the offset function can vary the points size.
-  const lanelet::Points3d ex_lefts =
-    toPoints3d(expanded_left_bound_2d, lanelet_obj.leftBound3d().basicLineString().at(0).z());
-  const lanelet::Points3d ex_rights =
-    toPoints3d(expanded_right_bound_2d, lanelet_obj.rightBound3d().basicLineString().at(0).z());
+  lanelet::Points3d ex_lefts = toPoints3d(expanded_left_bound_2d);
+  lanelet::Points3d ex_rights = toPoints3d(expanded_right_bound_2d);
+  copyZ(lanelet_obj.leftBound3d(), ex_lefts);
+  copyZ(lanelet_obj.rightBound3d(), ex_rights);
 
   const auto & extended_left_bound_3d = lanelet::LineString3d(lanelet::InvalId, ex_lefts);
   const auto & expanded_right_bound_3d = lanelet::LineString3d(lanelet::InvalId, ex_rights);

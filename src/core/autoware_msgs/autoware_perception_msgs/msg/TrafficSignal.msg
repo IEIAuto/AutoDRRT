@@ -1,0 +1,2 @@
+int64 traffic_signal_id
+autoware_perception_msgs/TrafficLightElement[] elements

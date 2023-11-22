@@ -51,7 +51,7 @@ def generate_launch_description():
             ],
             parameters=[
                 {
-                    "map_resolution": 0.5,
+                    "map_resolution": 0.1,
                     "use_height_filter": True,
                 }
             ],

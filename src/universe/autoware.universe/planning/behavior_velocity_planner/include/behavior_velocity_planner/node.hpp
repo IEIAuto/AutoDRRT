@@ -37,11 +37,10 @@
 #include <memory>
 #include <mutex>
 #include <string>
-// Include Debuger
-#include "autoware_debuger.hpp"
 
 namespace behavior_velocity_planner
 {
+using autoware_auto_mapping_msgs::msg::HADMapBin;
 using tier4_planning_msgs::msg::VelocityLimit;
 class BehaviorVelocityPlannerNode : public rclcpp::Node
 {
@@ -80,7 +79,7 @@ private:
   void onPredictedObjects(
     const autoware_auto_perception_msgs::msg::PredictedObjects::ConstSharedPtr msg);
   void onNoGroundPointCloud(const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg);
-  void onVehicleVelocity(const nav_msgs::msg::Odometry::ConstSharedPtr msg);
+  void onOdometry(const nav_msgs::msg::Odometry::ConstSharedPtr msg);
   void onAcceleration(const geometry_msgs::msg::AccelWithCovarianceStamped::ConstSharedPtr msg);
   void onLaneletMap(const autoware_auto_mapping_msgs::msg::HADMapBin::ConstSharedPtr msg);
   void onTrafficSignals(
@@ -102,9 +101,6 @@ private:
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_viz_pub_;
 
   void publishDebugMarker(const autoware_auto_planning_msgs::msg::Path & path);
-   //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
 
   //  parameter
   double forward_path_length_;
@@ -114,6 +110,8 @@ private:
   PlannerData planner_data_;
   BehaviorVelocityPlannerManager planner_manager_;
   bool is_driving_forward_{true};
+  HADMapBin::ConstSharedPtr map_ptr_{nullptr};
+  bool has_received_map_;
 
   // mutex for planner_data_
   std::mutex mutex_;

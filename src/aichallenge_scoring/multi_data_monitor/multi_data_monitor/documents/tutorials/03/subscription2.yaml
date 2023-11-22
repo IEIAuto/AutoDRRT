@@ -1,0 +1,25 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+
+widgets:
+  - class: Matrix
+    rows: 1
+    items:
+      - class: Simple
+        value: NoData
+        input: sec
+      - class: Simple
+        value: NoData
+        input: nsec
+      - class: Simple
+        value: NoData
+        input: frame
+
+subscriptions:
+  - name: /example/header
+    fields:
+      - { name: stamp.sec, label: sec }
+      - { name: stamp.nanosec, label: nsec }
+      - { name: frame_id, label: frame }

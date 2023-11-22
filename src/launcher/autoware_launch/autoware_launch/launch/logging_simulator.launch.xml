@@ -24,10 +24,9 @@
   <!-- Map -->
   <arg name="lanelet2_map_file" default="lanelet2_map.osm" description="lanelet2 map file name"/>
   <arg name="pointcloud_map_file" default="pointcloud_map.pcd" description="pointcloud map file name"/>
-  <!-- Control -->
-  <arg name="enable_obstacle_collision_checker" default="false" description="use obstacle_collision_checker"/>
   <!-- System -->
   <arg name="launch_system_monitor" default="false" description="launch system monitor"/>
+  <arg name="launch_dummy_diag_publisher" default="false" description="launch dummy diag publisher"/>
   <!-- Tools -->
   <arg name="rviz" default="true" description="launch rviz"/>
   <!-- Scenario simulation -->
@@ -59,11 +58,10 @@
       <arg name="launch_system" value="$(var system)"/>
       <arg name="system_run_mode" value="online"/>
       <arg name="launch_system_monitor" value="$(var launch_system_monitor)"/>
+      <arg name="launch_dummy_diag_publisher" value="$(var launch_dummy_diag_publisher)"/>
       <!-- Map -->
       <arg name="lanelet2_map_file" value="$(var lanelet2_map_file)"/>
       <arg name="pointcloud_map_file" value="$(var pointcloud_map_file)"/>
-      <!-- Control -->
-      <arg name="enable_obstacle_collision_checker" value="$(var enable_obstacle_collision_checker)"/>
       <!-- Sensing -->
       <arg name="launch_sensing_driver" value="false"/>
     </include>

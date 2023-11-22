@@ -41,7 +41,7 @@ def launch_setup(context, *args, **kwargs):
                     "/sensing/lidar/right/outlier_filtered/pointcloud",
                 ],
                 "output_frame": LaunchConfiguration("base_frame"),
-                "timeout_sec": 0.001,
+                "timeout_sec": 0.01,
             }
         ],
         extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],

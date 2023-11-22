@@ -102,18 +102,43 @@ double project_goal_to_map(
   return project.z();
 }
 
+geometry_msgs::msg::Pose get_closest_centerline_pose(
+  const lanelet::ConstLanelets & road_lanelets, const geometry_msgs::msg::Pose & point,
+  vehicle_info_util::VehicleInfo vehicle_info)
+{
+  lanelet::Lanelet closest_lanelet;
+  lanelet::utils::query::getClosestLanelet(road_lanelets, point, &closest_lanelet);
+
+  const auto refined_center_line = lanelet::utils::generateFineCenterline(closest_lanelet, 1.0);
+  closest_lanelet.setCenterline(refined_center_line);
+
+  const double lane_yaw = lanelet::utils::getLaneletAngle(closest_lanelet, point.position);
+
+  const auto nearest_idx =
+    motion_utils::findNearestIndex(convertCenterlineToPoints(closest_lanelet), point.position);
+  const auto nearest_point = closest_lanelet.centerline()[nearest_idx];
+
+  // shift nearest point on its local y axis so that vehicle's right and left edges
+  // would have approx the same clearance from road border
+  const auto shift_length = (vehicle_info.right_overhang_m - vehicle_info.left_overhang_m) / 2.0;
+  const auto delta_x = -shift_length * std::sin(lane_yaw);
+  const auto delta_y = shift_length * std::cos(lane_yaw);
+
+  lanelet::BasicPoint3d refined_point(
+    nearest_point.x() + delta_x, nearest_point.y() + delta_y, nearest_point.z());
+
+  return convertBasicPoint3dToPose(refined_point, lane_yaw);
+}
+
 }  // anonymous namespace
 
 namespace mission_planner::lanelet2
 {
 
-void DefaultPlanner::initialize(rclcpp::Node * node)
+void DefaultPlanner::initialize_common(rclcpp::Node * node)
 {
   is_graph_ready_ = false;
   node_ = node;
-  map_subscriber_ = node_->create_subscription<HADMapBin>(
-    "input/vector_map", rclcpp::QoS{10}.transient_local(),
-    std::bind(&DefaultPlanner::map_callback, this, std::placeholders::_1));
 
   const auto durable_qos = rclcpp::QoS(1).transient_local();
   pub_goal_footprint_marker_ =
@@ -121,12 +146,20 @@ void DefaultPlanner::initialize(rclcpp::Node * node)
 
   vehicle_info_ = vehicle_info_util::VehicleInfoUtil(*node_).getVehicleInfo();
   param_.goal_angle_threshold_deg = node_->declare_parameter("goal_angle_threshold_deg", 45.0);
+  param_.enable_correct_goal_pose = node_->declare_parameter("enable_correct_goal_pose", false);
+}
+
+void DefaultPlanner::initialize(rclcpp::Node * node)
+{
+  initialize_common(node);
+  map_subscriber_ = node_->create_subscription<HADMapBin>(
+    "input/vector_map", rclcpp::QoS{10}.transient_local(),
+    std::bind(&DefaultPlanner::map_callback, this, std::placeholders::_1));
 }
 
 void DefaultPlanner::initialize(rclcpp::Node * node, const HADMapBin::ConstSharedPtr msg)
 {
-  is_graph_ready_ = false;
-  node_ = node;
+  initialize_common(node);
   map_callback(msg);
 }
 
@@ -272,6 +305,25 @@ bool DefaultPlanner::is_goal_valid(
   const geometry_msgs::msg::Pose & goal, lanelet::ConstLanelets path_lanelets)
 {
   const auto logger = node_->get_logger();
+
+  const auto goal_lanelet_pt = lanelet::utils::conversion::toLaneletPoint(goal.position);
+
+  // check if goal is in shoulder lanelet
+  lanelet::Lanelet closest_shoulder_lanelet;
+  if (lanelet::utils::query::getClosestLanelet(
+        shoulder_lanelets_, goal, &closest_shoulder_lanelet)) {
+    if (is_in_lane(closest_shoulder_lanelet, goal_lanelet_pt)) {
+      const auto lane_yaw =
+        lanelet::utils::getLaneletAngle(closest_shoulder_lanelet, goal.position);
+      const auto goal_yaw = tf2::getYaw(goal.orientation);
+      const auto angle_diff = tier4_autoware_utils::normalizeRadian(lane_yaw - goal_yaw);
+      const double th_angle = tier4_autoware_utils::deg2rad(param_.goal_angle_threshold_deg);
+      if (std::abs(angle_diff) < th_angle) {
+        return true;
+      }
+    }
+  }
+
   lanelet::Lanelet closest_lanelet;
   if (!lanelet::utils::query::getClosestLanelet(road_lanelets_, goal, &closest_lanelet)) {
     return false;
@@ -298,8 +350,6 @@ bool DefaultPlanner::is_goal_valid(
     return false;
   }
 
-  const auto goal_lanelet_pt = lanelet::utils::conversion::toLaneletPoint(goal.position);
-
   if (is_in_lane(closest_lanelet, goal_lanelet_pt)) {
     const auto lane_yaw = lanelet::utils::getLaneletAngle(closest_lanelet, goal.position);
     const auto goal_yaw = tf2::getYaw(goal.orientation);
@@ -323,23 +373,6 @@ bool DefaultPlanner::is_goal_valid(
     return true;
   }
 
-  // check if goal is in shoulder lanelet
-  lanelet::Lanelet closest_shoulder_lanelet;
-  if (!lanelet::utils::query::getClosestLanelet(
-        shoulder_lanelets_, goal, &closest_shoulder_lanelet)) {
-    return false;
-  }
-  // check if goal pose is in shoulder lane
-  if (is_in_lane(closest_shoulder_lanelet, goal_lanelet_pt)) {
-    const auto lane_yaw = lanelet::utils::getLaneletAngle(closest_shoulder_lanelet, goal.position);
-    const auto goal_yaw = tf2::getYaw(goal.orientation);
-    const auto angle_diff = tier4_autoware_utils::normalizeRadian(lane_yaw - goal_yaw);
-
-    const double th_angle = tier4_autoware_utils::deg2rad(param_.goal_angle_threshold_deg);
-    if (std::abs(angle_diff) < th_angle) {
-      return true;
-    }
-  }
   return false;
 }
 
@@ -377,7 +410,13 @@ PlannerPlugin::LaneletRoute DefaultPlanner::plan(const RoutePoints & points)
     route_sections = combine_consecutive_route_sections(route_sections, local_route_sections);
   }
 
-  if (!is_goal_valid(points.back(), all_route_lanelets)) {
+  auto goal_pose = points.back();
+  if (param_.enable_correct_goal_pose) {
+    goal_pose = get_closest_centerline_pose(
+      lanelet::utils::query::laneletLayer(lanelet_map_ptr_), goal_pose, vehicle_info_);
+  }
+
+  if (!is_goal_valid(goal_pose, all_route_lanelets)) {
     RCLCPP_WARN(logger, "Goal is not valid! Please check position and angle of goal_pose");
     return route_msg;
   }
@@ -387,7 +426,7 @@ PlannerPlugin::LaneletRoute DefaultPlanner::plan(const RoutePoints & points)
     return route_msg;
   }
 
-  const auto refined_goal = refine_goal_height(points.back(), route_sections);
+  const auto refined_goal = refine_goal_height(goal_pose, route_sections);
   RCLCPP_DEBUG(logger, "Goal Pose Z : %lf", refined_goal.position.z);
 
   // The header is assigned by mission planner.

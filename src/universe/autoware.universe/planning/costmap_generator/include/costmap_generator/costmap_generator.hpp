@@ -71,7 +71,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-
+#include <tier4_autoware_utils/system/stop_watch.hpp>
 class CostmapGenerator : public rclcpp::Node
 {
 public:
@@ -86,7 +86,8 @@ private:
   lanelet::LaneletMapPtr lanelet_map_;
   autoware_auto_perception_msgs::msg::PredictedObjects::ConstSharedPtr objects_;
   sensor_msgs::msg::PointCloud2::ConstSharedPtr points_;
-
+    // debugger
+  std::unique_ptr<tier4_autoware_utils::StopWatch<std::chrono::milliseconds>> stop_watch_ptr_{nullptr};
   std::string costmap_frame_;
   std::string vehicle_frame_;
   std::string map_frame_;

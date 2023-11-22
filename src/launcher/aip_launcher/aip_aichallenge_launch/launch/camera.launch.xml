@@ -1,0 +1,16 @@
+<launch>
+
+  <arg name="launch_driver" default="true" />
+  <arg name="camera_type" default="front" />
+
+  <group>
+    <push-ros-namespace namespace="camera"/>
+      <!-- (usb_cam_node is assumed to have launched on logging PC) -->
+    <include file="$(find-pkg-share common_sensor_launch)/launch/spinnaker.launch.py">
+      <arg name="image_topic" value="image_raw" />
+      <arg name="camera_id" value="0" />
+      <arg name="spinnaker_param_path" value="$(find-pkg-share aip_aichallenge_launch)/config/spinnaker.param.yaml" />
+      <arg name="camera_info_url" value="" />
+    </include>
+  </group>
+</launch>

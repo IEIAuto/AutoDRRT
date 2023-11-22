@@ -79,11 +79,10 @@ ObjectAssociationMergerNode::ObjectAssociationMergerNode(const rclcpp::NodeOptio
   // Create publishers and subscribers
   using std::placeholders::_1;
   using std::placeholders::_2;
-    CREATE_PUBLISH_DEBUGGER_MICRO
   sync_.registerCallback(std::bind(&ObjectAssociationMergerNode::objectsCallback, this, _1, _2));
   merged_object_pub_ = create_publisher<autoware_auto_perception_msgs::msg::DetectedObjects>(
     "output/object", rclcpp::QoS{1});
-  
+
   // Parameters
   base_link_frame_id_ = declare_parameter<std::string>("base_link_frame_id", "base_link");
   priority_mode_ = static_cast<PriorityMode>(
@@ -118,7 +117,6 @@ void ObjectAssociationMergerNode::objectsCallback(
   const autoware_auto_perception_msgs::msg::DetectedObjects::ConstSharedPtr & input_objects0_msg,
   const autoware_auto_perception_msgs::msg::DetectedObjects::ConstSharedPtr & input_objects1_msg)
 {
-  SET_STAMP_IN_CALLBACK
   // Guard
   if (merged_object_pub_->get_subscription_count() < 1) {
     return;
@@ -210,9 +208,6 @@ void ObjectAssociationMergerNode::objectsCallback(
 
   // publish output msg
   merged_object_pub_->publish(output_msg);
-  debuger_string=std::to_string(rclcpp::Time(output_msg.header.stamp).seconds());
-  
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
 }
 }  // namespace object_association
 

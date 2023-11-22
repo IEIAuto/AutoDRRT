@@ -41,8 +41,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-// Include Debuger
-#include "autoware_debuger.hpp"
+
 namespace object_association
 {
 class ObjectAssociationMergerNode : public rclcpp::Node
@@ -55,9 +54,7 @@ private:
   void objectsCallback(
     const autoware_auto_perception_msgs::msg::DetectedObjects::ConstSharedPtr & input_object0_msg,
     const autoware_auto_perception_msgs::msg::DetectedObjects::ConstSharedPtr & input_object1_msg);
-      //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
+
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
   rclcpp::Publisher<autoware_auto_perception_msgs::msg::DetectedObjects>::SharedPtr

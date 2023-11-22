@@ -20,7 +20,7 @@ macro(autoware_package)
     set(CMAKE_CXX_EXTENSIONS OFF)
   endif()
   if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall -Wextra -Wpedantic  )
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
   endif()
 
   # Ignore PCL errors in Clang
@@ -52,6 +52,14 @@ macro(autoware_package)
   include_directories(SYSTEM
     ${EIGEN3_INCLUDE_DIR}
   )
+
+  # Workaround for lanelet2-core@1.2.1
+  if(TARGET lanelet2_core::lanelet2_core)
+    get_target_property(lanelet2_core_INCLUDE_DIRECTORIES lanelet2_core::lanelet2_core INTERFACE_INCLUDE_DIRECTORIES)
+    include_directories(SYSTEM
+      ${lanelet2_core_INCLUDE_DIRECTORIES}
+    )
+  endif()
 
   # Find test dependencies
   if(BUILD_TESTING)

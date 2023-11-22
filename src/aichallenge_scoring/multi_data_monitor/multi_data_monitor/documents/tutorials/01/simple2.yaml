@@ -1,0 +1,8 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+
+widgets:
+  - class: Simple
+    input: { class: subscription, label: s1, topic: /example/count/uint32, field: data }

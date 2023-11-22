@@ -1,0 +1,2 @@
+tier4_simulation_msgs/UserDefinedValueType type
+string value

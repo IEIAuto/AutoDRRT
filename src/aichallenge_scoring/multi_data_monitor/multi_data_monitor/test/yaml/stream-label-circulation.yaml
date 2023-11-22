@@ -1,0 +1,9 @@
+version: 2.0
+
+widgets:
+  - { class: Simple, input: s1 }
+
+streams:
+  - { class: relay, label: s1, refer: s2 }
+  - { class: relay, label: s2, refer: s3 }
+  - { class: relay, label: s3, refer: s1 }

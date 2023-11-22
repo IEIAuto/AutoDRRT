@@ -1,0 +1,1 @@
+float32 distance_score_when_overridden

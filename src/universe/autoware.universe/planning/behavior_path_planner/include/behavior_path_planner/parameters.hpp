@@ -17,8 +17,24 @@
 
 #include <vehicle_info_util/vehicle_info_util.hpp>
 
+struct ModuleConfigParameters
+{
+  bool enable_module{false};
+  bool enable_simultaneous_execution{false};
+  uint8_t priority{0};
+  uint8_t max_module_size{0};
+};
+
 struct BehaviorPathPlannerParameters
 {
+  bool verbose;
+
+  ModuleConfigParameters config_avoidance;
+  ModuleConfigParameters config_pull_out;
+  ModuleConfigParameters config_pull_over;
+  ModuleConfigParameters config_side_shift;
+  ModuleConfigParameters config_lane_change;
+
   double backward_path_length;
   double forward_path_length;
   double backward_length_buffer_for_end_of_lane;
@@ -58,8 +74,8 @@ struct BehaviorPathPlannerParameters
   double base_link2front;
   double base_link2rear;
 
-  // drivable area visualization
-  bool visualize_drivable_area_for_shared_linestrings_lanelet;
+  // maximum drivable area visualization
+  bool visualize_maximum_drivable_area;
 
   // collision check
   double lateral_distance_max_threshold;

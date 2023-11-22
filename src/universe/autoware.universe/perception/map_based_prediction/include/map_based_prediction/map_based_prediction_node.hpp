@@ -47,14 +47,18 @@
 #include <utility>
 #include <vector>
 
-
-  
-// Include Debuger
-#include "autoware_debuger.hpp"
-  
-
 namespace map_based_prediction
 {
+struct LateralKinematicsToLanelet
+{
+  double dist_from_left_boundary;
+  double dist_from_right_boundary;
+  double left_lateral_velocity;
+  double right_lateral_velocity;
+  double filtered_left_lateral_velocity;
+  double filtered_right_lateral_velocity;
+};
+
 struct ObjectData
 {
   std_msgs::msg::Header header;
@@ -63,6 +67,8 @@ struct ObjectData
   geometry_msgs::msg::Pose pose;
   geometry_msgs::msg::Twist twist;
   double time_delay;
+  // for lane change prediction
+  std::unordered_map<lanelet::ConstLanelet, LateralKinematicsToLanelet> lateral_kinematics_set;
 };
 
 enum class Maneuver {
@@ -104,9 +110,6 @@ public:
 
 private:
   // ROS Publisher and Subscriber
-    //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
   rclcpp::Publisher<PredictedObjects>::SharedPtr pub_objects_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_debug_markers_;
   rclcpp::Subscription<TrackedObjects>::SharedPtr sub_objects_;
@@ -142,10 +145,9 @@ private:
   double sigma_yaw_angle_deg_;
   double object_buffer_time_length_;
   double history_time_length_;
-  double dist_ratio_threshold_to_left_bound_;
-  double dist_ratio_threshold_to_right_bound_;
-  double diff_dist_threshold_to_left_bound_;
-  double diff_dist_threshold_to_right_bound_;
+  double dist_threshold_to_bound_;
+  double time_threshold_to_bound_;
+  double cutoff_freq_of_velocity_lpf_;
   double reference_path_resolution_;
 
   // Stop watch

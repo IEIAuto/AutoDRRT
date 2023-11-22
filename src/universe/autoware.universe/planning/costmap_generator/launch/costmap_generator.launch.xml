@@ -18,7 +18,7 @@
     <param name="vehicle_frame" value="base_link"/>
     <param name="map_frame" value="map"/>
 
-    <param name="update_rate" value="10.0"/>
+    <param name="update_rate" value="1.0"/>
 
     <param name="use_wayarea" value="true"/>
     <param name="use_parkinglot" value="true"/>
@@ -27,7 +27,7 @@
 
     <param name="grid_min_value" value="0.0"/>
     <param name="grid_max_value" value="1.0"/>
-    <param name="grid_resolution" value="0.2"/>
+    <param name="grid_resolution" value="0.1"/>
     <param name="grid_length_x" value="70.0"/>
     <param name="grid_length_y" value="70.0"/>
     <param name="grid_position_x" value="0.0"/>

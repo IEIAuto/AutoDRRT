@@ -1,0 +1,21 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+
+widgets:
+  - class: Matrix
+    rows: 1
+    items:
+      - { class: Simple, value: NoData, input: mps }
+      - { class: Simple, value: NoData, input: kph }
+
+streams:
+  - { label: raw, class: subscription, topic: /example/count/double, field: data }
+  - { label: mps, class: apply, input: raw, rules: f2 }
+  - { label: kph, class: apply, input: raw, rules: f3 }
+
+filters:
+  - { class: Units, label: f1, mode: mps_to_kph }
+  - { class: Precision, label: f2, digits: 2 }
+  - { class: function, label: f3, rules: [f1, f2] }

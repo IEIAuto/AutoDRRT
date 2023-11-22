@@ -1,0 +1,17 @@
+* [color="black"]   { color: black;   }
+* [color="red"]     { color: red;     }
+* [color="magenta"] { color: magenta; }
+* [color="yellow"]  { color: yellow;  }
+* [color="lime"]    { color: lime;    }
+* [color="cyan"]    { color: cyan;    }
+* [color="blue"]    { color: blue;    }
+* [color="white"]   { color: white;   }
+
+* [back-color="black"]   { background-color: black;   }
+* [back-color="red"]     { background-color: red;     }
+* [back-color="magenta"] { background-color: magenta; }
+* [back-color="yellow"]  { background-color: yellow;  }
+* [back-color="lime"]    { background-color: lime;    }
+* [back-color="cyan"]    { background-color: cyan;    }
+* [back-color="blue"]    { background-color: blue;    }
+* [back-color="white"]   { background-color: white;   }

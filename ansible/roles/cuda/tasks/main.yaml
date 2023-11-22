@@ -1,0 +1,82 @@
+- name: Get CUDA architecture name
+  ansible.builtin.shell: |
+    if [ "$(uname -m)" = "x86_64" ]; then
+      echo "x86_64"
+    else
+      echo "sbsa"
+    fi
+  register: cuda_architecture
+  changed_when: false
+
+- name: (tmp for Ubuntu 22.04) Add liburcu6 repository into sources.list for amd64
+  become: true
+  ansible.builtin.apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu focal main restricted
+    filename: focal
+    state: present
+  when: cuda_architecture.stdout == "x86_64"
+
+- name: (tmp for Ubuntu 22.04) Add liburcu6 repository into sources.list for arm64
+  become: true
+  ansible.builtin.apt_repository:
+    repo: deb http://ports.ubuntu.com/ubuntu-ports focal main restricted
+    filename: focal
+    state: present
+  when: cuda_architecture.stdout == "aarch64"
+
+- name: Remove old /etc/apt/sources.list.d/cuda.list
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/cuda.list
+    state: absent
+
+- name: Install CUDA keyring
+  become: true
+  ansible.builtin.apt:
+    deb: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/{{ cuda_architecture.stdout }}/cuda-keyring_1.0-1_all.deb
+    update_cache: true
+
+- name: Get dash-case name of cuda_version
+  ansible.builtin.shell: bash -c 'sed -e "s/\./-/g" <<< $(echo {{ cuda_version }})'
+  register: dash_case_cuda_version
+  changed_when: false
+
+- name: Install CUDA libraries except for cuda-drivers
+  become: true
+  ansible.builtin.apt:
+    name:
+      - cuda-cudart-dev-{{ dash_case_cuda_version.stdout }}
+      - cuda-command-line-tools-{{ dash_case_cuda_version.stdout }}
+      - cuda-minimal-build-{{ dash_case_cuda_version.stdout }}
+      - cuda-libraries-dev-{{ dash_case_cuda_version.stdout }}
+      - cuda-nvml-dev-{{ dash_case_cuda_version.stdout }}
+      - cuda-nvprof-{{ dash_case_cuda_version.stdout }}
+      - libnpp-dev-{{ dash_case_cuda_version.stdout }}
+      - libcusparse-dev-{{ dash_case_cuda_version.stdout }}
+      - libcublas-dev-{{ dash_case_cuda_version.stdout }}
+      - libnccl-dev
+    update_cache: true
+
+- name: Install cuda-drivers
+  become: true
+  ansible.builtin.apt:
+    name:
+      - cuda-drivers
+    update_cache: true
+  when: install_cuda_drivers | bool
+
+- name: Add PATH to .bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    line: export PATH="/usr/local/cuda/bin:$PATH"
+    state: present
+    create: true
+    mode: 0644
+
+- name: Add LD_LIBRARY_PATH to bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    line: export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+    state: present
+    create: true
+    mode: 0644

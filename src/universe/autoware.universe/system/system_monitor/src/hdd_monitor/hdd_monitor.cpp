@@ -28,7 +28,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/process.hpp>
 #include <boost/serialization/vector.hpp>
-#define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 #include <stdio.h>
 

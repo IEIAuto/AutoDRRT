@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-namespace ground_segmentation
+namespace
 {
 Eigen::Vector3d getArbitraryOrthogonalVector(const Eigen::Vector3d & input)
 {
@@ -85,11 +85,6 @@ using pointcloud_preprocessor::get_param;
 RANSACGroundFilterComponent::RANSACGroundFilterComponent(const rclcpp::NodeOptions & options)
 : Filter("RANSACGroundFilter", options)
 {
-  using tier4_autoware_utils::DebugPublisher;
-  using tier4_autoware_utils::StopWatch;
-  stop_watch_ptr_ = std::make_unique<StopWatch<std::chrono::milliseconds>>();
-  stop_watch_ptr_->tic("processing_time");
-  RCLCPP_INFO(get_logger(), "RANSACGroundFilterComponent LAUNCHED");
   base_frame_ = declare_parameter("base_frame", "base_link");
   unit_axis_ = declare_parameter("unit_axis", "z");
   max_iterations_ = declare_parameter("max_iterations", 1000);
@@ -256,11 +251,10 @@ void RANSACGroundFilterComponent::filter(
   filter.filter(*downsampled_cloud);
 
   // apply ransac
-  stop_watch_ptr_->toc("processing_time",true);
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
   applyRANSAC(downsampled_cloud, inliers, coefficients);
-  RCLCPP_INFO(get_logger(), "applyRANSAC cost time is %f",stop_watch_ptr_->toc("processing_time",true));
+
   if (coefficients->values.empty()) {
     RCLCPP_WARN_THROTTLE(
       this->get_logger(), *this->get_clock(), std::chrono::milliseconds(1000).count(),

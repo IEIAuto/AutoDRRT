@@ -1,0 +1,12 @@
+<library path="multi_data_monitor_plugin">
+  <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Simple"/>
+  <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Titled"/>
+  <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Matrix"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Access"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::DiagFind"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Dump"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Units"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Precision"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::SetIf"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::SetFirstIf"/>
+</library>

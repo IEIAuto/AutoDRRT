@@ -23,12 +23,16 @@
 #include "tier4_rtc_msgs/msg/cooperate_status_array.hpp"
 #include "tier4_rtc_msgs/msg/module.hpp"
 #include "tier4_rtc_msgs/srv/cooperate_commands.hpp"
+#include "tier4_rtc_msgs/srv/auto_mode.hpp"
+#include "tier4_rtc_msgs/srv/auto_mode_with_module.hpp"
 
 #include <memory>
 #include <string>
 #include <vector>
 
 using CooperateCommands = tier4_rtc_msgs::srv::CooperateCommands;
+using AutoMode = tier4_rtc_msgs::srv::AutoMode;
+using AutoModeWithModule = tier4_rtc_msgs::srv::AutoModeWithModule;
 using CooperateStatusArray = tier4_rtc_msgs::msg::CooperateStatusArray;
 using CooperateStatus = tier4_rtc_msgs::msg::CooperateStatus;
 using Module = tier4_rtc_msgs::msg::Module;
@@ -38,9 +42,11 @@ class RTCModule
 public:
   std::string cooperate_status_namespace_ = "/planning/cooperate_status";
   std::string cooperate_commands_namespace_ = "/planning/cooperate_commands";
+  std::string enable_auto_mode_namespace_ = "/planning/enable_auto_mode";
   std::vector<CooperateStatus> module_statuses_;
   rclcpp::Subscription<CooperateStatusArray>::SharedPtr module_sub_;
   tier4_api_utils::Client<CooperateCommands>::SharedPtr cli_set_module_;
+  tier4_api_utils::Client<AutoMode>::SharedPtr cli_set_auto_mode_;
 
   RTCModule(rclcpp::Node * node, const std::string & name);
   void moduleCallback(const CooperateStatusArray::ConstSharedPtr message);
@@ -48,6 +54,9 @@ public:
   void callService(
     CooperateCommands::Request::SharedPtr request,
     const CooperateCommands::Response::SharedPtr & responses);
+  void callAutoModeService(
+    const AutoMode::Request::SharedPtr request,
+    const AutoMode::Response::SharedPtr response);
 };
 
 namespace external_api
@@ -68,6 +77,8 @@ private:
   std::unique_ptr<RTCModule> virtual_traffic_light_;
   std::unique_ptr<RTCModule> lane_change_left_;
   std::unique_ptr<RTCModule> lane_change_right_;
+  std::unique_ptr<RTCModule> ext_request_lane_change_left_;
+  std::unique_ptr<RTCModule> ext_request_lane_change_right_;
   std::unique_ptr<RTCModule> avoidance_left_;
   std::unique_ptr<RTCModule> avoidance_right_;
   std::unique_ptr<RTCModule> pull_over_;
@@ -78,6 +89,7 @@ private:
   /* service from external */
   rclcpp::CallbackGroup::SharedPtr group_;
   tier4_api_utils::Service<CooperateCommands>::SharedPtr srv_set_rtc_;
+  tier4_api_utils::Service<AutoModeWithModule>::SharedPtr srv_set_rtc_auto_mode_;
 
   /* Timer */
   rclcpp::TimerBase::SharedPtr timer_;
@@ -88,6 +100,9 @@ private:
   void setRTC(
     const CooperateCommands::Request::SharedPtr requests,
     const CooperateCommands::Response::SharedPtr responses);
+  void setRTCAutoMode(
+    const AutoModeWithModule::Request::SharedPtr request,
+    const AutoModeWithModule::Response::SharedPtr response);
 
   // ros callback
   void onTimer();

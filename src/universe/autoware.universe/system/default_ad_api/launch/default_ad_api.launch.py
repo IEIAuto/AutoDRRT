@@ -47,6 +47,7 @@ def generate_launch_description():
         create_api_node("localization", "LocalizationNode"),
         create_api_node("motion", "MotionNode"),
         create_api_node("operation_mode", "OperationModeNode"),
+        create_api_node("planning", "PlanningNode"),
         create_api_node("routing", "RoutingNode"),
     ]
     container = ComposableNodeContainer(
@@ -54,6 +55,7 @@ def generate_launch_description():
         name="container",
         package="rclcpp_components",
         executable="component_container_mt",
+        ros_arguments=["--log-level", "default_ad_api.container:=WARN"],
         composable_node_descriptions=components,
     )
     web_server = Node(

@@ -29,6 +29,9 @@ RTCModule::RTCModule(rclcpp::Node * node, const std::string & name)
 
   cli_set_module_ = proxy.create_client<CooperateCommands>(
     cooperate_commands_namespace_ + "/" + name, rmw_qos_profile_services_default);
+
+  cli_set_auto_mode_ = proxy.create_client<AutoMode>(
+    enable_auto_mode_namespace_ + "/" + name, rmw_qos_profile_services_default);
 }
 
 void RTCModule::moduleCallback(const CooperateStatusArray::ConstSharedPtr message)
@@ -54,6 +57,17 @@ void RTCModule::callService(
     responses->responses.end(), resp->responses.begin(), resp->responses.end());
 }
 
+void RTCModule::callAutoModeService(
+  const AutoMode::Request::SharedPtr request,
+  const AutoMode::Response::SharedPtr response)
+{
+  const auto [status, resp] = cli_set_auto_mode_->call(request);
+  if (!tier4_api_utils::is_success(status)) {
+    return;
+  }
+  response->success = resp->success;
+}
+
 namespace external_api
 {
 RTCController::RTCController(const rclcpp::NodeOptions & options)
@@ -74,6 +88,9 @@ RTCController::RTCController(const rclcpp::NodeOptions & options)
   virtual_traffic_light_ = std::make_unique<RTCModule>(this, "virtual_traffic_light");
   lane_change_left_ = std::make_unique<RTCModule>(this, "lane_change_left");
   lane_change_right_ = std::make_unique<RTCModule>(this, "lane_change_right");
+  ext_request_lane_change_left_ = std::make_unique<RTCModule>(this, "ext_request_lane_change_left");
+  ext_request_lane_change_right_ =
+    std::make_unique<RTCModule>(this, "ext_request_lane_change_right");
   avoidance_left_ = std::make_unique<RTCModule>(this, "avoidance_left");
   avoidance_right_ = std::make_unique<RTCModule>(this, "avoidance_right");
   pull_over_ = std::make_unique<RTCModule>(this, "pull_over");
@@ -85,6 +102,9 @@ RTCController::RTCController(const rclcpp::NodeOptions & options)
   group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
   srv_set_rtc_ = proxy.create_service<CooperateCommands>(
     "/api/external/set/rtc_commands", std::bind(&RTCController::setRTC, this, _1, _2),
+    rmw_qos_profile_services_default, group_);
+  srv_set_rtc_auto_mode_ = proxy.create_service<AutoModeWithModule>(
+    "/api/external/set/rtc_auto_mode", std::bind(&RTCController::setRTCAutoMode, this, _1, _2),
     rmw_qos_profile_services_default, group_);
 
   timer_ = rclcpp::create_timer(this, get_clock(), 100ms, std::bind(&RTCController::onTimer, this));
@@ -133,6 +153,8 @@ void RTCController::onTimer()
   virtual_traffic_light_->insertMessage(cooperate_statuses);
   lane_change_left_->insertMessage(cooperate_statuses);
   lane_change_right_->insertMessage(cooperate_statuses);
+  ext_request_lane_change_left_->insertMessage(cooperate_statuses);
+  ext_request_lane_change_right_->insertMessage(cooperate_statuses);
   avoidance_left_->insertMessage(cooperate_statuses);
   avoidance_right_->insertMessage(cooperate_statuses);
   pull_over_->insertMessage(cooperate_statuses);
@@ -160,6 +182,14 @@ void RTCController::setRTC(
       }
       case Module::LANE_CHANGE_RIGHT: {
         lane_change_right_->callService(request, responses);
+        break;
+      }
+      case Module::EXT_REQUEST_LANE_CHANGE_LEFT: {
+        ext_request_lane_change_left_->callService(request, responses);
+        break;
+      }
+      case Module::EXT_REQUEST_LANE_CHANGE_RIGHT: {
+        ext_request_lane_change_right_->callService(request, responses);
         break;
       }
       case Module::AVOIDANCE_LEFT: {
@@ -209,6 +239,71 @@ void RTCController::setRTC(
         // virtual_traffic not found
     }
   }
+}
+
+void RTCController::setRTCAutoMode(
+  const AutoModeWithModule::Request::SharedPtr request,
+  const AutoModeWithModule::Response::SharedPtr response)
+{
+  auto auto_mode_request = std::make_shared<AutoMode::Request>();
+  auto auto_mode_response = std::make_shared<AutoMode::Response>();
+  auto_mode_request->enable = request->enable;
+  switch (request->module.type) {
+    case Module::LANE_CHANGE_LEFT: {
+      lane_change_left_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::LANE_CHANGE_RIGHT: {
+      lane_change_right_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::AVOIDANCE_LEFT: {
+      avoidance_left_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::AVOIDANCE_RIGHT: {
+      avoidance_right_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::PULL_OVER: {
+      pull_over_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::PULL_OUT: {
+      pull_out_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::TRAFFIC_LIGHT: {
+      traffic_light_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::INTERSECTION: {
+      intersection_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::CROSSWALK: {
+      crosswalk_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::BLIND_SPOT: {
+      blind_spot_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::DETECTION_AREA: {
+      detection_area_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::NO_STOPPING_AREA: {
+      no_stopping_area_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+    case Module::OCCLUSION_SPOT: {
+      occlusion_spot_->callAutoModeService(auto_mode_request, auto_mode_response);
+      break;
+    }
+      // virtual_traffic not found
+  }
+  response->success = auto_mode_response->success;
 }
 
 }  // namespace external_api

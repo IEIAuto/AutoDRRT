@@ -14,10 +14,11 @@
 
 #include "pointcloud_preprocessor/distortion_corrector/distortion_corrector.hpp"
 
+#include "tier4_autoware_utils/math/trigonometry.hpp"
+
 #include <deque>
 #include <string>
 #include <utility>
-
 
 namespace pointcloud_preprocessor
 {
@@ -33,22 +34,15 @@ DistortionCorrectorComponent::DistortionCorrectorComponent(const rclcpp::NodeOpt
     debug_publisher_ = std::make_unique<DebugPublisher>(this, "distortion_corrector");
     stop_watch_ptr_->tic("cyclic_time");
     stop_watch_ptr_->tic("processing_time");
-    stop_watch_ptr_->tic("debug_time");
   }
 
   // Parameter
   time_stamp_field_name_ = declare_parameter("time_stamp_field_name", "time_stamp");
   use_imu_ = declare_parameter("use_imu", true);
-  _thread_total_num = 4;
+
   // Publisher
   undistorted_points_pub_ =
     this->create_publisher<PointCloud2>("~/output/pointcloud", rclcpp::SensorDataQoS());
-
-
-    //debug_pub
-  CREATE_PUBLISH_DEBUGGER_MICRO
-
-
 
   // Subscriber
   twist_sub_ = this->create_subscription<geometry_msgs::msg::TwistWithCovarianceStamped>(
@@ -89,7 +83,7 @@ void DistortionCorrectorComponent::onImu(const sensor_msgs::msg::Imu::ConstShare
   if (!use_imu_) {
     return;
   }
-  
+
   tf2::Transform tf2_imu_link_to_base_link{};
   getTransform(base_link_frame_, imu_msg->header.frame_id, &tf2_imu_link_to_base_link);
   geometry_msgs::msg::TransformStamped::SharedPtr tf_base2imu_ptr =
@@ -121,8 +115,6 @@ void DistortionCorrectorComponent::onImu(const sensor_msgs::msg::Imu::ConstShare
 
 void DistortionCorrectorComponent::onPointCloud(PointCloud2::UniquePtr points_msg)
 {
-  SET_STAMP_IN_CALLBACK
-  RCLCPP_INFO(get_logger(), "distortion received the pointcloud");
   stop_watch_ptr_->toc("processing_time", true);
   const auto points_sub_count = undistorted_points_pub_->get_subscription_count() +
                                 undistorted_points_pub_->get_intra_process_subscription_count();
@@ -130,27 +122,13 @@ void DistortionCorrectorComponent::onPointCloud(PointCloud2::UniquePtr points_ms
   if (points_sub_count < 1) {
     return;
   }
-  stop_watch_ptr_->toc("debug_time", true);
+
   tf2::Transform tf2_base_link_to_sensor{};
   getTransform(points_msg->header.frame_id, base_link_frame_, &tf2_base_link_to_sensor);
-  // RCLCPP_INFO(get_logger(), "distortion_corrector getTransform cost time %f", stop_watch_ptr_->toc("debug_time", true));
-  std::vector<std::thread> thread_vector;
-  for(int thread_index = 0; thread_index < _thread_total_num; thread_index++)
-  {
-    thread_vector.push_back(std::thread(&DistortionCorrectorComponent::undistortPointCloud_omp, this, std::ref(tf2_base_link_to_sensor), std::ref(*points_msg), thread_index));
-  }
-    for (auto iter = thread_vector.begin(); iter != thread_vector.end(); iter++) {
-          iter->join();
-  }
 
-  // undistortPointCloud(tf2_base_link_to_sensor, *points_msg);
-  // RCLCPP_INFO(get_logger(), "undistortPointCloud cost time %f", stop_watch_ptr_->toc("debug_time", true));
-  GET_STAMP(points_msg)
+  undistortPointCloud(tf2_base_link_to_sensor, *points_msg);
+
   undistorted_points_pub_->publish(std::move(points_msg));
-  // RCLCPP_INFO(get_logger(), "publish cost time %f", stop_watch_ptr_->toc("debug_time", true));
-
-
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO;
 
   // add processing time for debug
   if (debug_publisher_) {
@@ -189,197 +167,6 @@ bool DistortionCorrectorComponent::getTransform(
   return true;
 }
 
-void DistortionCorrectorComponent::undistortPointCloud_omp(
-  const tf2::Transform & tf2_base_link_to_sensor, PointCloud2 & points, int thread_index)
-{
-  int twist_queue_num = twist_queue_.size();
-  if(twist_queue_num < _thread_total_num)
-  {
-    return ;
-  }
-  
-  if (points.data.empty() || twist_queue_.empty()) {
-    RCLCPP_WARN_STREAM_THROTTLE(
-      get_logger(), *get_clock(), 10000 /* ms */,
-      "input_pointcloud->points or twist_queue_ is empty.");
-    return ;
-  }
-  // auto t1 = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-  auto time_stamp_field_it = std::find_if(
-    std::cbegin(points.fields), std::cend(points.fields),
-    [this](const sensor_msgs::msg::PointField & field) {
-      // RCLCPP_INFO( get_logger(),"filed_name is : %s, filed offset is %d",field.name.c_str(), field.offset);
-      return field.name == time_stamp_field_name_;
-    });
-  if (time_stamp_field_it == points.fields.cend()) {
-    RCLCPP_WARN_STREAM_THROTTLE(
-      get_logger(), *get_clock(), 10000 /* ms */,
-      "Required field time stamp doesn't exist in the point cloud.");
-    return ;
-  }
-  // auto t2 = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-  // sensor_msgs::PointCloud2Iterator<float> it_x(points, "x");
-  // sensor_msgs::PointCloud2Iterator<float> it_y(points, "y");
-  // sensor_msgs::PointCloud2Iterator<float> it_z(points, "z");
-  // sensor_msgs::PointCloud2ConstIterator<double> it_time_stamp(points, time_stamp_field_name_);
-  const auto data_size = points.data.size();
-  const auto point_step = points.point_step;
-  float pt_xyz[3] ;
-  double pt_time_stamp;
-  int start_index = ((int)(data_size/point_step / _thread_total_num )) * thread_index * point_step;
-  int end_index = ((int)(data_size/point_step / _thread_total_num )) * (thread_index + 1) * point_step;
-  memcpy(&pt_time_stamp,&points.data[start_index+40], sizeof(double));
-  
-  int twist_queue_start = ((int)(twist_queue_num / _thread_total_num)) * thread_index;
-  int twist_queue_end =  ((int)(twist_queue_num / _thread_total_num)) * (thread_index + 1);
-  //  RCLCPP_INFO(get_logger(), "thread %d,data_size is %d, start index is %d, end index is  %d", thread_index,data_size,start_index,end_index);
-  std::deque<geometry_msgs::msg::TwistStamped> twist_queue_omp(twist_queue_.begin()+twist_queue_start, twist_queue_.begin()+twist_queue_end);
-  
-  //  RCLCPP_INFO(get_logger(), "thread %d,twist_queue_num is %d, twist_queue_start index is %d, twist_queue_end index is  %d", thread_index,twist_queue_num,twist_queue_start,twist_queue_end);
-  // int angular_velocity_queue_num = angular_velocity_queue_.size();
-  // int angular_velocity_queue_start = angular_velocity_queue_num / _thread_total_num * thread_index;
-  // int angular_velocity_queue_end = angular_velocity_queue_num / _thread_total_num * (thread_index + 1);
-  // std::deque<geometry_msgs::msg::Vector3Stamped> angular_velocity_queue_omp(angular_velocity_queue_.begin()+angular_velocity_queue_start, angular_velocity_queue_.begin()+angular_velocity_queue_end);
-  // memcpy(pt_xyz, &points.data[start_index], sizeof(float) * 3);
-
-
-
-  float theta{0.0f};
-  float x{0.0f};
-  float y{0.0f};
-  double prev_time_stamp_sec{pt_time_stamp};
-  const double first_point_time_stamp_sec{pt_time_stamp};
-  
-  auto twist_it = std::lower_bound(
-    std::begin(twist_queue_omp), std::end(twist_queue_omp), first_point_time_stamp_sec,
-    [](const geometry_msgs::msg::TwistStamped & x, const double t) {
-      return rclcpp::Time(x.header.stamp).seconds() < t;
-    });
-  twist_it = twist_it == std::end(twist_queue_omp) ? std::end(twist_queue_omp) - 1 : twist_it;
-
-  decltype(angular_velocity_queue_)::iterator imu_it;
-  if (use_imu_ && !angular_velocity_queue_.empty()) {
-    imu_it = std::lower_bound(
-      std::begin(angular_velocity_queue_), std::end(angular_velocity_queue_),
-      first_point_time_stamp_sec, [](const geometry_msgs::msg::Vector3Stamped & x, const double t) {
-        return rclcpp::Time(x.header.stamp).seconds() < t;
-      });
-    imu_it =
-      imu_it == std::end(angular_velocity_queue_) ? std::end(angular_velocity_queue_) - 1 : imu_it;
-  }
-  
-  const tf2::Transform tf2_base_link_to_sensor_inv{tf2_base_link_to_sensor.inverse()};
-  int count_twist = 0;
-  int count_imu = 0;
-  // long long time_twist = 0;
-  // long long time_imu = 0;
-  // long long time_calc = 0;
-  // long long twist_judge = 0;
-  // auto t3 = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    // RCLCPP_INFO(get_logger(), "thread %d,first_point_time_stamp_sec is %f, imu_it is %f,data_size is %d, start index is %d, end index is  %d", thread_index, first_point_time_stamp_sec, rclcpp::Time(imu_it->header.stamp).seconds(),data_size,start_index,end_index);
-  for (size_t i = start_index; i < end_index - point_step; i += point_step) {
-    
-    // auto t5 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    memcpy(pt_xyz, &points.data[i], sizeof(float) * 3);
-    memcpy(&pt_time_stamp,&points.data[i+40], sizeof(double));
-    auto twist_time = rclcpp::Time(twist_it->header.stamp).seconds();
-    float v{0.0f};
-    float w{0.0f};
-    if(twist_it != std::end(twist_queue_omp)- 1 && std::abs(pt_time_stamp - twist_time) > 0.1)
-    {
-      v = static_cast<float>(twist_it->twist.linear.x);
-      w = static_cast<float>(twist_it->twist.angular.z);
-    }
-    
-  // for (; it_x != it_x.end(); ++it_x, ++it_y, ++it_z, ++it_time_stamp) {
-
-  // for (; it_x != it_x.end(); ++it_x, ++it_y, ++it_z, ++it_time_stamp) {
-    for (;
-         (twist_it != std::end(twist_queue_omp) - 1 &&
-          pt_time_stamp > twist_time);
-         ++twist_it) {
-          count_twist++;
-    }
-    
-    // auto t6 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    // time_twist = time_twist + (t6-t5);
-
-    // auto t9 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    // float v{0.0f};
-    // float w{0.0f};
-    // if (std::abs(pt_time_stamp - twist_time) > 0.1) {
-    //   RCLCPP_WARN_STREAM_THROTTLE(
-    //     get_logger(), *get_clock(), 10000 /* ms */,
-    //     "twist time_stamp is too late. Could not interpolate.");
-    //   // v = 0.0f;
-    //   // w = 0.0f;
-    // }else{
-    //   float v = static_cast<float>(v_ori);
-    //   float w = static_cast<float>(w_ori);
-    // }
-    // auto t10 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    // twist_judge = twist_judge + (t10-t9); 
-    // t6 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    if (use_imu_ && !angular_velocity_queue_.empty()) {
-      for (;
-           (imu_it != std::end(angular_velocity_queue_) - 1 &&
-            pt_time_stamp> rclcpp::Time(imu_it->header.stamp).seconds());
-           ++imu_it) {
-            count_imu++;
-      }
-      if (std::abs(pt_time_stamp - rclcpp::Time(imu_it->header.stamp).seconds()) > 0.1) {
-        RCLCPP_WARN_STREAM_THROTTLE(
-          get_logger(), *get_clock(), 10000 /* ms */,
-          "imu time_stamp is too late. Could not interpolate.");
-      } else {
-        w = static_cast<float>(imu_it->vector.z);
-      }
-    }
-    // auto t7 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    // time_imu = time_imu + (t7-t6);
-    const float time_offset = static_cast<float>(pt_time_stamp - prev_time_stamp_sec);
-
-    const tf2::Vector3 sensorTF_point{pt_xyz[0], pt_xyz[1], pt_xyz[2]};
-
-    // const tf2::Vector3 sensorTF_point{*it_x, *it_y, *it_z};
-
-    const tf2::Vector3 base_linkTF_point{tf2_base_link_to_sensor_inv * sensorTF_point};
-    if(std::abs(w) < 0.0001)
-    {
-      continue;
-    }
-    theta += w * time_offset;
-    tf2::Quaternion baselink_quat{};
-    baselink_quat.setRPY(0.0, 0.0, theta);
-    const float dis = v * time_offset;
-    x += dis * std::cos(theta);
-    y += dis * std::sin(theta);
-
-    tf2::Transform baselinkTF_odom{};
-    baselinkTF_odom.setOrigin(tf2::Vector3(x, y, 0.0));
-    baselinkTF_odom.setRotation(baselink_quat);
-
-    const tf2::Vector3 base_linkTF_trans_point{baselinkTF_odom * base_linkTF_point};
-
-    const tf2::Vector3 sensorTF_trans_point{tf2_base_link_to_sensor * base_linkTF_trans_point};
-
-    pt_xyz[0] = sensorTF_trans_point.getX();
-    pt_xyz[1]= sensorTF_trans_point.getY();
-    pt_xyz[2] = sensorTF_trans_point.getZ();
-    
-    memcpy(&points.data[i], pt_xyz, sizeof(float) * 3);
-
-    // auto t8 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    // time_calc = time_calc + (t8-t7);
-    prev_time_stamp_sec = pt_time_stamp;
-  }
-  // auto t4 = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-  // RCLCPP_INFO(get_logger(), "thread %d,point size is %d, start is %d, end is %d , twist is %d, imu is %d", thread_index,  data_size,start_index,end_index,count_twist,count_imu);
-  // RCLCPP_INFO(get_logger(), "time_stamp_field_it  %ld,lower_bound is %ld,  for is %ld", (t2-t1),(t3-t2),(t4-t3));
-  // RCLCPP_INFO(get_logger(), "twist_judge time is %ld, twist time   %ld,imu time is %ld,  calc time  is %ld , angular_velocity_queue_ size %ld, angular_velocity_queue size is %ld", twist_judge,time_twist,time_imu,time_calc,angular_velocity_queue_.size(),angular_velocity_queue_.size());
-  return ;
-}
-
 bool DistortionCorrectorComponent::undistortPointCloud(
   const tf2::Transform & tf2_base_link_to_sensor, PointCloud2 & points)
 {
@@ -393,7 +180,6 @@ bool DistortionCorrectorComponent::undistortPointCloud(
   auto time_stamp_field_it = std::find_if(
     std::cbegin(points.fields), std::cend(points.fields),
     [this](const sensor_msgs::msg::PointField & field) {
-      // RCLCPP_INFO( get_logger(),"filed_name is : %s, filed offset is %d",field.name.c_str(), field.offset);
       return field.name == time_stamp_field_name_;
     });
   if (time_stamp_field_it == points.fields.cend()) {
@@ -434,27 +220,29 @@ bool DistortionCorrectorComponent::undistortPointCloud(
 
   const tf2::Transform tf2_base_link_to_sensor_inv{tf2_base_link_to_sensor.inverse()};
 
-  const auto data_size = points.data.size();
-  const auto point_step = points.point_step;
-  float pt_xyz[3] ;
-  double pt_time_stamp;
-  #pragma omp for
-  for (size_t i = 0; i < data_size - point_step; i += point_step) {
-    memcpy(pt_xyz, &points.data[i], sizeof(float) * 3);
-    memcpy(&pt_time_stamp,&points.data[i+40], sizeof(double));
-  // for (; it_x != it_x.end(); ++it_x, ++it_y, ++it_z, ++it_time_stamp) {
+  // For performance, do not instantiate `rclcpp::Time` inside of the for-loop
+  double twist_stamp = rclcpp::Time(twist_it->header.stamp).seconds();
+  double imu_stamp = rclcpp::Time(imu_it->header.stamp).seconds();
 
-  // for (; it_x != it_x.end(); ++it_x, ++it_y, ++it_z, ++it_time_stamp) {
-    for (;
-         (twist_it != std::end(twist_queue_) - 1 &&
-          pt_time_stamp > rclcpp::Time(twist_it->header.stamp).seconds());
-         ++twist_it) {
+  // For performance, instantiate outside of the for-loop
+  tf2::Quaternion baselink_quat{};
+  tf2::Transform baselink_tf_odom{};
+  tf2::Vector3 point{};
+  tf2::Vector3 undistorted_point{};
+
+  // For performance, avoid transform computation if unnecessary
+  bool need_transform = points.header.frame_id != base_link_frame_;
+
+  for (; it_x != it_x.end(); ++it_x, ++it_y, ++it_z, ++it_time_stamp) {
+    while (twist_it != std::end(twist_queue_) - 1 && *it_time_stamp > twist_stamp) {
+      ++twist_it;
+      twist_stamp = rclcpp::Time(twist_it->header.stamp).seconds();
     }
 
     float v{static_cast<float>(twist_it->twist.linear.x)};
     float w{static_cast<float>(twist_it->twist.angular.z)};
 
-    if (std::abs(pt_time_stamp - rclcpp::Time(twist_it->header.stamp).seconds()) > 0.1) {
+    if (std::abs(*it_time_stamp - twist_stamp) > 0.1) {
       RCLCPP_WARN_STREAM_THROTTLE(
         get_logger(), *get_clock(), 10000 /* ms */,
         "twist time_stamp is too late. Could not interpolate.");
@@ -465,10 +253,16 @@ bool DistortionCorrectorComponent::undistortPointCloud(
     if (use_imu_ && !angular_velocity_queue_.empty()) {
       for (;
            (imu_it != std::end(angular_velocity_queue_) - 1 &&
-            pt_time_stamp> rclcpp::Time(imu_it->header.stamp).seconds());
+            *it_time_stamp > rclcpp::Time(imu_it->header.stamp).seconds());
            ++imu_it) {
       }
-      if (std::abs(pt_time_stamp - rclcpp::Time(imu_it->header.stamp).seconds()) > 0.1) {
+
+      while (imu_it != std::end(angular_velocity_queue_) - 1 && *it_time_stamp > imu_stamp) {
+        ++imu_it;
+        imu_stamp = rclcpp::Time(imu_it->header.stamp).seconds();
+      }
+
+      if (std::abs(*it_time_stamp - imu_stamp) > 0.1) {
         RCLCPP_WARN_STREAM_THROTTLE(
           get_logger(), *get_clock(), 10000 /* ms */,
           "imu time_stamp is too late. Could not interpolate.");
@@ -477,37 +271,36 @@ bool DistortionCorrectorComponent::undistortPointCloud(
       }
     }
 
-    const float time_offset = static_cast<float>(pt_time_stamp - prev_time_stamp_sec);
+    const auto time_offset = static_cast<float>(*it_time_stamp - prev_time_stamp_sec);
 
-    const tf2::Vector3 sensorTF_point{pt_xyz[0], pt_xyz[1], pt_xyz[2]};
+    point.setValue(*it_x, *it_y, *it_z);
 
-    // const tf2::Vector3 sensorTF_point{*it_x, *it_y, *it_z};
-
-    const tf2::Vector3 base_linkTF_point{tf2_base_link_to_sensor_inv * sensorTF_point};
+    if (need_transform) {
+      point = tf2_base_link_to_sensor_inv * point;
+    }
 
     theta += w * time_offset;
-    tf2::Quaternion baselink_quat{};
-    baselink_quat.setRPY(0.0, 0.0, theta);
+    baselink_quat.setValue(
+      0, 0, tier4_autoware_utils::sin(theta * 0.5f),
+      tier4_autoware_utils::cos(theta * 0.5f));  // baselink_quat.setRPY(0.0, 0.0, theta);
     const float dis = v * time_offset;
-    x += dis * std::cos(theta);
-    y += dis * std::sin(theta);
+    x += dis * tier4_autoware_utils::cos(theta);
+    y += dis * tier4_autoware_utils::sin(theta);
 
-    tf2::Transform baselinkTF_odom{};
-    baselinkTF_odom.setOrigin(tf2::Vector3(x, y, 0.0));
-    baselinkTF_odom.setRotation(baselink_quat);
+    baselink_tf_odom.setOrigin(tf2::Vector3(x, y, 0.0));
+    baselink_tf_odom.setRotation(baselink_quat);
 
-    const tf2::Vector3 base_linkTF_trans_point{baselinkTF_odom * base_linkTF_point};
+    undistorted_point = baselink_tf_odom * point;
 
-    const tf2::Vector3 sensorTF_trans_point{tf2_base_link_to_sensor * base_linkTF_trans_point};
+    if (need_transform) {
+      undistorted_point = tf2_base_link_to_sensor * undistorted_point;
+    }
 
-    pt_xyz[0] = sensorTF_trans_point.getX();
-    pt_xyz[1]= sensorTF_trans_point.getY();
-    pt_xyz[2] = sensorTF_trans_point.getZ();
-    
-    memcpy(&points.data[i], pt_xyz, sizeof(float) * 3);
+    *it_x = static_cast<float>(undistorted_point.getX());
+    *it_y = static_cast<float>(undistorted_point.getY());
+    *it_z = static_cast<float>(undistorted_point.getZ());
 
-
-    prev_time_stamp_sec = pt_time_stamp;
+    prev_time_stamp_sec = *it_time_stamp;
   }
   return true;
 }

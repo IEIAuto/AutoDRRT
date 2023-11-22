@@ -47,8 +47,6 @@ OperationModeNode::OperationModeNode(const rclcpp::NodeOptions & options)
     const auto name = "/system/component_state_monitor/component/autonomous/" + module_names[i];
     const auto qos = rclcpp::QoS(1).transient_local();
     const auto callback = [this, i](const ModeChangeAvailable::ConstSharedPtr msg) {
-      RCLCPP_INFO(get_logger(), "/system/component_state_monitor/component/autonomous/ %d, is_avaliable is %s" ,i,std::to_string(msg->available));
-     
       module_states_[i] = msg->available;
     };
     sub_module_states_.push_back(create_subscription<ModeChangeAvailable>(name, qos, callback));
@@ -142,7 +140,6 @@ void OperationModeNode::on_timer()
   for (const auto & state : module_states_) {
     autonomous_available &= state;
   }
-  autonomous_available = true;
   mode_available_[OperationModeState::Message::AUTONOMOUS] = autonomous_available;
 
   update_state();

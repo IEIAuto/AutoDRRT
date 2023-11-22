@@ -75,8 +75,7 @@ VehicleStatus::VehicleStatus(const rclcpp::NodeOptions & options)
 : Node("external_api_vehicle_status", options)
 {
   using namespace std::literals::chrono_literals;
-  std::cout << "JUST FOR TEST FAULT TOLERANCE" << std::endl;
-  // this->sub_ownership_strenth = 0;
+
   pub_status_ = create_publisher<tier4_external_api_msgs::msg::VehicleStatusStamped>(
     "/api/external/get/vehicle/status", rclcpp::QoS(1));
   timer_ = rclcpp::create_timer(this, get_clock(), 200ms, std::bind(&VehicleStatus::onTimer, this));

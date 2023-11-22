@@ -198,6 +198,12 @@ namespace velodyne_rawdata
       return;
     }
 
+    /** special parsing for the VLS128 **/
+    if (calibration_.num_lasers == 128) {
+      unpack_vls128(pkt, data);
+      return;
+    }
+
     const raw_packet_t * raw = (const raw_packet_t *)&pkt.data[0];
 
     for (int i = 0; i < BLOCKS_PER_PACKET; i++) {
@@ -208,11 +214,6 @@ namespace velodyne_rawdata
       if (raw->blocks[i].header == LOWER_BANK) {
         // lower bank lasers are [32..63]
         bank_origin = 32;
-      }
-      /** special parsing for the VLS128 **/
-      else if (calibration_.num_lasers == 128) {
-        unpack_vls128(pkt, data);
-        return;
       }
 
       for (int j = 0, k = 0; j < SCANS_PER_BLOCK; j++, k += RAW_SCAN_SIZE) {

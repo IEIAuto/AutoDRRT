@@ -50,4 +50,4 @@ rclcpp_components_register_nodes(${PROJECT_NAME}
   "external_api::Version"
 )
 
-ament_auto_package()
+ament_auto_package(INSTALL_TO_SHARE launch)

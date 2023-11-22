@@ -1,0 +1,9 @@
+version: 2.0
+
+widgets:
+  - { class: Simple, input: s1 }
+
+streams:
+  - { class: apply, label: s1, input: s2 }
+  - { class: apply, label: s2, input: s3 }
+  - { class: apply, label: s3, input: s1 }

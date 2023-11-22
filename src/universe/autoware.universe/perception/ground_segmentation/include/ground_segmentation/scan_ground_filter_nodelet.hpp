@@ -37,9 +37,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <atomic>
-
-#include "ground_segmentation/threadPool.hpp"
 
 namespace ground_segmentation
 {
@@ -153,35 +150,28 @@ private:
   tf2_ros::Buffer tf_buffer_{get_clock()};
   tf2_ros::TransformListener tf_listener_{tf_buffer_};
 
-  static const uint16_t gnd_grid_continual_thresh_ = 3;
+  const uint16_t gnd_grid_continual_thresh_ = 3;
   bool elevation_grid_mode_;
-  static float non_ground_height_threshold_;
-  static float grid_size_rad_;
-  static float grid_size_m_;
-  static float low_priority_region_x_;
-  static uint16_t gnd_grid_buffer_size_;
-  static float grid_mode_switch_grid_id_;
-  static float grid_mode_switch_angle_rad_;
-  static float virtual_lidar_z_;
-  static float detection_range_z_max_;
-  static float center_pcl_shift_;                         // virtual center of pcl to center mass
-  static float grid_mode_switch_radius_;                  // non linear grid size switching distance
-  static double global_slope_max_angle_rad_;              // radians
-  double local_slope_max_angle_rad_;                      // radians
-  static double radial_divider_angle_rad_;                // distance in rads between dividers
-  static double split_points_distance_tolerance_;         // distance in meters between concentric divisions
-  double split_height_distance_;                          // minimum height threshold regardless the slope, useful for close points
+  float non_ground_height_threshold_;
+  float grid_size_rad_;
+  float grid_size_m_;
+  float low_priority_region_x_;
+  uint16_t gnd_grid_buffer_size_;
+  float grid_mode_switch_grid_id_;
+  float grid_mode_switch_angle_rad_;
+  float virtual_lidar_z_;
+  float detection_range_z_max_;
+  float center_pcl_shift_;                  // virtual center of pcl to center mass
+  float grid_mode_switch_radius_;           // non linear grid size switching distance
+  double global_slope_max_angle_rad_;       // radians
+  double local_slope_max_angle_rad_;        // radians
+  double radial_divider_angle_rad_;         // distance in rads between dividers
+  double split_points_distance_tolerance_;  // distance in meters between concentric divisions
+  double                                    // minimum height threshold regardless the slope,
+    split_height_distance_;                 // useful for close points
   bool use_virtual_ground_point_;
-  static size_t radial_dividers_num_;
-  static VehicleInfo vehicle_info_;
-
-  static std::atomic<int> FramebusyBus;
-  static std::atomic<int> SortbusyBus;
-  static std::atomic<int> ClassifybusyBus;
-  ThreadPool threadPoolFrame;
-  ThreadPool threadPoolSort;
-  ThreadPool threadPoolClassify;
-
+  size_t radial_dividers_num_;
+  VehicleInfo vehicle_info_;
 
   /*!
    * Output transformed PointCloud from in_cloud_ptr->header.frame_id to in_target_frame
@@ -201,22 +191,9 @@ private:
   void convertPointcloud(
     const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud,
     std::vector<PointCloudRefVector> & out_radial_ordered_points_manager);
-/*
   void convertPointcloudGridScan(
     const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud,
     std::vector<PointCloudRefVector> & out_radial_ordered_points_manager);
-*/
-
-  static void convertPointcloudGridScanFrame(
-    const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud,
-//    size_t pointcloud_begin, size_t pointcloud_end,
-    std::vector<PointCloudRefVector> & out_radial_ordered_points_manager,
-    size_t thread_ID);
-
-  static void convertPointcloudGridScanSort(
-    std::vector<PointCloudRefVector> & out_radial_ordered_points_manager,
-    size_t thread_ID);
-
   /*!
    * Output ground center of front wheels as the virtual ground point
    * @param[out] point Virtual ground origin point
@@ -240,11 +217,9 @@ private:
   void classifyPointCloud(
     std::vector<PointCloudRefVector> & in_radial_ordered_clouds,
     pcl::PointIndices & out_no_ground_indices);
-
   void classifyPointCloudGridScan(
     std::vector<PointCloudRefVector> & in_radial_ordered_clouds,
-//    size_t in_radial_ordered_clouds_begin, size_t in_radial_ordered_clouds_end,
-    pcl::PointIndices & out_no_ground_indices, size_t thread_ID);
+    pcl::PointIndices & out_no_ground_indices);
   /*!
    * Re-classifies point of ground cluster based on their height
    * @param gnd_cluster Input ground cluster for re-checking

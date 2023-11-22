@@ -19,8 +19,7 @@
 
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/search/pcl_search.h>
-// Include Debuger
-#include "autoware_debuger.hpp"
+
 #include <vector>
 
 namespace compare_map_segmentation
@@ -50,9 +49,7 @@ private:
 
   /** \brief Parameter service callback */
   rcl_interfaces::msg::SetParametersResult paramCallback(const std::vector<rclcpp::Parameter> & p);
-  //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
+
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
   explicit VoxelBasedCompareMapFilterComponent(const rclcpp::NodeOptions & options);

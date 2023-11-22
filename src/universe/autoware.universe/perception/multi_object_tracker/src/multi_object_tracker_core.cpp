@@ -15,7 +15,7 @@
 //
 
 #include <boost/optional.hpp>
-#include <rclcpp/rclcpp.hpp>
+
 #include <tf2_ros/create_timer_interface.h>
 #include <tf2_ros/create_timer_ros.h>
 
@@ -29,7 +29,6 @@
 
 #define EIGEN_MPL2_ONLY
 #include "multi_object_tracker/multi_object_tracker_core.hpp"
-#include "multi_object_tracker/multi_object_tracker_opt.hpp"
 #include "multi_object_tracker/utils/utils.hpp"
 #include "perception_utils/perception_utils.hpp"
 
@@ -75,16 +74,14 @@ MultiObjectTracker::MultiObjectTracker(const rclcpp::NodeOptions & node_options)
   detected_object_sub_ = create_subscription<autoware_auto_perception_msgs::msg::DetectedObjects>(
     "input", rclcpp::QoS{1},
     std::bind(&MultiObjectTracker::onMeasurement, this, std::placeholders::_1));
-  // this->pub_ownership_strenth = 10;
   tracked_objects_pub_ =
     create_publisher<autoware_auto_perception_msgs::msg::TrackedObjects>("output", rclcpp::QoS{1});
-   //debug_pub
-    CREATE_PUBLISH_DEBUGGER_MICRO
+
   // Parameters
   double publish_rate = declare_parameter<double>("publish_rate", 30.0);
   world_frame_id_ = declare_parameter<std::string>("world_frame_id", "world");
   bool enable_delay_compensation{declare_parameter("enable_delay_compensation", false)};
-  multi_object_tracker_opt::param_opt(publish_rate,enable_delay_compensation);
+
   auto cti = std::make_shared<tf2_ros::CreateTimerROS>(
     this->get_node_base_interface(), this->get_node_timers_interface());
   tf_buffer_.setCreateTimerInterface(cti);
@@ -134,9 +131,7 @@ void MultiObjectTracker::onMeasurement(
   if (!self_transform) {
     return;
   }
-  RCLCPP_INFO(rclcpp::get_logger("multi_object_tracker"), "multi_object_tracker received objects at :%lld",std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-  GET_STAMP(input_objects_msg);
-  SET_STAMP_IN_CALLBACK
+
   /* transform to world coordinate */
   autoware_auto_perception_msgs::msg::DetectedObjects transformed_objects;
   if (!perception_utils::transformObjects(
@@ -163,7 +158,7 @@ void MultiObjectTracker::onMeasurement(
       (*(tracker_itr))
         ->updateWithMeasurement(
           transformed_objects.objects.at(direct_assignment.find(tracker_idx)->second),
-          measurement_time);
+          measurement_time, *self_transform);
     } else {  // not found
       (*(tracker_itr))->updateWithoutMeasurement();
     }
@@ -180,7 +175,7 @@ void MultiObjectTracker::onMeasurement(
       continue;
     }
     std::shared_ptr<Tracker> tracker =
-      createNewTracker(transformed_objects.objects.at(i), measurement_time);
+      createNewTracker(transformed_objects.objects.at(i), measurement_time, *self_transform);
     if (tracker) list_tracker_.push_back(tracker);
   }
 
@@ -190,35 +185,34 @@ void MultiObjectTracker::onMeasurement(
 }
 
 std::shared_ptr<Tracker> MultiObjectTracker::createNewTracker(
-  const autoware_auto_perception_msgs::msg::DetectedObject & object,
-  const rclcpp::Time & time) const
+  const autoware_auto_perception_msgs::msg::DetectedObject & object, const rclcpp::Time & time,
+  const geometry_msgs::msg::Transform & self_transform) const
 {
   const std::uint8_t label = perception_utils::getHighestProbLabel(object.classification);
   if (tracker_map_.count(label) != 0) {
     const auto tracker = tracker_map_.at(label);
 
     if (tracker == "bicycle_tracker") {
-      return std::make_shared<BicycleTracker>(time, object);
+      return std::make_shared<BicycleTracker>(time, object, self_transform);
     } else if (tracker == "big_vehicle_tracker") {
-      return std::make_shared<BigVehicleTracker>(time, object);
+      return std::make_shared<BigVehicleTracker>(time, object, self_transform);
     } else if (tracker == "multi_vehicle_tracker") {
-      return std::make_shared<MultipleVehicleTracker>(time, object);
+      return std::make_shared<MultipleVehicleTracker>(time, object, self_transform);
     } else if (tracker == "normal_vehicle_tracker") {
-      return std::make_shared<NormalVehicleTracker>(time, object);
+      return std::make_shared<NormalVehicleTracker>(time, object, self_transform);
     } else if (tracker == "pass_through_tracker") {
-      return std::make_shared<PassThroughTracker>(time, object);
+      return std::make_shared<PassThroughTracker>(time, object, self_transform);
     } else if (tracker == "pedestrian_and_bicycle_tracker") {
-      return std::make_shared<PedestrianAndBicycleTracker>(time, object);
+      return std::make_shared<PedestrianAndBicycleTracker>(time, object, self_transform);
     } else if (tracker == "pedestrian_tracker") {
-      return std::make_shared<PedestrianTracker>(time, object);
+      return std::make_shared<PedestrianTracker>(time, object, self_transform);
     }
   }
-  return std::make_shared<UnknownTracker>(time, object);
+  return std::make_shared<UnknownTracker>(time, object, self_transform);
 }
 
 void MultiObjectTracker::onTimer()
 {
-  SET_STAMP_IN_CALLBACK
   rclcpp::Time current_time = this->now();
   const auto self_transform =
     getTransformAnonymous(tf_buffer_, world_frame_id_, "base_link", current_time);
@@ -349,26 +343,9 @@ void MultiObjectTracker::publish(const rclcpp::Time & time) const
     (*itr)->getTrackedObject(time, object);
     output_msg.objects.push_back(object);
   }
-  // GET_STAMP_VIA_ENTITY_EXTRA(output_msg)
-  std::string debuger_string_extra =  std::to_string(rclcpp::Time(output_msg.header.stamp).seconds());
-  
+
   // Publish
   tracked_objects_pub_->publish(output_msg);
-  // RCLCPP_INFO(rclcpp::get_logger("multi_object_tracker"), "SUCCEED TO PUBLISH MESSAGES.");
-  // START_TO_PUBLISH_DEBUGGER_WITH_STMP_EXTRA_MICRO
-  auto timeStamp_debug =std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            // std_msgs::msg::String output_result_string;
-            std::string namespace_(this->get_namespace());
-            // output_result_string.data = namespace_ + "/" + this->get_name() + ":" + std::to_string(timeStamp_debug) + ":" + debuger_string  + ":" + std::to_string(rclcpp::Time(output_msg.header.stamp).seconds());
-            // auto output_result = std::make_unique<std_msgs::msg::String>(output_result_string);
-            // debug_pub->publish(std::move(output_result));
-            long long temp_res = timeStamp_debug - timeStamp_debug_start;
-            std::string result(std::to_string(temp_res));
-            std::string out_str(namespace_ + "/" + this->get_name() + ":" + std::to_string(timeStamp_debug) +":" + result + ":" + debuger_string  + ":" + std::to_string(rclcpp::Time(output_msg.header.stamp).seconds()));
-              RCLCPP_INFO(rclcpp::get_logger("debug_topic_consumer"), out_str.c_str());
-            // std::string out_str_compare(namespace_ + "/" + this->get_name() + ":" + std::to_string(timeStamp_debug) + ":" + timeStamp_debug_start + ":" + debuger_string  + " :" + std::to_string(rclcpp::Time(output_msg.header.stamp).seconds()));
-            //   RCLCPP_INFO(rclcpp::get_logger("debug_topic_node"), out_str_compare.c_str());
-
 }
 
 RCLCPP_COMPONENTS_REGISTER_NODE(MultiObjectTracker)

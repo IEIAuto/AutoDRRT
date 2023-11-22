@@ -142,17 +142,17 @@ def launch_setup(context, *args, **kwargs):
         extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
     )
 
-    # distortion_relay_component = ComposableNode(
-    #     package="topic_tools",
-    #     plugin="topic_tools::RelayNode",
-    #     name="pointcloud_distortion_relay",
-    #     namespace="",
-    #     parameters=[
-    #         {"input_topic": "mirror_cropped/pointcloud_ex"},
-    #         {"output_topic": "rectified/pointcloud_ex"}
-    #     ],
-    #     extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
-    # )
+    distortion_relay_component = ComposableNode(
+        package="topic_tools",
+        plugin="topic_tools::RelayNode",
+        name="pointcloud_distortion_relay",
+        namespace="",
+        parameters=[
+            {"input_topic": "mirror_cropped/pointcloud_ex"},
+            {"output_topic": "rectified/pointcloud_ex"}
+        ],
+        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+    )
 
     # one way to add a ComposableNode conditional on a launch argument to a
     # container. The `ComposableNode` itself doesn't accept a condition
@@ -161,13 +161,13 @@ def launch_setup(context, *args, **kwargs):
         target_container=container,
         condition=launch.conditions.IfCondition(LaunchConfiguration("use_distortion_corrector")),
     )
-    # distortion_relay_loader = LoadComposableNodes(
-    #     composable_node_descriptions=[distortion_relay_component],
-    #     target_container=container,
-    #     condition=launch.conditions.UnlessCondition(LaunchConfiguration("use_distortion_corrector")),
-    # )
+    distortion_relay_loader = LoadComposableNodes(
+        composable_node_descriptions=[distortion_relay_component],
+        target_container=container,
+        condition=launch.conditions.UnlessCondition(LaunchConfiguration("use_distortion_corrector")),
+    )
 
-    return [container, distortion_loader]
+    return [container, distortion_loader, distortion_relay_loader]
 
 
 def generate_launch_description():
@@ -188,6 +188,7 @@ def generate_launch_description():
     )
     add_launch_arg("use_multithread", "False", "use multithread")
     add_launch_arg("use_intra_process", "False", "use ROS2 component container communication")
+
     set_container_executable = SetLaunchConfiguration(
         "container_executable",
         "component_container",

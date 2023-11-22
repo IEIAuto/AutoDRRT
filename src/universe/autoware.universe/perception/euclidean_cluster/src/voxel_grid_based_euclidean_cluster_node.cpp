@@ -33,8 +33,6 @@ VoxelGridBasedEuclideanClusterNode::VoxelGridBasedEuclideanClusterNode(
   cluster_ = std::make_shared<VoxelGridBasedEuclideanCluster>(
     use_height, min_cluster_size, max_cluster_size, tolerance, voxel_leaf_size,
     min_points_number_per_voxel);
-  //debug_pub
-    CREATE_PUBLISH_DEBUGGER_MICRO
 
   using std::placeholders::_1;
   pointcloud_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
@@ -49,7 +47,6 @@ VoxelGridBasedEuclideanClusterNode::VoxelGridBasedEuclideanClusterNode(
 void VoxelGridBasedEuclideanClusterNode::onPointCloud(
   const sensor_msgs::msg::PointCloud2::ConstSharedPtr input_msg)
 {
-  SET_STAMP_IN_CALLBACK
   // convert ros to pcl
   pcl::PointCloud<pcl::PointXYZ>::Ptr raw_pointcloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg(*input_msg, *raw_pointcloud_ptr);
@@ -62,8 +59,7 @@ void VoxelGridBasedEuclideanClusterNode::onPointCloud(
   tier4_perception_msgs::msg::DetectedObjectsWithFeature output;
   convertPointCloudClusters2Msg(input_msg->header, clusters, output);
   cluster_pub_->publish(output);
-  GET_STAMP(input_msg);
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
+
   // build debug msg
   if (debug_pub_->get_subscription_count() < 1) {
     return;

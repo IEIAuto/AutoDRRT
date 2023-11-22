@@ -1,0 +1,26 @@
+- name: Install apt packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - python3-colcon-mixin
+      - python3-flake8-docstrings
+      - python3-pip
+      - python3-pytest-cov
+      - ros-dev-tools
+      - python3-flake8-blind-except
+      - python3-flake8-builtins
+      - python3-flake8-class-newline
+      - python3-flake8-comprehensions
+      - python3-flake8-deprecated
+      - python3-flake8-import-order
+      - python3-flake8-quotes
+      - python3-pytest-repeat
+      - python3-pytest-rerunfailures
+    state: latest
+    update_cache: true
+
+- name: Run 'sudo rosdep init'
+  become: true
+  ansible.builtin.command:
+    cmd: rosdep init
+    creates: /etc/ros/rosdep/sources.list.d/20-default.list

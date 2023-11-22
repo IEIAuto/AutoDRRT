@@ -23,8 +23,7 @@
 #include <tier4_perception_msgs/msg/detected_objects_with_feature.hpp>
 
 #include <memory>
-// Include Debuger
-#include "autoware_debuger.hpp"
+
 namespace euclidean_cluster
 {
 class EuclideanClusterNode : public rclcpp::Node
@@ -38,9 +37,7 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pointcloud_sub_;
   rclcpp::Publisher<tier4_perception_msgs::msg::DetectedObjectsWithFeature>::SharedPtr cluster_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr debug_pub_;
-  //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
+
   std::shared_ptr<EuclideanCluster> cluster_;
 };
 

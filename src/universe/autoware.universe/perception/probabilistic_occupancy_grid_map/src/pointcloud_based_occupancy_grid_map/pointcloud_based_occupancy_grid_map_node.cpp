@@ -42,8 +42,16 @@ bool transformPointcloud(
   const std::string & target_frame, sensor_msgs::msg::PointCloud2 & output)
 {
   geometry_msgs::msg::TransformStamped tf_stamped;
-  tf_stamped = tf2.lookupTransform(
-    target_frame, input.header.frame_id, input.header.stamp, rclcpp::Duration::from_seconds(0.5));
+  // lookup transform
+  try {
+    tf_stamped = tf2.lookupTransform(
+      target_frame, input.header.frame_id, input.header.stamp, rclcpp::Duration::from_seconds(0.5));
+  } catch (tf2::TransformException & ex) {
+    RCLCPP_WARN(
+      rclcpp::get_logger("probabilistic_occupancy_grid_map"), "Failed to lookup transform: %s",
+      ex.what());
+    return false;
+  }
   // transform pointcloud
   Eigen::Matrix4f tf_matrix = tf2::transformToEigen(tf_stamped.transform).matrix().cast<float>();
   pcl_ros::transformPointCloud(tf_matrix, input, output);
@@ -111,6 +119,7 @@ PointcloudBasedOccupancyGridMapNode::PointcloudBasedOccupancyGridMapNode(
   /* params */
   map_frame_ = declare_parameter("map_frame", "map");
   base_link_frame_ = declare_parameter("base_link_frame", "base_link");
+  output_frame_ = declare_parameter("output_frame", "base_link");
   use_height_filter_ = declare_parameter("use_height_filter", true);
   enable_single_frame_mode_ = declare_parameter("enable_single_frame_mode", false);
   const double map_length{declare_parameter("map_length", 100.0)};
@@ -127,7 +136,7 @@ PointcloudBasedOccupancyGridMapNode::PointcloudBasedOccupancyGridMapNode(
   sync_ptr_->registerCallback(
     std::bind(&PointcloudBasedOccupancyGridMapNode::onPointcloudWithObstacleAndRaw, this, _1, _2));
   occupancy_grid_map_pub_ = create_publisher<OccupancyGrid>("~/output/occupancy_grid_map", 1);
-  CREATE_PUBLISH_DEBUGGER_MICRO
+
   /* Occupancy grid */
   occupancy_grid_map_updater_ptr_ = std::make_shared<OccupancyGridMapBBFUpdater>(
     map_length / map_resolution, map_length / map_resolution, map_resolution);
@@ -141,7 +150,6 @@ PointcloudBasedOccupancyGridMapNode::PointcloudBasedOccupancyGridMapNode(
       std::make_unique<DebugPublisher>(this, "pointcloud_based_occupancy_grid_map");
     stop_watch_ptr_->tic("cyclic_time");
     stop_watch_ptr_->tic("processing_time");
-    stop_watch_ptr_->tic("processing_time_debuger");
   }
 }
 
@@ -152,11 +160,7 @@ void PointcloudBasedOccupancyGridMapNode::onPointcloudWithObstacleAndRaw(
   if (stop_watch_ptr_) {
     stop_watch_ptr_->toc("processing_time", true);
   }
-  SET_STAMP_IN_CALLBACK
-  // sensor_msgs::msg::PointCloud2 input = *input_raw_msg;
-  GET_STAMP(input_raw_msg)
   // Apply height filter
-  // RCLCPP_INFO(rclcpp::get_logger("occupancy_grid_map_node_debuger"),"start time is %f",stop_watch_ptr_->toc("processing_time_debuger", true));
   PointCloud2 cropped_obstacle_pc{};
   PointCloud2 cropped_raw_pc{};
   if (use_height_filter_) {
@@ -171,45 +175,50 @@ void PointcloudBasedOccupancyGridMapNode::onPointcloudWithObstacleAndRaw(
       return;
     }
   }
-  //  RCLCPP_INFO(rclcpp::get_logger("occupancy_grid_map_node_debuger"),"crop time is %f",stop_watch_ptr_->toc("processing_time_debuger", true));
   const PointCloud2 & filtered_obstacle_pc =
     use_height_filter_ ? cropped_obstacle_pc : *input_obstacle_msg;
   const PointCloud2 & filtered_raw_pc = use_height_filter_ ? cropped_raw_pc : *input_raw_msg;
 
   // Get from map to sensor frame pose
-  Pose pose{};
+  Pose robot_pose{};
+  Pose gridmap_origin{};
   try {
-    pose = getPose(input_raw_msg->header, *tf2_, map_frame_);
+    robot_pose = getPose(input_raw_msg->header, *tf2_, map_frame_);
+    geometry_msgs::msg::TransformStamped tf_stamped;
+    tf_stamped = tf2_->lookupTransform(
+      map_frame_, output_frame_, input_raw_msg->header.stamp, rclcpp::Duration::from_seconds(0.5));
+    gridmap_origin = tier4_autoware_utils::transform2pose(tf_stamped.transform);
   } catch (tf2::TransformException & ex) {
     RCLCPP_WARN_STREAM(get_logger(), ex.what());
     return;
   }
-  //  RCLCPP_INFO(rclcpp::get_logger("occupancy_grid_map_node_debuger"),"getPose time is %f",stop_watch_ptr_->toc("processing_time_debuger", true));
+
   // Create single frame occupancy grid map
-  costmap_2d::OccupancyGridMapOPT single_frame_occupancy_grid_map(
+  OccupancyGridMap single_frame_occupancy_grid_map(
     occupancy_grid_map_updater_ptr_->getSizeInCellsX(),
     occupancy_grid_map_updater_ptr_->getSizeInCellsY(),
     occupancy_grid_map_updater_ptr_->getResolution());
   single_frame_occupancy_grid_map.updateOrigin(
-    pose.position.x - single_frame_occupancy_grid_map.getSizeInMetersX() / 2,
-    pose.position.y - single_frame_occupancy_grid_map.getSizeInMetersY() / 2);
-   RCLCPP_INFO(rclcpp::get_logger("occupancy_grid_map_node_debuger"),"Create single frame time is %f",stop_watch_ptr_->toc("processing_time_debuger", true));
-  single_frame_occupancy_grid_map.updateWithPointCloud(filtered_raw_pc, filtered_obstacle_pc, pose);
-   RCLCPP_INFO(rclcpp::get_logger("occupancy_grid_map_node_debuger"),"updateWithPointCloud time is %f",stop_watch_ptr_->toc("processing_time_debuger", true));
+    gridmap_origin.position.x - single_frame_occupancy_grid_map.getSizeInMetersX() / 2,
+    gridmap_origin.position.y - single_frame_occupancy_grid_map.getSizeInMetersY() / 2);
+  single_frame_occupancy_grid_map.updateWithPointCloud(
+    filtered_raw_pc, filtered_obstacle_pc, robot_pose, gridmap_origin);
+
   if (enable_single_frame_mode_) {
     // publish
     occupancy_grid_map_pub_->publish(OccupancyGridMapToMsgPtr(
-      map_frame_, input_raw_msg->header.stamp, pose.position.z, single_frame_occupancy_grid_map));
+      map_frame_, input_raw_msg->header.stamp, robot_pose.position.z,
+      single_frame_occupancy_grid_map));  // (todo) robot_pose may be altered with gridmap_origin
   } else {
     // Update with bayes filter
     occupancy_grid_map_updater_ptr_->update(single_frame_occupancy_grid_map);
 
     // publish
     occupancy_grid_map_pub_->publish(OccupancyGridMapToMsgPtr(
-      map_frame_, input_raw_msg->header.stamp, pose.position.z, *occupancy_grid_map_updater_ptr_));
+      map_frame_, input_raw_msg->header.stamp, robot_pose.position.z,
+      *occupancy_grid_map_updater_ptr_));
   }
-  //  RCLCPP_INFO(rclcpp::get_logger("occupancy_grid_map_node_debuger"),"publish time is %f",stop_watch_ptr_->toc("processing_time_debuger", true));
-  START_TO_PUBLISH_DEBUGGER_WITH_STMP_MICRO
+
   if (debug_publisher_ptr_ && stop_watch_ptr_) {
     const double cyclic_time_ms = stop_watch_ptr_->toc("cyclic_time", true);
     const double processing_time_ms = stop_watch_ptr_->toc("processing_time", true);

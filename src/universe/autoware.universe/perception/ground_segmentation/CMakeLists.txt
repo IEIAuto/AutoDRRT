@@ -25,14 +25,9 @@ ament_auto_add_library(ground_segmentation SHARED
   src/ray_ground_filter_nodelet.cpp
   src/ransac_ground_filter_nodelet.cpp
   src/scan_ground_filter_nodelet.cpp
-  src/threadPool.cpp
 )
 
-find_library(GROUND_SEGMENTATION_OPT ground_segmentation_opt
-            PATHS ${CMAKE_CURRENT_SOURCE_DIR}/lib/)
-
 target_link_libraries(ground_segmentation
-  ${GROUND_SEGMENTATION_OPT}
   ${Boost_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${PCL_LIBRARIES}

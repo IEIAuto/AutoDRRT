@@ -1,0 +1,92 @@
+/**:
+  ros__parameters:
+    # -- Node Configurations --
+    planning_algorithm: "astar"
+    waypoints_velocity: 3.0
+    update_rate: 10.0
+    th_arrived_distance_m: 0.7
+    th_stopped_time_sec: 1.0
+    th_stopped_velocity_mps: 0.01
+    th_course_out_distance_m: 0.1
+    #vehicle_shape_margin_m: -0.5
+    vehicle_shape_margin_width_m: 0.15
+    vehicle_shape_margin_length_m: 0.0
+    vehicle_base_link_margin: 0.08
+    replan_when_obstacle_found: false
+    replan_when_course_out: false
+    jump_if_size_less: 3
+    # -- Configurations common to the all planners --
+    # base configs
+    time_limit: 300000.0
+    # robot configs # TODO replace by vehicle_info
+    # robot_length: 4.5
+    # robot_width: 1.75
+    # robot_base2back: 1.0
+    robot_length: 3.017
+    robot_width: 1.155
+    robot_base2back: 1.14
+    minimum_turning_radius: 6.5
+    maximum_turning_radius: 14.5
+    turning_radius_size: 8
+    # search configs
+    theta_size: 144
+    angle_goal_range: 6.0
+    curve_weight: 1.2
+    reverse_weight: 1.1
+    lateral_goal_range: 0.2
+    longitudinal_goal_range: 0.5
+    # costmap configs
+    obstacle_threshold: 20
+
+    # -- A* search Configurations --
+    astar:
+      only_behind_solutions: false
+      use_back: true
+      distance_heuristic_weight: 2.0
+
+
+
+# /**:
+#   ros__parameters:
+#     # -- Node Configurations --
+#     planning_algorithm: "astar"
+#     waypoints_velocity: 3.0
+#     update_rate: 3.0
+#     th_arrived_distance_m: 0.5
+#     th_stopped_time_sec: 1.0
+#     th_stopped_velocity_mps: 0.01
+#     th_course_out_distance_m: 0.4
+#     vehicle_shape_margin_m: 0.1
+#     replan_when_obstacle_found: false
+#     replan_when_course_out: false
+
+#     # -- Configurations common to the all planners --
+#     # base configs
+#     time_limit: 30000.0
+#     # robot configs # TODO replace by vehicle_info
+#     # robot_length: 4.5
+#     # robot_width: 1.75
+#     # robot_base2back: 1.0
+#     robot_length: 3.117
+#     robot_width: 1.255
+#     robot_base2back: 2.14
+#     # minimum_turning_radius: 20.0
+#     # maximum_turning_radius: 50.0
+#     minimum_turning_radius: 20.0
+#     maximum_turning_radius: 40.0
+#     turning_radius_size: 20
+#     # search configs
+#     theta_size: 400
+#     angle_goal_range: 1.0
+#     curve_weight: 5.2
+#     reverse_weight: 1.2
+#     lateral_goal_range: 0.05
+#     longitudinal_goal_range: 0.05
+#     # costmap configs
+#     obstacle_threshold: 20
+
+#     # -- A* search Configurations --
+#     astar:
+#       only_behind_solutions: false
+#       use_back: true
+#       distance_heuristic_weight: 1.0

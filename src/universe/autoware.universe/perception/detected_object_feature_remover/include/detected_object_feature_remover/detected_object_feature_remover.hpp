@@ -19,8 +19,7 @@
 
 #include <autoware_auto_perception_msgs/msg/detected_objects.hpp>
 #include <tier4_perception_msgs/msg/detected_objects_with_feature.hpp>
-// Include Debuger
-#include "autoware_debuger.hpp"
+
 namespace detected_object_feature_remover
 {
 using autoware_auto_perception_msgs::msg::DetectedObjects;
@@ -32,9 +31,6 @@ public:
   explicit DetectedObjectFeatureRemover(const rclcpp::NodeOptions & node_options);
 
 private:
-    //debug publisher
-  INIT_PUBLISH_DEBUGGER_MICRO
-  INIT_STAMP_STRING
   rclcpp::Subscription<DetectedObjectsWithFeature>::SharedPtr sub_;
   rclcpp::Publisher<DetectedObjects>::SharedPtr pub_;
   void objectCallback(const DetectedObjectsWithFeature::ConstSharedPtr input);

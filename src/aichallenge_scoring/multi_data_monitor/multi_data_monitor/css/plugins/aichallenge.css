@@ -1,0 +1,6 @@
+QLabel {
+  font-size: 18px;
+  border-width: 2px 2px 2px 2px;
+  border-style: solid;
+  font-weight: bold;
+}

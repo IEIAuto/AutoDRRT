@@ -23,7 +23,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/process.hpp>
-#define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 
 #include <map>

@@ -11,16 +11,8 @@ find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED)
 find_package(PCL REQUIRED)
-find_package(OpenMP)
 find_package(CGAL REQUIRED COMPONENTS Core)
-find_package(CUDA REQUIRED)
-find_library(CUBLAS_LIBRARIES cublas HINTS
-    ${CUDA_TOOLKIT_ROOT_DIR}/lib64
-    ${CUDA_TOOLKIT_ROOT_DIR}/lib
-  )
-if(CUDA_FOUND)
-  message("CUDA_FOUND")
-endif()
+
 include_directories(
   include
   SYSTEM
@@ -28,8 +20,6 @@ include_directories(
   ${PCL_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${GRID_MAP_INCLUDE_DIR}
-  ${CUDA_INCLUDE_DIRS}
 )
 
 add_library(pointcloud_preprocessor_filter_base SHARED
@@ -50,18 +40,6 @@ ament_target_dependencies(pointcloud_preprocessor_filter_base
   tier4_autoware_utils
   pcl_ros
 )
-
-# cuda_add_library(crop_box_cuda_lib SHARED
-#   src/crop_box_filter/crop_box_cuda.cu
-#   )
-# target_include_directories(crop_box_cuda_lib PUBLIC
-# "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-# "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-# )
-# target_include_directories(crop_box_cuda_lib
-#   SYSTEM PUBLIC
-#   ${CUDA_INCLUDE_DIRS}
-# )
 
 ament_auto_add_library(pointcloud_preprocessor_filter SHARED
   src/utility/utilities.cpp
@@ -85,58 +63,23 @@ ament_auto_add_library(pointcloud_preprocessor_filter SHARED
   src/vector_map_filter/vector_map_inside_area_filter.cpp
 )
 
-#   target_include_directories(crop_box_cuda_lib PUBLIC
-#   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-#   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-#   include
-# )
-# ament_target_dependencies(crop_box_cuda_lib
-# sensor_msgs
-# )
-# link_directories(src/outlier_filter/lib/)
-find_library(RING_OUTLIER_FILTER_OPT_LIB ring_outlier_filter_opt
-            PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src/outlier_filter/lib/)
-
-find_library(CROP_BOX_FILTER_OPT_LIB crop_box_filter_opt
-            PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src/crop_box_filter/lib/)
-# message(STATUS,${CMAKE_CURRENT_SOURCE_DIR})
-# message(STATUS,${RING_OUTLIER_FILTER_OPT_LIB})
 target_link_libraries(pointcloud_preprocessor_filter
   pointcloud_preprocessor_filter_base
-  ${RING_OUTLIER_FILTER_OPT_LIB}
-  ${CROP_BOX_FILTER_OPT_LIB}
   ${Boost_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${PCL_LIBRARIES}
-  ${CUDA_LIBRARIES}
-  ${CUBLAS_LIBRARIES}
-  ${CUDA_curand_LIBRARY}
-  ${CUDNN_LIBRARY}
-  
-  OpenMP::OpenMP_CXX
 )
 
-
-if(OPENMP_FOUND)
-message(STATUS,"OPENMP ENABLED")
-  set_target_properties(pointcloud_preprocessor_filter PROPERTIES
-    COMPILE_FLAGS ${OpenMP_CXX_FLAGS}
-    LINK_FLAGS ${OpenMP_CXX_FLAGS}
-  )
-endif()
-target_compile_options(pointcloud_preprocessor_filter PUBLIC -fopenmp -march=native -ffast-math -ftree-loop-vectorize -ftree-vectorizer-verbose=2  -O3 -ftree-vectorize)
-# ========== Concatenate data ========== docker exec -it autoware_ice bash -fopt-info-vec
+# ========== Concatenate data ==========
 rclcpp_components_register_node(pointcloud_preprocessor_filter
   PLUGIN "pointcloud_preprocessor::PointCloudConcatenateDataSynchronizerComponent"
   EXECUTABLE concatenate_data_node)
 
 # ========== CropBox ==========
-# target_link_libraries(pointcloud_preprocessor_filter crop_box_cuda_lib)
 rclcpp_components_register_node(pointcloud_preprocessor_filter
   PLUGIN "pointcloud_preprocessor::CropBoxFilterComponent"
   EXECUTABLE crop_box_filter_node)
-# target_link_libraries(crop_box_filter_node crop_box_cuda_lib)
-  
+
 # ========== Down Sampler Filter ==========
 # -- Voxel Grid Downsample Filter --
 rclcpp_components_register_node(pointcloud_preprocessor_filter
@@ -217,13 +160,6 @@ rclcpp_components_register_node(pointcloud_preprocessor_filter
   PLUGIN "pointcloud_preprocessor::VectorMapInsideAreaFilterComponent"
   EXECUTABLE vector_map_inside_area_filter_node)
 
-
-  # install(
-  #   TARGETS crop_box_cuda_lib 
-  #   ARCHIVE DESTINATION lib
-  #   LIBRARY DESTINATION lib
-  #   RUNTIME DESTINATION bin
-  # )
 install(
   TARGETS pointcloud_preprocessor_filter_base EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
@@ -241,4 +177,3 @@ ament_export_targets(export_${PROJECT_NAME})
 ament_auto_package(INSTALL_TO_SHARE
   launch
 )
-
