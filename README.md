@@ -18,6 +18,13 @@ This framework supports transforming single-node applications into distributed a
 
 The framework supports concurrent startup of multiple identical algorithm nodes, capable of receiving and processing data simultaneously. In the event of a primary node failure due to faults, backup nodes seamlessly take over data transmission with millisecond-level switchover time.
 
+- DDS integrated with DMA acceleration
+
+The framework has upgraded Cyclone DDS, leveraging the DMA capabilities of Orin for shared memory implementation, thereby enhancing the transfer performance of large data blocks.
+![avatar](./docs/imgs/dma_dds_compare.png)
+  <span style="font-size: small;">The comparison between DDS and DDS integrated with DMA</span>
+
+
 ## Installation
 
 ### Target Platforms
