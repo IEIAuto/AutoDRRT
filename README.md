@@ -1,6 +1,14 @@
 # Autonomous Driving Computing Framework AutoDRRT
 AutoDRRT is an autonomous driving framework developed based on the [Autoware open-source framework](https://github.com/autowarefoundation/autoware/tree/main), with targeted optimizations for the EIS400 onboard domain controller. These optimizations enhance the framework's real-time performance, distributability, and fault tolerance. A set of tools is provided to facilitate users in making use of these new features more easily. This framework is built upon the Robot Operating System 2 (ROS2). It encompasses all necessary functionalities from localization and target detection to path planning and control, striving to lower the entry barrier and aiming to involve as many individuals and organizations as possible in the open innovation of autonomous driving technology.
+
 ![avatar](./docs/imgs/Architecture_Diagram_en.png)
+
+Based on the AutoDRRT framework, IEI secured the dual championship in both simulation and real vehicle races at the 5th Japan Automotive AI Challenge. This solution is tailored for factory scenarios and provides a [Level 4 autonomous driving solution](../../tree/factory_scene).
+<div align=center>
+  <img src="./docs/imgs/award.png" width="450" height="600">
+</div>
+
+
 ## Features
 
 - Distributed
@@ -13,7 +21,8 @@ This framework supports transforming single-node applications into distributed a
   ![avatar](./docs/imgs/Real_time_performance.png)
   <span style="font-size: small;">The test data corresponds to the 'logging_simulator' scenario used in the Autoware framework</span>
 
-  
+
+
 - Fault Tolerance
 
 The framework supports concurrent startup of multiple identical algorithm nodes, capable of receiving and processing data simultaneously. In the event of a primary node failure due to faults, backup nodes seamlessly take over data transmission with millisecond-level switchover time.
@@ -23,6 +32,12 @@ The framework supports concurrent startup of multiple identical algorithm nodes,
 The framework has upgraded Cyclone DDS, leveraging the DMA capabilities of Orin for shared memory implementation, thereby enhancing the transfer performance of large data blocks.
 ![avatar](./docs/imgs/dma_dds_compare.png)
   <span style="font-size: small;">The comparison between DDS and DDS integrated with DMA</span>
+
+
+- [Unmanned Car Scenario](../../tree/factory_scene)
+
+The framework supports unmanned car scenarios, capable of addressing obstacles, smoke, S-curves, L-curves, and other situations.  It possesses safety, availability, and drivability. 
+
 
 
 ## Installation
@@ -76,6 +91,11 @@ The AutoDRRT Foundation provides support only for the platforms listed below. Ot
 ### Usage Instructions
 
 [Usage Instructions](./docs/en/tutorials.md)
+
+If you want to use the [unmanned car scenario](../../tree/factory_scene) on the current branch, please use the following command:
+
+```bash factory_scene.sh```
+
 
 ### Contact Us
 [AutoDRRT@ieisystem.com](AutoDRRT@ieisystem.com)
