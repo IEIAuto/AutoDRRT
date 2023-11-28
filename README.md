@@ -4,8 +4,8 @@ AutoDRRT is an autonomous driving framework developed based on the [Autoware ope
 ![avatar](./docs/imgs/Architecture_Diagram_en.png)
 
 Based on the AutoDRRT framework, IEI secured the dual championship in both simulation and real vehicle races at the 5th Japan Automotive AI Challenge. This solution is tailored for factory scenarios and provides a [Level 4 autonomous driving solution](../../tree/factory_scene).
-<div style="text-align: center;">
-<img src="./docs/imgs/award.png" width="450" height="600">
+<div align=center>
+  <img src="./docs/imgs/award.png" width="450" height="600">
 </div>
 
 
