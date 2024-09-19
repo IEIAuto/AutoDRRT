@@ -1,0 +1,4 @@
+builtin_interfaces/Time stamp
+float32 velocity_mps
+float32 front_wheel_angle_rad
+float32 rear_wheel_angle_rad

@@ -1,0 +1,1 @@
+bool allow_goal_modification

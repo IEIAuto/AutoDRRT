@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>llh_converter</name>
+  <version>0.0.0</version>
+  <description>The height converter package between ellipsoid and orthometric</description>
+  <maintainer email="tomoya.sato@tier4.jp">Tomoya-Sato</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+
+  <depend>geographiclib</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>  

@@ -1,0 +1,10 @@
+float32 wheel_radius
+float32 wheel_width
+float32 wheel_base
+float32 wheel_tread
+float32 front_overhang
+float32 rear_overhang
+float32 left_overhang
+float32 right_overhang
+float32 height
+geometry_msgs/Polygon footprint

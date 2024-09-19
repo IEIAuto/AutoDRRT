@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.14)
+project(autoware_adapi_v1_msgs)
+
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  common/msg/ResponseStatus.msg
+  localization/msg/LocalizationInitializationState.msg
+  localization/srv/InitializeLocalization.srv
+  routing/msg/RouteState.msg
+  routing/msg/Route.msg
+  routing/msg/RouteData.msg
+  routing/msg/RouteOption.msg
+  routing/msg/RoutePrimitive.msg
+  routing/msg/RouteSegment.msg
+  routing/srv/ClearRoute.srv
+  routing/srv/SetRoute.srv
+  routing/srv/SetRoutePoints.srv
+  operation_mode/msg/OperationModeState.msg
+  operation_mode/srv/ChangeOperationMode.srv
+  motion/msg/MotionState.msg
+  motion/srv/AcceptStart.srv
+  perception/msg/DynamicObject.msg
+  perception/msg/DynamicObjectArray.msg
+  perception/msg/DynamicObjectKinematics.msg
+  perception/msg/DynamicObjectPath.msg
+  perception/msg/ObjectClassification.msg
+  planning/msg/SteeringFactor.msg
+  planning/msg/SteeringFactorArray.msg
+  planning/msg/VelocityFactor.msg
+  planning/msg/VelocityFactorArray.msg
+  planning/msg/PlanningBehavior.msg
+  planning/msg/PlanningSequence.msg
+  planning/msg/CooperationCommand.msg
+  planning/msg/CooperationDecision.msg
+  planning/msg/CooperationPolicy.msg
+  planning/msg/CooperationStatus.msg
+  planning/srv/SetCooperationCommands.srv
+  planning/srv/SetCooperationPolicies.srv
+  planning/srv/GetCooperationPolicies.srv
+  system/msg/MrmState.msg
+  vehicle/msg/DoorCommand.msg
+  vehicle/msg/DoorLayout.msg
+  vehicle/msg/DoorStatus.msg
+  vehicle/msg/DoorStatusArray.msg
+  vehicle/msg/Gear.msg
+  vehicle/msg/HazardLights.msg
+  vehicle/msg/TurnIndicators.msg
+  vehicle/msg/VehicleStatus.msg
+  vehicle/msg/VehicleDimensions.msg
+  vehicle/msg/VehicleKinematics.msg
+  vehicle/srv/SetDoorCommand.srv
+  vehicle/srv/GetDoorLayout.srv
+  vehicle/srv/GetVehicleDimensions.srv
+  DEPENDENCIES
+    builtin_interfaces
+    geographic_msgs
+    geometry_msgs
+    shape_msgs
+    std_msgs
+    unique_identifier_msgs
+)
+
+ament_auto_package()
