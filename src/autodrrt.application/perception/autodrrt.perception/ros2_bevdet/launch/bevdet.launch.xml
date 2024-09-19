@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="/front/image_raw_time" default="/cam_front/raw"/>
+    <arg name="/front_left/image_raw_time" default="/cam_front_left/raw"/>
+    <arg name="/front_right/image_raw_time" default="/cam_front_right/raw"/>
+    <arg name="/rear/image_raw_time" default="/cam_back/raw"/>
+    <arg name="/rear_left/image_raw_time" default="/cam_back_left/raw"/>
+    <arg name="/rear_right/image_raw_time" default="/cam_back_right/raw"/>
+    <arg name="bevdet_config_path" default="$(find-pkg-share ros2_bevdet)/config/bevdet.param.yaml"/>
+
+    <node pkg="ros2_bevdet" exec="bevdet_node" name="ros2_bevdet" output="screen">
+        <param name="/front/image_raw_time" value="$(var /front/image_raw_time)"/>
+        <param name="/front_left/image_raw_time" value="$(var /front_left/image_raw_time)"/>
+        <param name="/front_right/image_raw_time" value="$(var /front_right/image_raw_time)"/>
+        <param name="/rear/image_raw_time" value="$(var /rear/image_raw_time)"/>
+        <param name="/rear_left/image_raw_time" value="$(var /rear_left/image_raw_time)"/>
+        <param name="/rear_right/image_raw_time" value="$(var /rear_right/image_raw_time)"/>
+        <param from="$(var bevdet_config_path)"/>
+    </node>
+</launch>
+
+
+
+

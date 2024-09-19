@@ -1,0 +1,30 @@
+TestNuscenes: true # true or false
+
+ModelConfig: ./src/ROS2-CUDA-BEVFusion/cfgs/bevdet_lt_depth.yaml
+
+N: 6
+H: 900
+W: 1600
+cams: [CAM_FRONT_LEFT, CAM_FRONT, CAM_FRONT_RIGHT, CAM_BACK_LEFT, CAM_BACK, CAM_BACK_RIGHT]
+sample:
+    CAM_FRONT_LEFT: ./src/ROS2-CUDA-BEVFusion/sample0/imgs/CAM_FRONT_LEFT.jpg
+    CAM_FRONT: ./src/ROS2-CUDA-BEVFusion/sample0/imgs/CAM_FRONT.jpg
+    CAM_FRONT_RIGHT: ./src/ROS2-CUDA-BEVFusion/sample0/imgs/CAM_FRONT_RIGHT.jpg
+    CAM_BACK_LEFT: ./src/ROS2-CUDA-BEVFusion/sample0/imgs/CAM_BACK_LEFT.jpg
+    CAM_BACK: ./src/ROS2-CUDA-BEVFusion/sample0/imgs/CAM_BACK.jpg
+    CAM_BACK_RIGHT: ./src/ROS2-CUDA-BEVFusion/sample0/imgs/CAM_BACK_RIGHT.jpg
+
+CamConfig: ./src/ROS2-CUDA-BEVFusion/sample0/sample0000.yaml
+InputFile: ./src/ROS2-CUDA-BEVFusion/sample0/0.bin
+OutputLidarBox: ./src/ROS2-CUDA-BEVFusion/sample0/sample0_lidarbox.txt
+
+ImgStageEngine: ./src/ROS2-CUDA-BEVFusion/model/img_stage_lt_d_fp16.engine
+BEVStageEngine: ./src/ROS2-CUDA-BEVFusion/model/bev_stage_lt_d_fp16.engine
+
+
+OutputDir: ./src/ROS2-CUDA-BEVFusion/output/
+
+LoadDim: 5
+UseDim: 4
+
+dataset_info: ./src/ROS2-CUDA-BEVFusion/data/nuscenes/data_infos

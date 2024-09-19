@@ -1,0 +1,11 @@
+<launch>
+  <arg name="baudrate" default="230400" description="set baudrate value"/>
+  <arg name="port" default="/dev/ttyUSB0" description="set serial port"/>
+  <arg name="output_hz" default="100"/>
+
+  <node pkg="cgi610_driver" exec="cgi610_driver_node" name="cgi610_driver_node" output="screen">
+    <param name="baudrate" value="$(var baudrate)"/>
+    <param name="port" value="$(var port)"/>
+    <param name="output_hz" value="$(var output_hz)"/>
+  </node>
+</launch>

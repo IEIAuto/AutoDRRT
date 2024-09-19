@@ -1,0 +1,4 @@
+source;share/dma_customer_msg/local_setup.bash
+source;share/dma_customer_msg/local_setup.dsv
+source;share/dma_customer_msg/local_setup.sh
+source;share/dma_customer_msg/local_setup.zsh

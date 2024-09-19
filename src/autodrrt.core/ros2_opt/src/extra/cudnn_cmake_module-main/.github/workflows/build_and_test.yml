@@ -1,0 +1,32 @@
+name:  build and test
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.docker_image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distribution:
+          - galactic
+          - rolling
+        include:
+          # Galactic Geochelone (May 2021 - November 2022)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-galactic-ros-base-latest
+            ros_distribution: galactic
+            ros_version: 2
+          # Rolling Ridley  (June 2020 - Present)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-rolling-ros-base-latest
+            ros_distribution: rolling
+            ros_version: 2
+    steps:
+      - uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          package-name: cudnn_cmake_module
+          target-ros2-distro: ${{ matrix.ros_distribution }}

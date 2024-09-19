@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>tvm_vendor</name>
+  <version>0.9.1</version>
+  <description>Wrapper around Apache TVM to make it available to the ROS ecosystem.</description>
+  <maintainer email="josh.whitley@autoware.org">Josh Whitley</maintainer>
+  <license>Apache License 2.0</license>
+
+  <url type="bugtracker">https://github.com/apache/incubator-tvm/issues</url>
+  <url type="repository">https://github.com/apache/incubator-tvm</url>
+  <url type="website">https://tvm.apache.org/</url>
+
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+
+  <build_depend>ros_environment</build_depend>
+
+  <depend>git</depend>
+  <depend>libopenblas-dev</depend>
+  <depend>libxml2</depend>
+  <depend condition="$ROS_VERSION == 2">libvulkan-dev</depend>
+  <depend condition="$ROS_VERSION == 2">ocl-icd-opencl-dev</depend>
+  <depend condition="$ROS_VERSION == 2">opencl-headers</depend>
+  <depend condition="$ROS_VERSION == 2">spirv-headers</depend>
+  <depend condition="$ROS_VERSION == 2">spirv-tools</depend>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+  </export>
+</package>

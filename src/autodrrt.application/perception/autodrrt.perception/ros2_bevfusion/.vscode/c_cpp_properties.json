@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/local/cuda/include/**",
+                "/usr/include/aarch64-linux-gnu//**",
+                "/usr/include/python3.8/**",
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/../dependencies/stb/**",
+                "${workspaceFolder}/../dependencies/pybind11/include/**",
+                "${workspaceFolder}/../cuOSD/src/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

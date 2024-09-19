@@ -1,0 +1,17 @@
+<launch>
+  <arg name="pub_rate" default="1.0" description="[rad/s]"/>
+  <arg name="report_dt" default="0.1" description="[rad/s]"/>
+  <arg name="command_dt" default="0.01" description="[rad/s]"/>
+  <arg name="base_frame_id" default="base_link"/>
+
+  <node pkg="can_interface_custom" exec="can_interface_custom_node" name="can_interface_custom_node" output="screen">
+    <param name="pub_rate" value="$(var pub_rate)"/>
+    <param name="report_dt" value="$(var report_dt)"/>
+    <param name="command_dt" value="$(var command_dt)"/>
+    <param name="base_frame_id" value="$(var base_frame_id)"/>
+    <!--remap from="~/input/control_cmd" to="/control/command/control_cmd"/--> <!--form为订阅的名称，to为原发布的话题名称-->
+    <!--remap from="~/input/gear_cmd" to="/control/command/gear_cmd"/--> <!--form为订阅的名称，to为原发布的话题名称-->
+
+  </node>
+
+</launch>

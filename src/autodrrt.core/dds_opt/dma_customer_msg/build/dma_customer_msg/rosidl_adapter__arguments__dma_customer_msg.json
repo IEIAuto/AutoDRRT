@@ -1,0 +1,6 @@
+{
+  "package_name": "dma_customer_msg",
+  "non_idl_tuples": [
+    "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg:msg/Dmamessage.msg"
+  ]
+}

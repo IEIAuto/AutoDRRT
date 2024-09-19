@@ -1,0 +1,11 @@
+;; Emacs C mode formatting for the BLIS layout requirements.
+((c-mode . ((c-file-style . "stroustrup")
+	    (c-basic-offset . 4)
+	    (comment-start . "// ")
+	    (comment-end . "")
+	    (indent-tabs-mode . t)
+	    (tab-width . 4)
+	    (parens-require-spaces . nil)
+	    (require-final-newline . t)
+	    (eval add-hook `before-save-hook `delete-trailing-whitespace)
+	    )))

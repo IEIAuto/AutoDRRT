@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+
+
+  <arg name="input/pointcloud" default="/message_sync/input/pointcloud"/>
+  <arg name="input/images_info" default="/message_sync/input/images_info"/>
+  <arg name="input/objects" default="/message_sync/input/objects"/>
+  <arg name="input/camera_info" default="/message_sync/input/camera_info"/>
+  <arg name="input/image_raw" default="/message_sync/input/image_raw"/>
+
+  <arg name="output/pointcloud" default="/message_sync/out/pointcloud"/>
+  <arg name="output/images_info" default="/message_sync/out/images_info"/>
+  <arg name="output/objects" default="/message_sync/out/objects"/>
+  <arg name="output/camera_info" default="/message_sync/out/camera_info"/>
+  <arg name="output/image_raw" default="/message_sync/out/image_raw"/>
+
+
+  <node pkg="message_sync" exec="message_sync_node" name="message_sync_node" output="screen">
+    <remap from="/input/pointcloud" to="$(var input/pointcloud)"/>
+    <remap from="/input/images_info" to="$(var input/images_info)"/>
+    <remap from="/input/objects" to="$(var input/objects)"/>
+    <remap from="/input/camera_info" to="$(var input/camera_info)"/>
+    <remap from="/input/image_raw" to="$(var input/image_raw)"/>
+
+    <remap from="/message_sync/images_info" to="$(var output/images_info)"/>
+    <remap from="/message_sync/pcl" to="$(var output/pointcloud)"/>
+    <remap from="/message_sync/objects" to="$(var output/objects)"/>
+    <remap from="/message_sync/camera_info" to="$(var output/camera_info)"/>
+    <remap from="/message_sync/image_raw" to="$(var output/image_raw)"/>
+
+
+  </node>
+</launch>

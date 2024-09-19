@@ -1,0 +1,80 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  image: osrf/ros:foxy-desktop
+  script:
+    - apt-get update
+    - rosdep update
+    - rosdep install --from point_cloud_msg_wrapper --ignore-src -y
+    - mkdir -p /opt/point_cloud_msg_wrapper
+    - '
+      colcon build
+          --install-base /opt/point_cloud_msg_wrapper
+          --merge-install
+          --cmake-args
+            -DCMAKE_BUILD_TYPE=Release
+          --base-path point_cloud_msg_wrapper
+      '
+    - cp LICENSE /opt/point_cloud_msg_wrapper
+    - tar cfz opt.tar.gz /opt/point_cloud_msg_wrapper
+  artifacts:
+    expire_in: 1 day
+    when: always
+    paths:
+      - log
+      - build
+      - opt.tar.gz
+
+test:
+  stage: test
+  image: osrf/ros:foxy-desktop
+  dependencies:
+    - build
+  script:
+    - tar xf opt.tar.gz -C /
+    - '
+      colcon test
+          --install-base /opt/point_cloud_msg_wrapper
+          --merge-install
+          --base-path point_cloud_msg_wrapper
+      '
+    - 'colcon test-result --verbose'
+  artifacts:
+    expire_in: 1 day
+    when: always
+    paths:
+      - log
+
+volume:
+  stage: deploy
+  image: docker
+  services:
+    - docker:dind
+  dependencies:
+    - build
+  before_script:
+    - ''
+  script:
+    - 'echo -e "*\n!opt.tar.gz" > .dockerignore'
+    - |
+      cat >Dockerfile <<EOF
+      FROM alpine
+      ADD opt.tar.gz /
+      VOLUME /opt/point_cloud_msg_wrapper
+      CMD ["/bin/sh", "-c", "trap 'exit 147' TERM; tail -f /dev/null & wait ${!}"]
+      EOF
+    - '
+      docker build
+          --label ade_image_commit_sha="$CI_COMMIT_SHA"
+          --label ade_image_commit_tag="$CI_COMMIT_TAG"
+          -t image .
+      '
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker tag image $CI_REGISTRY_IMAGE:commit-$CI_COMMIT_SHA
+    - docker tag image $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    - docker push $CI_REGISTRY_IMAGE:commit-$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG

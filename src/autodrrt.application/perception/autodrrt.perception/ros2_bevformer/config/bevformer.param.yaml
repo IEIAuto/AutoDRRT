@@ -1,0 +1,9 @@
+/**:
+  ros__parameters:
+    input_shapes:
+      {'image': [1, 6, 3, 480, 800], 'prev_bev': [2500, 1, 256], 'use_prev_bev': [1], 'can_bus': [18], 'lidar2img': [1, 6, 4, 4]}
+    output_shapes: 
+      {'bev_embed': [2500, 1, 256], 'outputs_classes': [6, 1, 900, 10], 'outputs_coords': [6, 1, 900, 10]}
+    class_names:
+      ["car","truck","construction_vehicle","bus","trailer","barrier","motorcycle","bicycle","pedestrian","traffic_cone",]  
+    

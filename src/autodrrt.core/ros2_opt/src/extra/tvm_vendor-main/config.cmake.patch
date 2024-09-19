@@ -1,0 +1,22 @@
+diff --git a/cmake/config.cmake b/cmake/config.cmake
+index b9a3aaef..a0f9f2b7 100644
+--- a/cmake/config.cmake
++++ b/cmake/config.cmake
+@@ -148,7 +148,7 @@ set(USE_LLVM OFF)
+ set(USE_BYODT_POSIT OFF)
+ 
+ # Whether use BLAS, choices: openblas, atlas, apple
+-set(USE_BLAS none)
++set(USE_BLAS openblas)
+ 
+ # Whether to use MKL
+ # Possible values:
+@@ -367,7 +367,7 @@ set(USE_PAPI OFF)
+ #   be enabled, otherwise it will be disabled.
+ # Note that cmake will use `find_package` to find GTest. Please use cmake's
+ # predefined variables to specify the path to the GTest package if needed.
+-set(USE_GTEST AUTO)
++set(USE_GTEST OFF)
+ 
+ # Enable using CUTLASS as a BYOC backend
+ # Need to have USE_CUDA=ON

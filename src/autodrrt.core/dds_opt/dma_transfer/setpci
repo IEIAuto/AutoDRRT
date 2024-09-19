@@ -1,0 +1,1 @@
+setpci -s 0005:01:00.0 COMMAND=0x02

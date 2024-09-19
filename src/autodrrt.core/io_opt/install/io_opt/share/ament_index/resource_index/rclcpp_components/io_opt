@@ -1,0 +1,2 @@
+io_opt::Talker;lib/libtalker_component.so
+io_opt::Listener;lib/liblistener_component.so

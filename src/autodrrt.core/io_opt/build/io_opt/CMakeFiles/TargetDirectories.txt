@@ -1,0 +1,11 @@
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/uninstall.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/io_opt_uninstall.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/talker_component.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/listener_component.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/test.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/edit_cache.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/rebuild_cache.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/list_install_components.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/install.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/install/local.dir
+/home/orin/disk/demos-humble/io_opt/build/io_opt/CMakeFiles/install/strip.dir

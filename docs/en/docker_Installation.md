@@ -2,6 +2,7 @@
 
 Docker ensures that all developers in the project have a consistent development environment. It is recommended for beginners, temporary users, and those unfamiliar with Ubuntu.
 
+
 ```shell
 ## 1. Install docker-engine
 # Taken from: https://docs.docker.com/engine/install/ubuntu/
@@ -73,20 +74,14 @@ xhost +
 ## 4. Download Images
 
 # For ARM architecture
-docker pull ieiauto/autodrrt:orin
+docker pull ieiauto/autodrrt:v2
 
-# For x86 architecture
-docker pull ieiauto/autodrrt:x86
 
-## 5. Load Images
-
-docker load -i ghcr.io/autodrrtfoundation/autodrrt-universe:latest-cuda
-
-## 6. Clone the Code (Assuming the directory location is ${workspace})
+## 5. Clone the Code (Assuming the directory location is ${workspace})
 
 git clone https://github.com/IEIAuto/AutoDRRT.git
 
-## 7.1 Start the Container (for Orin/arm64)
+## 6. Start the Container (for Orin/arm64)
 
 docker run -it \
 --net=host \
@@ -97,26 +92,12 @@ docker run -it \
 -v /dev/shm:/dev/shm \
 -w ${workspace} \
 --name=autodrrt \
-ieiauto/autodrrt:orin
-
-## 7.2 Start the Container (for x86)
-
-docker run -it \
---net=host \
---gpus all \
--e DISPLAY=$DISPLAY \
--v  /home/:/home/ \
--v /tmp/.X11-unix/:/tmp/.X11-unix \
--w ${workspace} \
--v /dev/shm:/dev/shm \
---name=autodrrt \
-docker pull ieiauto/autodrrt:x86
+ieiauto/autodrrt:v2
 
 
-## 8. Enter the Container
+## 7. Enter the Container
 
 docker start autodrrt && docker exec -it autodrrt /bin/bash
 
-## 9. Compile Inside the Container
-
-./env_set.sh && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=Off 
+## 8. Compile Inside the Container
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=Off

@@ -1,0 +1,81 @@
+#version=1.6
+include:
+   - project: 'pub/mrt_build_config'
+     ref: master
+     file: '/ci_templates/default_catkin_project.yml'
+
+# Tests installing on a plain system without mrt stuff using the provided Docker image
+.build_docker:
+  stage: build
+  image: docker:18.09
+  only:
+  - master
+  - merge_requests
+  before_script: []
+  cache: {}
+  services:
+    - docker:18.09-dind
+  script:
+    - export IMAGE_NAME=$CI_REGISTRY_IMAGE:$TAG
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build --cache-from $IMAGE_NAME -t $IMAGE_NAME --build-arg=DISTRIBUTION=$DISTRIBUTION --build-arg=ROS_DISTRO=$ROS_DISTRO --build-arg ROS=$ROS .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - if [ "$CI_COMMIT_REF_NAME" = "master" ]; then docker push $IMAGE_NAME; fi
+
+build_docker_xenial:
+  extends: .build_docker
+  variables:
+    DISTRIBUTION: "16.04"
+    TAG: "16.04"
+    ROS_DISTRO: kinetic
+    DOCKER_DRIVER: overlay2
+    GIT_STRATEGY: fetch
+    ROS: ros
+
+build_docker_bionic:
+  extends: .build_docker
+  variables:
+    DISTRIBUTION: "18.04"
+    TAG: "18.04"
+    ROS_DISTRO: melodic
+    DOCKER_DRIVER: overlay2
+    GIT_STRATEGY: fetch
+    ROS: ros
+
+# disabled as long as https://github.com/catkin/catkin_tools/issues/594 persists
+build_docker_focal:
+  extends: .build_docker
+  variables:
+    DISTRIBUTION: "20.04"
+    TAG: "20.04"
+    ROS_DISTRO: noetic
+    DOCKER_DRIVER: overlay2
+    GIT_STRATEGY: fetch
+    ROS: ros
+
+build_docker_ros2:
+  extends: .build_docker
+  variables:
+    DISTRIBUTION: "18.04"
+    TAG: ros2
+    ROS_DISTRO: dashing
+    DOCKER_DRIVER: overlay2
+    GIT_STRATEGY: fetch
+    ROS: ros2
+
+build_conan:
+  stage: build
+  image: ubuntu:20.04
+  variables:
+    GIT_STRATEGY: fetch
+  only:
+  - master
+  - merge_requests
+  before_script: []
+  script:
+  - apt update && env DEBIAN_FRONTEND=noninteractive apt install -y python3-pip git cmake python3-dev
+  - pip3 install conan catkin_pkg numpy
+  - conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
+  - conan config set general.revisions_enabled=1
+  - conan source .
+  - conan create . lanelet2/stable --build=missing

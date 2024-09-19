@@ -1,0 +1,66 @@
+# TestNuscenes: false # true or false
+
+# # ModelConfig: cfgs/bevdet_lt_d_offcial_r50.yaml
+# ModelConfig: cfgs/bevdet_lt_depth.yaml
+
+# N: 1
+# H: 900
+# W: 1600
+# # cams: [CAM_FRONT_LEFT, CAM_FRONT, CAM_FRONT_RIGHT, CAM_BACK_LEFT, CAM_BACK, CAM_BACK_RIGHT]
+# cams: [CAM_FRONT]
+# sample:
+#     CAM_FRONT: sample0/imgs/CAM_FRONT.jpg
+    
+# CamConfig: sample0/sample0000.yaml
+# InputFile: sample0/0.bin
+# OutputLidarBox: sample0/sample0_lidarbox.txt
+
+# # ImgStageEngine: model/img_stage_lt_d_fp16.engine
+# # BEVStageEngine: model/bev_stage_lt_d_fp16.engine
+# ImgStageEngine: model_offcial/img_stage_lt_d_fp16.engine
+# BEVStageEngine: model_offcial/bev_stage_lt_d_fp16.engine
+
+
+# OutputDir: output/
+
+# LoadDim: 5
+# UseDim: 4
+
+# dataset_info: data/nuscenes/data_infos
+
+
+
+TestNuscenes: false # true or false
+
+# ModelConfig: cfgs/bevdet_lt_d_offcial_r50.yaml
+ModelConfig: model/bevdet_lt_d.yaml
+
+N: 1
+H: 1280
+W: 2048
+
+cams: [CAM_FRONT]
+sample:
+    # CAM_FRONT_LEFT: sample0/imgs/CAM_FRONT_LEFT.jpg
+    CAM_FRONT: model/front_camera_optical_link_1706680938.jpg
+    # CAM_FRONT_RIGHT: sample0/imgs/CAM_FRONT_RIGHT.jpg
+    # CAM_BACK_LEFT: sample0/imgs/CAM_BACK_LEFT.jpg
+    # CAM_BACK: sample0/imgs/CAM_BACK.jpg
+    # CAM_BACK_RIGHT: sample0/imgs/CAM_BACK_RIGHT.jpg
+
+CamConfig: model/sample0000.yaml
+InputFile: sample0/0.bin
+OutputLidarBox: model/sample0_lidarbox.txt
+
+# ImgStageEngine: model/img_stage_lt_d_fp16.engine
+# BEVStageEngine: model/bev_stage_lt_d_fp16.engine
+ImgStageEngine: model/img_stage_lt_d_fp16.engine
+BEVStageEngine: model/bev_stage_lt_d_fp16.engine
+
+
+OutputDir: output/
+
+LoadDim: 5
+UseDim: 4
+
+dataset_info: data/nuscenes/data_infos

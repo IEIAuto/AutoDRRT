@@ -1,0 +1,42 @@
+# Run linters automatically on pull requests.
+name: Lint
+on:
+  pull_request:
+
+jobs:
+  ament_lint:
+    name: ament_${{ matrix.linter }}(${{ matrix.ros_distribution }})
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.docker_image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distribution:
+          - foxy
+          - galactic
+          - rolling
+        include:
+          # Foxy Fitzroy (May 2020 - May 2023)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-foxy-ros-base-latest
+            ros_distribution: foxy
+            ros_version: 2
+          # Galactic Geochelone (May 2021 - November 2022)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-galactic-ros-base-latest
+            ros_distribution: galactic
+            ros_version: 2
+          # Rolling Ridley  (June 2020 - Present)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-rolling-ros-base-latest
+            ros_distribution: rolling
+            ros_version: 2
+        linter:
+          - copyright
+          - xmllint
+          - lint_cmake
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - uses: ros-tooling/action-ros-lint@0.1.3
+        with:
+          linter: ${{ matrix.linter }}
+          distribution: ${{ matrix.ros_distribution }}
+          package-name: osqp_vendor

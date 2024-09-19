@@ -1,0 +1,45 @@
+# PACMod system watchdog report2
+
+std_msgs/Header header
+
+bool accel_rpt_timeout
+bool brake_rpt_timeout
+bool brake_deccel_rpt_timeout
+bool cabin_climate_rpt_timeout
+bool cabin_fan_speed_rpt_timeout
+bool cabin_temp_rpt_timeout
+bool cruise_control_rpt_timeout
+bool dash_left_rpt_timeout
+bool dash_right_rpt_timeout
+bool engine_brake_rpt_timeout
+bool hazard_lights_rpt_timeout
+bool headlight_rpt_timeout
+bool horn_rpt_timeout
+bool marker_lamp_rpt_timeout
+bool media_controls_rpt_timeout
+bool parking_brake_rpt_timeout
+bool rear_pass_door_rpt_timeout
+bool shift_rpt_timeout
+bool sprayer_rpt_timeout
+bool steering_rpt_timeout
+bool turn_rpt_timeout
+bool wiper_rpt_timeout
+bool mod1_sanity_fault
+bool mod2_sanity_fault
+bool mod3_sanity_fault
+bool mini1_sanity_fault
+bool mini2_sanity_fault
+bool mini3_sanity_fault
+bool mod1_component_rpt_timeout
+bool mod2_component_rpt_timeout
+bool mod3_component_rpt_timeout
+bool mini1_component_rpt_timeout
+bool mini2_component_rpt_timeout
+bool mini3_component_rpt_timeout
+bool mod1_system_present_fault
+bool mod2_system_present_fault
+bool mod3_system_present_fault
+bool mini1_system_present_fault
+bool mini2_system_present_fault
+bool mini3_system_present_fault
+bool drive_mode_invalid

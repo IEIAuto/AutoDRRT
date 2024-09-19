@@ -1,0 +1,11 @@
+/**:
+  ros__parameters:
+    N: 6
+    H: 900
+    W: 1600
+    ModelConfig: ./cfgs/bevdet_lt_depth.yaml
+    ImgStageEngine: ./model/img_stage_lt_d_fp16.engine
+    BEVStageEngine: ./model/bev_stage_lt_d_fp16.engine
+    CamConfig: /sample0/sample0000.yaml
+    OutputLidarBox: /sample0/sample0_lidarbox.txt
+    cams: [CAM_FRONT_LEFT, CAM_FRONT, CAM_FRONT_RIGHT, CAM_BACK_LEFT, CAM_BACK, CAM_BACK_RIGHT]

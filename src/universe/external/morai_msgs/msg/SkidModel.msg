@@ -1,2 +1,0 @@
-WheelRpm rpm
-WheelTorque torque

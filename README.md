@@ -1,44 +1,45 @@
 # Autonomous Driving Computing Framework AutoDRRT
-AutoDRRT is an autonomous driving framework developed based on the [Autoware open-source framework](https://github.com/autowarefoundation/autoware/tree/main), with targeted optimizations for the EIS400 onboard domain controller. These optimizations enhance the framework's real-time performance, distributability, and fault tolerance. A set of tools is provided to facilitate users in making use of these new features more easily. This framework is built upon the Robot Operating System 2 (ROS2). It encompasses all necessary functionalities from localization and target detection to path planning and control, striving to lower the entry barrier and aiming to involve as many individuals and organizations as possible in the open innovation of autonomous driving technology.
+AutoDRRT is an autonomous driving framework developed based on the [Autoware open-source framework](https://github.com/autowarefoundation/autoware/tree/main), with targeted optimizations for the IEI_EIS400 onboard domain controller. These optimizations enhance the framework's real-time performance, distributability, and fault tolerance. A set of tools is provided to facilitate users in making use of these new features more easily. This framework is built upon the Robot Operating System 2 (ROS2). It encompasses all necessary functionalities from localization and target detection to path planning and control, striving to lower the entry barrier and aiming to involve as many individuals and organizations as possible in the open innovation of autonomous driving technology.
 
-![avatar](./docs/imgs/Architecture_Diagram_en.png)
+## Key Updates(v2.0)
 
-Based on the AutoDRRT framework, IEI secured the dual championship in both simulation and real vehicle races at the 5th Japan Automotive AI Challenge. This solution is tailored for factory scenarios and provides a [Level 4 autonomous driving solution](../../tree/factory_scene).
-<div align=center>
-  <img src="./docs/imgs/award.png" width="450" height="600">
-</div>
+- Algorithm upgrade: integrating multiple BEV + Transformer perception algorithm libraries.
+- Performance upgrade: integrating various latency optimization functions for computation, communication, and I/O.
+- Usability upgrade: integrating multiple development tools and low-level drivers.
+
+## Version Introduction
+
+### AutoDRRT V1.0
+<p style="text-align: center;">
+  <img src="./docs/imgs/1.0.png" alt="avatar">
+  </p>
+
+### AutoDRRT V2.0
+<p style="text-align: center;">
+  <img src="./docs/imgs/2.0.png" alt="avatar">
+  </p>
 
 
 ## Features
 
-- Distributed
+- Computation latency optimization
+  achieving low-latency computation from 2D+CNN to BEV+Transformer
+  <p style="text-align: center;">
+  <img src="./docs/imgs/bev_time.png" alt="avatar" width="250">
+  </p>
 
-This framework supports transforming single-node applications into distributed applications with zero code changes.
+- Communication delay optimization
+  Implementing DDS from supporting Ethernet to PCIE
+  <p style="text-align: center;">
+  <img src="./docs/imgs/dds_time.png" alt="avatar" width="250">
+  </p>
 
-- Enhanced Real time performance
-  
-  Significant Reduction in End-to-End Latency Achieved Through Multi-Faceted Optimization Strategies and Hardware-Software Co-design.
-  ![avatar](./docs/imgs/Real_time_performance.png)
-  <span style="font-size: small;">The test data corresponds to the 'logging_simulator' scenario used in the Autoware framework</span>
+- IO latency optimization
+  GPU data sharing between nodes to avoid CPU-GPU transfer
 
-
-
-- Fault Tolerance
-
-The framework supports concurrent startup of multiple identical algorithm nodes, capable of receiving and processing data simultaneously. In the event of a primary node failure due to faults, backup nodes seamlessly take over data transmission with millisecond-level switchover time.
-
-- DDS integrated with DMA acceleration
-
-The framework has upgraded Cyclone DDS, leveraging the DMA capabilities of Orin for shared memory implementation, thereby enhancing the transfer performance of large data blocks.
-![avatar](./docs/imgs/dma_dds_compare.png)
-  <span style="font-size: small;">The comparison between DDS and DDS integrated with DMA</span>
-
-
-- [Unmanned Car Scenario](../../tree/factory_scene)
-
-The framework supports unmanned car scenarios, capable of addressing obstacles, smoke, S-curves, L-curves, and other situations.  It possesses safety, availability, and drivability. 
-
-
+  <p style="text-align: center;">
+  <img src="./docs/imgs/io_time.png" alt="avatar" width="250">
+  </p>
 
 ## Installation
 
@@ -49,18 +50,13 @@ The target platforms for AutoDRRT are as follows. There might be changes in futu
 The AutoDRRT Foundation provides support only for the platforms listed below. Other platforms are not supported.
 
 ### Platform Architectures
-
-- amd64
-
-        Recommend: X86 + NVIDIA GPU (4GB RAM)
-
 - arm64
 
-        Recommend: NVIDIA Orin OR NVIDIA Xavier
+        Recommend: NVIDIA Orin Jetson Linux 35.4.1
 
 ### Recommended Platforms
 
-- [EIS400](./docs/en/EIS400.md)
+- [IEI_EIS400](./docs/en/EIS400.md)
 
 - NVIDIA Orin
 
@@ -74,28 +70,14 @@ The AutoDRRT Foundation provides support only for the platforms listed below. Ot
 
 ### Installation Instructions
 
-#### 1. Installation using DOCKER
-
  Docker ensures that all developers in the project have a consistent development environment. It is recommended for beginners, temporary users, and those unfamiliar with Ubuntu.
 
 - [Installation Method](./docs/en/docker_Installation.md)
 
-#### 2. Installation from SOURCE CODE
-
-  - Environmental Requirements
-
-    - Ubuntu 22.04
-
-- [Installation Method](./docs/en/source_Installation.md)
 
 ### Usage Instructions
 
 [Usage Instructions](./docs/en/tutorials.md)
-
-If you want to use the [unmanned car scenario](../../tree/factory_scene) on the current branch, please use the following command:
-
-```bash factory_scene.sh```
-
 
 ### Contact Us
 [AutoDRRT@ieisystem.com](AutoDRRT@ieisystem.com)

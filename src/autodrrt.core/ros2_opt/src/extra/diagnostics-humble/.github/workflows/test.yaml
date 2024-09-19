@@ -1,0 +1,35 @@
+name: Test diagnostics
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    # Run every morning to detect flakiness and broken dependencies
+    - cron: '17 8 * * *'
+
+jobs:
+  build_and_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04]
+    steps:
+      - uses: ros-tooling/setup-ros@v0.2
+      - uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          target-ros2-distro: rolling
+          package-name:
+            diagnostic_aggregator
+            diagnostic_updater
+            self_test
+          vcs-repo-file-url: |
+            https://raw.githubusercontent.com/ros2/ros2/master/ros2.repos
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-gcc"]
+              }
+            }
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml

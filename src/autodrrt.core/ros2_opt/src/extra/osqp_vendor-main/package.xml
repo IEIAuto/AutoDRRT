@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>osqp_vendor</name>
+  <version>0.2.0</version>
+  <description>
+    Wrapper around osqp that ships with a CMake module
+  </description>
+  <maintainer email="esteve.fernandez@autoware.org">Esteve Fernandez</maintainer>
+  <license>Apache License 2.0</license>
+
+  <url type="website">https://github.com/oxfordcontrol/osqp</url>
+  <author email="esteve.fernandez@autoware.org">Esteve Fernandez</author>
+
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend>git</buildtool_depend>
+
+  <build_depend>ros_environment</build_depend>
+
+  <test_depend condition="$ROS_VERSION == 2">ament_lint_auto</test_depend>
+  <test_depend condition="$ROS_VERSION == 2">ament_lint_common</test_depend>
+
+  <export>
+    <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+  </export>
+</package>

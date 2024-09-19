@@ -1,0 +1,6 @@
+setup.py
+dma_customer_msg/__init__.py
+dma_customer_msg.egg-info/PKG-INFO
+dma_customer_msg.egg-info/SOURCES.txt
+dma_customer_msg.egg-info/dependency_links.txt
+dma_customer_msg.egg-info/top_level.txt

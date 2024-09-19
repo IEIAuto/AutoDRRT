@@ -1,2 +1,0 @@
-std_msgs/Header header
-tier4_planning_msgs/LaneChangeDebugMsg[] lane_change_info

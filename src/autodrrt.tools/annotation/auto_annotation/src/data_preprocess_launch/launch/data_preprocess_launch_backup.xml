@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+
+  <!-- main parameters -->  
+
+  <arg name="input/image" default="/front/image_raw_time"/>
+  <arg name="input/camera_info" default="/front/camerainfo_time"/>
+  <arg name="input_pointcloud" default="/sensing/lidar/top/outlier_filtered/pointcloud"/>
+
+  <!-- lidar parameters -->
+
+  <arg name="output_objects" default="/output/objects"/>
+  <arg name="model_name" default="centerpoint_tiny" description="options: `centerpoint` or `centerpoint_tiny`"/>
+  <arg name="model_path" default="$(find-pkg-share lidar_centerpoint_collect)/data"/>
+  <arg name="model_param_path" default="$(find-pkg-share lidar_centerpoint_collect)/config/$(var model_name).param.yaml"/>
+  <arg name="class_remapper_param_path" default="$(find-pkg-share lidar_centerpoint_collect)/config/detection_class_remapper.param.yaml"/>
+  <arg name="score_threshold" default="0.35"/>
+  <arg name="has_twist" default="false"/>
+  <!-- image parameters -->
+  <arg name="input/image_info" default="/image_info"/>
+  <arg name="message_sync/output/images_info" default="/message_sync/out/images_info"/>
+  <!-- message sync parameters --> 
+
+  <arg name="message_sync/output/pointcloud" default="/message_sync/out/pointcloud"/>
+  <arg name="message_sync/output/images_info" default="/message_sync/out/images_info"/>
+  <arg name="message_sync/output/objects" default="/message_sync/out/objects"/>
+  <arg name="message_sync/output/camera_info" default="/message_sync/out/camera_info"/>
+  <arg name="message_sync/output/image_raw" default="/message_sync/out/image_raw"/>
+
+
+  <!-- message sync -->
+
+  <include file="$(find-pkg-share message_sync)/launch/message_sync.launch.xml">
+    <arg name="input/pointcloud" value="$(var input_pointcloud)"/>
+    <arg name="input/camera_info" value="$(var input/camera_info)"/>
+    <arg name="input/image_raw" value="$(var input/image)"/>
+
+    <arg name="message_sync/output/pointcloud" value="/message_sync/out/pointcloud"/>
+    <!-- <arg name="message_sync/output/images_info" value="/message_sync/out/images_info"/> -->
+    <arg name="message_sync/output/objects" value="/message_sync/out/objects"/>
+    <arg name="message_sync/output/camera_info" value="/message_sync/out/camera_info"/>
+    <arg name="message_sync/output/image_raw" value="/message_sync/out/image_raw"/>
+  </include>
+
+  <!-- lidar -->
+<group>
+  <include file="$(find-pkg-share lidar_centerpoint_collect)/launch/lidar_centerpoint.launch.xml">
+      <arg name="input/pointcloud" value="$(var message_sync/output/pointcloud)"/>
+      <arg name="output/objects" value="$(var message_sync/output/objects)"/>
+      <arg name="model_name" value="$(var model_name)"/>
+      <arg name="score_threshold" value="$(var score_threshold)"/>
+
+  </include>
+</group>
+  <!-- image saver -->  
+
+  <node pkg="image_view" exec="image_saver" name="image_saver_node" output="screen">
+    <remap from="image" to="$(var message_sync/output/image_raw)"/>
+    <remap from="output" to="$(var message_sync/output/images_info)"/>
+  </node>
+
+    <!-- data dumper -->  
+
+  <node pkg="data_format_dump" exec="data_dumper" name="data_dumper_node" output="screen">
+  </node>
+
+
+
+</launch>

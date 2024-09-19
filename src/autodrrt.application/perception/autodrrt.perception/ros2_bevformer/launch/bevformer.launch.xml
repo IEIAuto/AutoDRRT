@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="trt_model_path" default="/home/orin/disk/autodrrt/ros2_bevformer/BEVFormer_tensorrt_deploy/checkpoints/tensorrt/bevformer_tiny_epoch_24_cp_entropy_int8_fp16.trt" />
+  <arg name="config_path" default="/home/orin/disk/autodrrt/ros2_bevformer/BEVFormer_tensorrt_deploy/configs/bevformer/bevformer_tiny_trt.py"/>
+  
+  <arg name="bevformer_config_path" default="$(find-pkg-share ros2_bevformer)/config/bevformer.param.yaml"/>
+  
+  <arg name="/camera_0/raw_image" default="/lucid_vision/camera_0/raw_image"/>
+  <arg name="/camera_1/raw_image" default="/lucid_vision/camera_1/raw_image"/>
+  <arg name="/camera_2/raw_image" default="/lucid_vision/camera_2/raw_image"/>
+  <arg name="/camera_3/raw_image" default="/lucid_vision/camera_0/raw_image"/>
+  <arg name="/camera_4/raw_image" default="/lucid_vision/camera_1/raw_image"/>
+  <arg name="/camera_5/raw_image" default="/lucid_vision/camera_2/raw_image"/>
+
+  <node pkg="ros2_bevformer" exec="ros2_bevformer" name="ros2_bevformer" output="screen">
+    <param name="trt_model_path" value="$(var trt_model_path)"/>
+    <param name="config_path" value="$(var config_path)"/>
+    <param name="/camera_0/raw_image" value="$(var /camera_0/raw_image)"/>
+    <param name="/camera_1/raw_image" value="$(var /camera_1/raw_image)"/>
+    <param name="/camera_2/raw_image" value="$(var /camera_2/raw_image)"/>
+    <param name="/camera_3/raw_image" value="$(var /camera_3/raw_image)"/>
+    <param name="/camera_4/raw_image" value="$(var /camera_4/raw_image)"/>
+    <param name="/camera_5/raw_image" value="$(var /camera_5/raw_image)"/>
+    
+    <param name="bevformer_config_path" value="$(var bevformer_config_path)"/>
+  </node>
+</launch>
+
+
+

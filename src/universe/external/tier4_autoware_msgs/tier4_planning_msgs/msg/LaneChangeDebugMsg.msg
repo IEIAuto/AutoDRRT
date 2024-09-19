@@ -1,6 +1,0 @@
-string object_id
-bool allow_lane_change
-bool is_front
-geometry_msgs/Pose relative_distance
-float64 velocity
-string failed_reason

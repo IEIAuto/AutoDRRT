@@ -1,0 +1,418 @@
+# 分为三类：容器节点结果，ROS2节点结果，启动节点
+1. 容器节点结果
+system/component_state_monitor/container
+  1  /system/component_state_monitor/component
+/planning/scenario_planning/lane_driving/behavior_planning/behavior_planning_container
+  1  /planning/scenario_planning/lane_driving/behavior_planning/behavior_path_planner
+  2  /planning/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner
+/pointcloud_container
+  1  /perception/object_recognition/detection/voxel_based_compare_map_filter
+  2  /sensing/lidar/concatenate_data
+  3  /sensing/lidar/left/velodyne_convert_node
+  4  /perception/obstacle_segmentation/crop_box_filter
+  5  /perception/occupancy_grid_map/occupancy_grid_map_node
+  6  /sensing/lidar/top/velodyne_convert_node
+  7  /sensing/lidar/rear/velodyne_convert_node
+  8  /sensing/lidar/right/velodyne_convert_node
+  9  /localization/util/crop_box_filter_measurement_range
+  10  /sensing/lidar/left/crop_box_filter_self
+  11  /perception/obstacle_segmentation/common_ground_filter
+  12  /sensing/lidar/rear/crop_box_filter_self
+  13  /sensing/lidar/top/crop_box_filter_self
+  14  /sensing/lidar/right/crop_box_filter_self
+  15  /localization/util/voxel_grid_downsample_filter
+  16  /sensing/lidar/left/crop_box_filter_mirror
+  17  /perception/obstacle_segmentation/occupancy_grid_map_outlier_filter
+  18  /sensing/lidar/rear/crop_box_filter_mirror
+  19  /sensing/lidar/top/crop_box_filter_mirror
+  20  /sensing/lidar/right/crop_box_filter_mirror
+  21  /localization/util/random_downsample_filter
+  22  /sensing/lidar/left/distortion_corrector_node
+  23  /sensing/lidar/rear/distortion_corrector_node
+  24  /sensing/lidar/top/distortion_corrector_node
+  25  /sensing/lidar/right/distortion_corrector_node
+  26  /sensing/lidar/left/ring_outlier_filter
+  27  /sensing/lidar/rear/ring_outlier_filter
+  28  /sensing/lidar/right/ring_outlier_filter
+  29  /sensing/lidar/top/ring_outlier_filter
+/system/mrm_emergency_stop_operator/mrm_emergency_stop_operator_container
+  1  /system/mrm_emergency_stop_operator
+/map/map_container
+  1  /map/lanelet2_map_loader
+  2  /map/lanelet2_map_visualization
+  3  /map/pointcloud_map_loader
+  4  /map/vector_map_tf_generator
+/system/mrm_comfortable_stop_operator/mrm_comfortable_stop_operator_container
+  1  /system/mrm_comfortable_stop_operator
+/control/control_container
+  1  /control/external_cmd_selector
+  2  /control/external_cmd_converter
+  3  /control/trajectory_follower/controller_node_exe
+  4  /control/trajectory_follower/lane_departure_checker_node
+  5  /control/shift_decider
+  6  /control/vehicle_cmd_gate
+  7  /control/operation_mode_transition_manager
+/planning/scenario_planning/lane_driving/motion_planning/motion_planning_container
+  1  /planning/scenario_planning/lane_driving/motion_planning/obstacle_avoidance_planner
+  2  /planning/scenario_planning/lane_driving/motion_planning/obstacle_stop_planner
+  3  /planning/scenario_planning/lane_driving/motion_planning/surround_obstacle_checker
+  4  /planning/scenario_planning/lane_driving/motion_planning/obstacle_velocity_limiter
+/planning/scenario_planning/parking/parking_container
+  1  /planning/scenario_planning/parking/costmap_generator
+  2  /planning/scenario_planning/parking/freespace_planner
+/perception/object_recognition/detection/clustering/euclidean_cluster_container
+  1  /perception/object_recognition/detection/clustering/outlier_filter
+  2  /perception/object_recognition/detection/clustering/voxel_grid_filter_orin_36303_2652471889833811899
+  3  /perception/object_recognition/detection/clustering/euclidean_cluster
+/autoware_api/external/rtc_controller/container
+  1  /autoware_api/external/rtc_controller/node
+/default_ad_api/container
+  1  /default_ad_api/node/autoware_state
+  2  /default_ad_api/node/fail_safe
+  3  /default_ad_api/node/interface
+  4  /default_ad_api/node/localization
+  5  /default_ad_api/node/motion
+  6  /default_ad_api/node/operation_mode
+  7  /default_ad_api/node/planning
+  8  /default_ad_api/node/routing
+/perception/traffic_light_recognition/traffic_light_node_container
+  1  /perception/traffic_light_recognition/traffic_light_classifier
+  2  /perception/traffic_light_recognition/traffic_light_image_decompressor
+  3  /perception/traffic_light_recognition/traffic_light_ssd_fine_detector
+  4  /perception/traffic_light_recognition/crosswalk_traffic_light_estimator
+  5  /perception/traffic_light_recognition/traffic_light_roi_visualizer
+
+
+2. ROS2节点结果
+/aggregator_node
+/autoware_api/external/rtc_controller/container
+/autoware_api/external/rtc_controller/node
+/control/control_container
+/control/external_cmd_converter
+/control/external_cmd_selector
+/control/operation_mode_transition_manager
+/control/shift_decider
+/control/trajectory_follower/controller_node_exe
+/control/trajectory_follower/lane_departure_checker_node
+/control/transform_listener_impl_7f4ac80079e0
+/control/vehicle_cmd_gate
+/default_ad_api/container
+/default_ad_api/helpers/initial_pose_adaptor
+/default_ad_api/helpers/routing_adaptor
+/default_ad_api/node/autoware_state
+/default_ad_api/node/fail_safe
+/default_ad_api/node/interface
+/default_ad_api/node/localization
+/default_ad_api/node/motion
+/default_ad_api/node/operation_mode
+/default_ad_api/node/planning
+/default_ad_api/node/routing
+/default_ad_api/web_server
+/launch_ros_36303
+/localization/localization_error_monitor
+/localization/pose_estimator/ndt_scan_matcher
+/localization/pose_estimator/transform_listener_impl_55ed53524938
+/localization/pose_twist_fusion_filter/ekf_localizer
+/localization/pose_twist_fusion_filter/stop_filter
+/localization/pose_twist_fusion_filter/twist2accel
+/localization/twist_estimator/gyro_odometer
+/localization/twist_estimator/transform_listener_impl_55db0dbaa990
+/localization/util/crop_box_filter_measurement_range
+/localization/util/default_ad_api/helpers/automatic_pose_initializer
+/localization/util/map_height_fitter
+/localization/util/pose_initializer_node
+/localization/util/random_downsample_filter
+/localization/util/transform_listener_impl_5615e302ec58
+/localization/util/voxel_grid_downsample_filter
+/map/lanelet2_map_loader
+/map/lanelet2_map_visualization
+/map/map_container
+/map/map_hash_generator
+/map/pointcloud_map_loader
+/map/vector_map_tf_generator
+/perception/object_recognition/detection/centerpoint/lidar_centerpoint
+/perception/object_recognition/detection/centerpoint/transform_listener_impl_555b4ca023f8
+/perception/object_recognition/detection/clustering/detected_object_feature_remover
+/perception/object_recognition/detection/clustering/euclidean_cluster
+/perception/object_recognition/detection/clustering/euclidean_cluster_container
+/perception/object_recognition/detection/clustering/outlier_filter
+/perception/object_recognition/detection/clustering/shape_estimation
+/perception/object_recognition/detection/clustering/transform_listener_impl_7f3ef000c440
+/perception/object_recognition/detection/clustering/transform_listener_impl_7f3ef00167c0
+/perception/object_recognition/detection/clustering/voxel_grid_filter_orin_36303_2652471889833811899
+/perception/object_recognition/detection/detection_by_tracker/detection_by_tracker_node
+/perception/object_recognition/detection/detection_by_tracker/transform_listener_impl_557d45b2b388
+/perception/object_recognition/detection/object_association_merger_orin_36303_1824922747358884600
+/perception/object_recognition/detection/object_association_merger_orin_36303_5258256768901333305
+/perception/object_recognition/detection/object_lanelet_filter
+/perception/object_recognition/detection/obstacle_pointcloud_based_validator_node
+/perception/object_recognition/detection/transform_listener_impl_55e1c0f275d0
+/perception/object_recognition/detection/transform_listener_impl_55ffba9723b8
+/perception/object_recognition/detection/transform_listener_impl_56511e1606b8
+/perception/object_recognition/detection/transform_listener_impl_5652d1cfa6b8
+/perception/object_recognition/detection/voxel_based_compare_map_filter
+/perception/object_recognition/prediction/map_based_prediction
+/perception/object_recognition/prediction/transform_listener_impl_7f888c016500
+/perception/object_recognition/tracking/multi_object_tracker
+/perception/object_recognition/tracking/transform_listener_impl_557004912ee8
+/perception/obstacle_segmentation/common_ground_filter
+/perception/obstacle_segmentation/crop_box_filter
+/perception/obstacle_segmentation/occupancy_grid_map_outlier_filter
+/perception/occupancy_grid_map/occupancy_grid_map_node
+/perception/traffic_light_recognition/crosswalk_traffic_light_estimator
+/perception/traffic_light_recognition/traffic_light_classifier
+/perception/traffic_light_recognition/traffic_light_image_decompressor
+/perception/traffic_light_recognition/traffic_light_map_based_detector
+/perception/traffic_light_recognition/traffic_light_map_visualizer
+/perception/traffic_light_recognition/traffic_light_node_container
+/perception/traffic_light_recognition/traffic_light_roi_visualizer
+/perception/traffic_light_recognition/traffic_light_ssd_fine_detector
+/perception/traffic_light_recognition/transform_listener_impl_555a8660cac8
+/planning/mission_planning/goal_pose_visualizer
+/planning/mission_planning/mission_planner
+/planning/mission_planning/transform_listener_impl_55ecb27d7c88
+/planning/planning_diagnostics/planning_error_monitor
+/planning/scenario_planning/external_velocity_limit_selector
+/planning/scenario_planning/lane_driving/behavior_planning/behavior_path_planner
+/planning/scenario_planning/lane_driving/behavior_planning/behavior_planning_container
+/planning/scenario_planning/lane_driving/behavior_planning/behavior_velocity_planner
+/planning/scenario_planning/lane_driving/behavior_planning/rtc_auto_mode_manager
+/planning/scenario_planning/lane_driving/behavior_planning/transform_listener_impl_7faa1859b448
+/planning/scenario_planning/lane_driving/behavior_planning/transform_listener_impl_7faa3c008880
+/planning/scenario_planning/lane_driving/motion_planning/motion_planning_container
+/planning/scenario_planning/lane_driving/motion_planning/obstacle_avoidance_planner
+/planning/scenario_planning/lane_driving/motion_planning/obstacle_stop_planner
+/planning/scenario_planning/lane_driving/motion_planning/obstacle_velocity_limiter
+/planning/scenario_planning/lane_driving/motion_planning/surround_obstacle_checker
+/planning/scenario_planning/lane_driving/motion_planning/transform_listener_impl_55aea417aa00
+/planning/scenario_planning/lane_driving/motion_planning/transform_listener_impl_7f9dec01c518
+/planning/scenario_planning/lane_driving/motion_planning/transform_listener_impl_7f9dfc00dd98
+/planning/scenario_planning/lane_driving/motion_planning/transform_listener_impl_7f9e1c0164f0
+/planning/scenario_planning/lane_driving/motion_planning/transform_listener_impl_7f9e1c0226f0
+/planning/scenario_planning/motion_velocity_smoother
+/planning/scenario_planning/parking/costmap_generator
+/planning/scenario_planning/parking/freespace_planner
+/planning/scenario_planning/parking/parking_container
+/planning/scenario_planning/parking/transform_listener_impl_5607c34fe078
+/planning/scenario_planning/parking/transform_listener_impl_7f4bb400b150
+/planning/scenario_planning/scenario_selector
+/planning/scenario_planning/transform_listener_impl_562024540708
+/planning/scenario_planning/transform_listener_impl_5628f2740e30
+/pointcloud_container
+/robot_state_publisher
+/rviz2
+/sensing/gnss/gnss_poser
+/sensing/gnss/transform_listener_impl_562e17d89518
+/sensing/imu/imu_corrector
+/sensing/imu/transform_listener_impl_560a343c5280
+/sensing/lidar/concatenate_data
+/sensing/lidar/left/crop_box_filter_mirror
+/sensing/lidar/left/crop_box_filter_self
+/sensing/lidar/left/distortion_corrector_node
+/sensing/lidar/left/ring_outlier_filter
+/sensing/lidar/left/velodyne_convert_node
+/sensing/lidar/rear/crop_box_filter_mirror
+/sensing/lidar/rear/crop_box_filter_self
+/sensing/lidar/rear/distortion_corrector_node
+/sensing/lidar/rear/ring_outlier_filter
+/sensing/lidar/rear/velodyne_convert_node
+/sensing/lidar/right/crop_box_filter_mirror
+/sensing/lidar/right/crop_box_filter_self
+/sensing/lidar/right/distortion_corrector_node
+/sensing/lidar/right/ring_outlier_filter
+/sensing/lidar/right/velodyne_convert_node
+/sensing/lidar/top/crop_box_filter_mirror
+/sensing/lidar/top/crop_box_filter_self
+/sensing/lidar/top/distortion_corrector_node
+/sensing/lidar/top/ring_outlier_filter
+/sensing/lidar/top/velodyne_convert_node
+/sensing/vehicle_velocity_converter_node
+/system/component_state_monitor/component
+/system/component_state_monitor/container
+/system/emergency_handler
+/system/mrm_comfortable_stop_operator
+/system/mrm_comfortable_stop_operator/mrm_comfortable_stop_operator_container
+/system/mrm_emergency_stop_operator
+/system/mrm_emergency_stop_operator/mrm_emergency_stop_operator_container
+/system/service_log_checker
+/system/system_error_monitor
+/system/topic_state_monitor_control_command_control_cmd
+/system/topic_state_monitor_initialpose3d
+/system/topic_state_monitor_mission_planning_route
+/system/topic_state_monitor_object_recognition_objects
+/system/topic_state_monitor_obstacle_segmentation_pointcloud
+/system/topic_state_monitor_pointcloud_map
+/system/topic_state_monitor_pose_twist_fusion_filter_pose
+/system/topic_state_monitor_scenario_planning_trajectory
+/system/topic_state_monitor_system_emergency_control_cmd
+/system/topic_state_monitor_trajectory_follower_control_cmd
+/system/topic_state_monitor_transform_map_to_base_link
+/system/topic_state_monitor_vector_map
+/system/topic_state_monitor_vehicle_status_steering_status
+/system/topic_state_monitor_vehicle_status_velocity_status
+/transform_listener_impl_562133aee030
+/transform_listener_impl_aaaabc0a80d0
+/transform_listener_impl_ffff50056e60
+/transform_listener_impl_ffff58086950
+/transform_listener_impl_ffff580c2590
+/transform_listener_impl_ffff58101b40
+/transform_listener_impl_ffff5c0bee20
+/transform_listener_impl_ffff6400eba8
+/transform_listener_impl_ffff640b7c78
+/transform_listener_impl_ffff68049be0
+/transform_listener_impl_ffff680766e8
+/transform_listener_impl_ffff7c04b860
+/transform_listener_impl_ffff7c08ff80
+/transform_listener_impl_ffff7c0fa210
+/transform_listener_impl_ffff7c13fcf0
+/transform_listener_impl_ffff7c249fa8
+/transform_listener_impl_ffff8404d8e0
+/transform_listener_impl_ffff84174b08
+/transform_listener_impl_ffff9402b690
+/transform_listener_impl_ffff940339f0
+/transform_listener_impl_ffff94036570
+/transform_listener_impl_ffff94038970
+/transform_listener_impl_ffff94047640
+/transform_listener_impl_ffff94053140
+/transform_listener_impl_ffff94055b40
+/transform_listener_impl_ffff9405a640
+/transform_listener_impl_ffff9406ac50
+
+
+3.启动的所有节点：
+===================================
+/pointcloud_container
+===================================
+/robot_state_publisher
+===================================
+/system/service_log_checker
+===================================
+/system/component_state_monitor/container
+===================================
+/system/topic_state_monitor_vector_map
+===================================
+/system/topic_state_monitor_pointcloud_map
+===================================
+/system/topic_state_monitor_initialpose3d
+===================================
+/system/topic_state_monitor_pose_twist_fusion_filter_pose
+===================================
+/system/topic_state_monitor_obstacle_segmentation_pointcloud
+===================================
+/system/topic_state_monitor_object_recognition_objects
+===================================
+/system/topic_state_monitor_mission_planning_route
+===================================
+/system/topic_state_monitor_scenario_planning_trajectory
+===================================
+/system/topic_state_monitor_trajectory_follower_control_cmd
+===================================
+/system/topic_state_monitor_control_command_control_cmd
+===================================
+/system/topic_state_monitor_vehicle_status_velocity_status
+===================================
+/system/topic_state_monitor_vehicle_status_steering_status
+===================================
+/system/topic_state_monitor_system_emergency_control_cmd
+===================================
+/system/topic_state_monitor_transform_map_to_base_link
+===================================
+/aggregator_node
+===================================
+/system/system_error_monitor
+===================================
+/system/emergency_handler
+===================================
+/system/mrm_comfortable_stop_operator/mrm_comfortable_stop_operator_container
+===================================
+/system/mrm_emergency_stop_operator/mrm_emergency_stop_operator_container
+===================================
+/map/map_container
+===================================
+/map/map_hash_generator
+===================================
+/sensing/imu/imu_corrector
+===================================
+/sensing/gnss/gnss_poser
+===================================
+/sensing/vehicle_velocity_converter_node
+===================================
+/localization/util/map_height_fitter
+===================================
+/localization/util/pose_initializer_node
+===================================
+/localization/util/default_ad_api/helpers/automatic_pose_initializer
+===================================
+/localization/pose_estimator/ndt_scan_matcher
+===================================
+/localization/twist_estimator/gyro_odometer
+===================================
+/localization/pose_twist_fusion_filter/ekf_localizer
+===================================
+/localization/pose_twist_fusion_filter/stop_filter
+===================================
+/localization/pose_twist_fusion_filter/twist2accel
+===================================
+/localization/localization_error_monitor
+===================================
+/perception/object_recognition/detection/clustering/euclidean_cluster_container
+===================================
+/perception/object_recognition/detection/clustering/shape_estimation
+===================================
+/perception/object_recognition/detection/clustering/detected_object_feature_remover
+===================================
+/perception/object_recognition/detection/detection_by_tracker/detection_by_tracker_node
+===================================
+/perception/object_recognition/detection/centerpoint/lidar_centerpoint
+===================================
+/perception/object_recognition/detection/obstacle_pointcloud_based_validator_node
+===================================
+/perception/object_recognition/detection/object_association_merger_orin_48266_6610909172311244815
+===================================
+/perception/object_recognition/detection/object_association_merger_orin_48266_4696795262623503311
+===================================
+/perception/object_recognition/detection/object_lanelet_filter
+===================================
+/perception/object_recognition/tracking/multi_object_tracker
+===================================
+/perception/object_recognition/prediction/map_based_prediction
+===================================
+/perception/traffic_light_recognition/traffic_light_map_based_detector
+===================================
+/perception/traffic_light_recognition/traffic_light_node_container
+===================================
+/perception/traffic_light_recognition/traffic_light_map_visualizer
+===================================
+/planning/mission_planning/mission_planner
+===================================
+/planning/mission_planning/goal_pose_visualizer
+===================================
+/planning/scenario_planning/scenario_selector
+===================================
+/planning/scenario_planning/external_velocity_limit_selector
+===================================
+/planning/scenario_planning/motion_velocity_smoother
+===================================
+/planning/scenario_planning/lane_driving/behavior_planning/behavior_planning_container
+===================================
+/planning/scenario_planning/lane_driving/behavior_planning/rtc_auto_mode_manager
+===================================
+/planning/scenario_planning/lane_driving/motion_planning/motion_planning_container
+===================================
+/planning/scenario_planning/parking/parking_container
+===================================
+/planning/planning_diagnostics/planning_error_monitor
+===================================
+/control/control_container
+===================================
+/default_ad_api/container
+===================================
+/default_ad_api/web_server
+===================================
+/default_ad_api/helpers/initial_pose_adaptor
+===================================
+/default_ad_api/helpers/routing_adaptor
+===================================
+/autoware_api/external/rtc_controller/container
+===================================
+/rviz2

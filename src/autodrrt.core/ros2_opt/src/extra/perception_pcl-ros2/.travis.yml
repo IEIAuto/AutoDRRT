@@ -1,0 +1,27 @@
+language: generic
+
+services:
+  - docker
+
+cache:
+  directories:
+    - $HOME/.ccache
+
+env:
+  global:
+    - ROS_REPO=ros2
+    - CCACHE_DIR=$HOME/.ccache
+    # travis build will time out with no output unless we use verbose output
+    - VERBOSE_OUTPUT=true
+    - VERBOSE_TESTS=true
+  matrix:
+    - ROS_DISTRO=foxy OS_NAME=ubuntu OS_CODE_NAME=focal
+
+install:
+  - git clone --branch master --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci
+script:
+  - .industrial_ci/travis.sh
+
+branches:
+  only:
+    - /.*-devel$/

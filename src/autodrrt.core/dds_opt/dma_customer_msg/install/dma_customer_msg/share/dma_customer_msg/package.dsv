@@ -1,0 +1,14 @@
+source;share/dma_customer_msg/hook/cmake_prefix_path.ps1
+source;share/dma_customer_msg/hook/cmake_prefix_path.dsv
+source;share/dma_customer_msg/hook/cmake_prefix_path.sh
+source;share/dma_customer_msg/hook/ld_library_path_lib.ps1
+source;share/dma_customer_msg/hook/ld_library_path_lib.dsv
+source;share/dma_customer_msg/hook/ld_library_path_lib.sh
+source;share/dma_customer_msg/hook/pythonpath.ps1
+source;share/dma_customer_msg/hook/pythonpath.dsv
+source;share/dma_customer_msg/hook/pythonpath.sh
+source;share/dma_customer_msg/local_setup.bash
+source;share/dma_customer_msg/local_setup.dsv
+source;share/dma_customer_msg/local_setup.ps1
+source;share/dma_customer_msg/local_setup.sh
+source;share/dma_customer_msg/local_setup.zsh

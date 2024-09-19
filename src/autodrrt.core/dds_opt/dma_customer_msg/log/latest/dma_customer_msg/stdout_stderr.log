@@ -1,0 +1,237 @@
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found std_msgs: 4.2.3 (/home/orin/ros2/install/std_msgs/share/std_msgs/cmake)
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter 
+-- Found rosidl_generator_c: 3.1.4 (/home/orin/ros2/install/rosidl_generator_c/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.4 (/home/orin/ros2/install/rosidl_adapter/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.4 (/home/orin/ros2/install/rosidl_generator_cpp/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_introspection_c;rosidl_typesupport_fastrtps_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_introspection_cpp;rosidl_typesupport_fastrtps_cpp
+-- Found rosidl_default_generators: 1.2.0 (/home/orin/ros2/install/rosidl_default_generators/share/rosidl_default_generators/cmake)
+-- Found ament_cmake_ros: 0.10.0 (/home/orin/ros2/install/ament_cmake_ros/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_introspection_c;rosidl_typesupport_fastrtps_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_introspection_cpp;rosidl_typesupport_fastrtps_cpp
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3.6") 
+-- Found python_cmake_module: 0.10.0 (/home/orin/ros2/install/python_cmake_module/share/python_cmake_module/cmake)
+-- Found PythonLibs: /usr/lib/aarch64-linux-gnu/libpython3.8.so (found suitable version "3.8.10", minimum required is "3.5") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.8
+-- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.8.so
+-- Found PythonExtra: .so  
+-- Using numpy include directory: /usr/local/lib/python3.8/dist-packages/numpy/core/include
+-- Found ament_lint_auto: 0.12.5 (/home/orin/ros2/install/ament_lint_auto/share/ament_lint_auto/cmake)
+-- Added test 'cppcheck' to perform static code analysis on C / C++ code
+-- Configured cppcheck include dirs: $<BUILD_INTERFACE:/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_generator_c>;$<BUILD_INTERFACE:/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_typesupport_fastrtps_c>;$<BUILD_INTERFACE:/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_generator_cpp>;$<BUILD_INTERFACE:/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_typesupport_fastrtps_cpp>;$<BUILD_INTERFACE:/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_typesupport_introspection_c>;$<BUILD_INTERFACE:/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_typesupport_introspection_cpp>;/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_generator_c;/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg/rosidl_generator_py
+-- Configured cppcheck exclude dirs and/or files: 
+-- Added test 'flake8' to check Python code syntax and style conventions
+-- Added test 'lint_cmake' to check CMake code style
+-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+-- Added test 'uncrustify' to check C / C++ code style
+-- Configured uncrustify additional arguments: 
+-- Added test 'xmllint' to check XML markup files
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/build/dma_customer_msg
+[  3%] [34m[1mGenerating C code for ROS interfaces[0m
+[  6%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[  6%] Built target ament_cmake_python_copy_dma_customer_msg
+[  9%] [32mBuilding C object CMakeFiles/dma_customer_msg__rosidl_generator_c.dir/rosidl_generator_c/dma_customer_msg/msg/detail/dmamessage__functions.c.o[0m
+[  9%] Built target dma_customer_msg__cpp
+[ 19%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[ 19%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[ 19%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[ 22%] [32m[1mLinking C shared library libdma_customer_msg__rosidl_generator_c.so[0m
+[ 22%] Built target dma_customer_msg__rosidl_generator_c
+[ 29%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[ 29%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[ 32%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+/usr/local/lib/python3.8/dist-packages/setuptools/dist.py:804: SetuptoolsDeprecationWarning: As setuptools moves its configuration towards `pyproject.toml`,
+`setuptools.config.parse_configuration` became deprecated.
+
+For the time being, you can use the `setuptools.config.setupcfg` module
+to access a backward compatible API, but this module is provisional
+and might be removed in the future.
+
+  parse_configuration(
+running egg_info
+creating dma_customer_msg.egg-info
+writing dma_customer_msg.egg-info/PKG-INFO
+writing dependency_links to dma_customer_msg.egg-info/dependency_links.txt
+writing top-level names to dma_customer_msg.egg-info/top_level.txt
+writing manifest file 'dma_customer_msg.egg-info/SOURCES.txt'
+reading manifest file 'dma_customer_msg.egg-info/SOURCES.txt'
+writing manifest file 'dma_customer_msg.egg-info/SOURCES.txt'
+[ 32%] Built target ament_cmake_python_build_dma_customer_msg_egg
+[ 35%] [32mBuilding CXX object CMakeFiles/dma_customer_msg__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/dma_customer_msg/msg/dmamessage__type_support.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/dma_customer_msg__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/dma_customer_msg/msg/detail/dmamessage__type_support.cpp.o[0m
+[ 41%] [32mBuilding CXX object CMakeFiles/dma_customer_msg__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/dma_customer_msg/msg/detail/dds_fastrtps/dmamessage__type_support.cpp.o[0m
+[ 45%] [32mBuilding CXX object CMakeFiles/dma_customer_msg__rosidl_typesupport_c.dir/rosidl_typesupport_c/dma_customer_msg/msg/dmamessage__type_support.cpp.o[0m
+[ 48%] [32mBuilding C object CMakeFiles/dma_customer_msg__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/dma_customer_msg/msg/detail/dmamessage__type_support.c.o[0m
+[ 51%] [32mBuilding CXX object CMakeFiles/dma_customer_msg__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/dma_customer_msg/msg/detail/dmamessage__type_support_c.cpp.o[0m
+[ 54%] [32m[1mLinking CXX shared library libdma_customer_msg__rosidl_typesupport_c.so[0m
+[ 58%] [32m[1mLinking C shared library libdma_customer_msg__rosidl_typesupport_introspection_c.so[0m
+[ 58%] Built target dma_customer_msg__rosidl_typesupport_c
+[ 58%] Built target dma_customer_msg__rosidl_typesupport_introspection_c
+[ 61%] [32m[1mLinking CXX shared library libdma_customer_msg__rosidl_typesupport_cpp.so[0m
+[ 61%] Built target dma_customer_msg__rosidl_typesupport_cpp
+[ 64%] [32m[1mLinking CXX shared library libdma_customer_msg__rosidl_typesupport_introspection_cpp.so[0m
+[ 67%] [32m[1mLinking CXX shared library libdma_customer_msg__rosidl_typesupport_fastrtps_cpp.so[0m
+[ 70%] [32m[1mLinking CXX shared library libdma_customer_msg__rosidl_typesupport_fastrtps_c.so[0m
+[ 70%] Built target dma_customer_msg__rosidl_typesupport_introspection_cpp
+[ 70%] Built target dma_customer_msg__rosidl_typesupport_fastrtps_cpp
+[ 70%] Built target dma_customer_msg__rosidl_typesupport_fastrtps_c
+[ 70%] Built target dma_customer_msg
+[ 74%] [34m[1mGenerating Python code for ROS interfaces[0m
+[ 74%] Built target dma_customer_msg__py
+[ 77%] [32mBuilding C object CMakeFiles/dma_customer_msg__rosidl_generator_py.dir/rosidl_generator_py/dma_customer_msg/msg/_dmamessage_s.c.o[0m
+[ 80%] [32m[1mLinking C shared library rosidl_generator_py/dma_customer_msg/libdma_customer_msg__rosidl_generator_py.so[0m
+[ 80%] Built target dma_customer_msg__rosidl_generator_py
+[ 90%] [32mBuilding C object CMakeFiles/dma_customer_msg__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/dma_customer_msg/_dma_customer_msg_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[ 90%] [32mBuilding C object CMakeFiles/dma_customer_msg__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/dma_customer_msg/_dma_customer_msg_s.ep.rosidl_typesupport_c.c.o[0m
+[ 90%] [32mBuilding C object CMakeFiles/dma_customer_msg__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/dma_customer_msg/_dma_customer_msg_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[ 96%] [32m[1mLinking C shared library rosidl_generator_py/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_fastrtps_c.cpython-38-aarch64-linux-gnu.so[0m
+[ 96%] [32m[1mLinking C shared library rosidl_generator_py/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_c.cpython-38-aarch64-linux-gnu.so[0m
+[100%] [32m[1mLinking C shared library rosidl_generator_py/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_introspection_c.cpython-38-aarch64-linux-gnu.so[0m
+[100%] Built target dma_customer_msg__rosidl_typesupport_fastrtps_c__pyext
+[100%] Built target dma_customer_msg__rosidl_typesupport_c__pyext
+[100%] Built target dma_customer_msg__rosidl_typesupport_introspection_c__pyext
+-- Install configuration: ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/ament_index/resource_index/rosidl_interfaces/dma_customer_msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__functions.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__type_support.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__functions.c
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__struct.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/rosidl_generator_c__visibility_control.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/dmamessage.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/library_path.sh
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/library_path.dsv
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_generator_c.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_generator_c.so" to ""
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_fastrtps_c.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_fastrtps_c.so" to ""
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__struct.hpp
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__builder.hpp
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__traits.hpp
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/dmamessage.hpp
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dds_fastrtps
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_fastrtps_cpp.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_fastrtps_cpp.so" to ""
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__type_support.c
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__rosidl_typesupport_introspection_c.h
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_introspection_c.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_c.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_c.so" to ""
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg
+-- Up-to-date: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__type_support.cpp
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/include/dma_customer_msg/dma_customer_msg/msg/detail/dmamessage__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_introspection_cpp.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_introspection_cpp.so" to ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_cpp.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_typesupport_cpp.so" to ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/pythonpath.sh
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/pythonpath.dsv
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg-0.0.0-py3.8.egg-info
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg-0.0.0-py3.8.egg-info/top_level.txt
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg-0.0.0-py3.8.egg-info/PKG-INFO
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg-0.0.0-py3.8.egg-info/dependency_links.txt
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg-0.0.0-py3.8.egg-info/SOURCES.txt
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_c.cpython-38-aarch64-linux-gnu.so
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/_dma_customer_msg_s.ep.rosidl_typesupport_fastrtps_c.c
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_fastrtps_c.cpython-38-aarch64-linux-gnu.so
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/msg/_dmamessage_s.c
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/msg/_dmamessage.py
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/msg/__init__.py
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/_dma_customer_msg_s.ep.rosidl_typesupport_introspection_c.c
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/libdma_customer_msg__rosidl_generator_py.so
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_introspection_c.cpython-38-aarch64-linux-gnu.so
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/_dma_customer_msg_s.ep.rosidl_typesupport_c.c
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/__init__.py
+Listing '/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg'...
+Compiling '/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/__init__.py'...
+Listing '/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/msg'...
+Compiling '/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/msg/__init__.py'...
+Compiling '/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/msg/_dmamessage.py'...
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_introspection_c.cpython-38-aarch64-linux-gnu.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_introspection_c.cpython-38-aarch64-linux-gnu.so" to ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_fastrtps_c.cpython-38-aarch64-linux-gnu.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_fastrtps_c.cpython-38-aarch64-linux-gnu.so" to ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_c.cpython-38-aarch64-linux-gnu.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/python3.8/site-packages/dma_customer_msg/dma_customer_msg_s__rosidl_typesupport_c.cpython-38-aarch64-linux-gnu.so" to ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_generator_py.so
+-- Set runtime path of "/home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/lib/libdma_customer_msg__rosidl_generator_py.so" to ""
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/msg/Dmamessage.idl
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/msg/Dmamessage.msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/ament_index/resource_index/package_run_dependencies/dma_customer_msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/ament_index/resource_index/parent_prefix_path/dma_customer_msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/ament_prefix_path.sh
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/ament_prefix_path.dsv
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/path.sh
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/environment/path.dsv
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/local_setup.bash
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/local_setup.sh
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/local_setup.zsh
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/local_setup.dsv
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/package.dsv
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/ament_index/resource_index/packages/dma_customer_msg
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_generator_cExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_generator_cExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_typesupport_fastrtps_cExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_generator_cppExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_introspection_cExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_cExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_cExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_cppExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msg__rosidl_typesupport_cppExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_generator_pyExport.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/export_dma_customer_msg__rosidl_generator_pyExport-noconfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/rosidl_cmake-extras.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/ament_cmake_export_libraries-extras.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/ament_cmake_export_targets-extras.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msgConfig.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/cmake/dma_customer_msgConfig-version.cmake
+-- Installing: /home/liheyi/swpld/dma_transfer/ros2_pkg/dma_customer_msg/install/dma_customer_msg/share/dma_customer_msg/package.xml

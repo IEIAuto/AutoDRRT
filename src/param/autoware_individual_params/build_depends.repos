@@ -1,5 +1,0 @@
-repositories:
-  core/common:
-    type: git
-    url: https://github.com/autowarefoundation/autoware_common.git
-    version: main
