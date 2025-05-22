@@ -1,11 +1,11 @@
 # Autonomous Driving Computing Framework AutoDRRT
 AutoDRRT is an autonomous driving framework developed based on the [Autoware open-source framework](https://github.com/autowarefoundation/autoware/tree/main), with targeted optimizations for the IEI_EIS400 onboard domain controller. These optimizations enhance the framework's real-time performance, distributability, and fault tolerance. A set of tools is provided to facilitate users in making use of these new features more easily. This framework is built upon the Robot Operating System 2 (ROS2). It encompasses all necessary functionalities from localization and target detection to path planning and control, striving to lower the entry barrier and aiming to involve as many individuals and organizations as possible in the open innovation of autonomous driving technology.
 
-## Key Updates(v2.0)
+## Key Updates(v2.1)
 
-- Algorithm upgrade: integrating multiple BEV + Transformer perception algorithm libraries.
-- Performance upgrade: integrating various latency optimization functions for computation, communication, and I/O.
-- Usability upgrade: integrating multiple development tools and low-level drivers.
+- Closed-loop End-to-End Development Based on Simulation Data: Data Collection → Data Processing → Model Training → Simulation Testing → On-vehicle Validation.
+- Support for Various Scenarios and Real-time Data Simulation: Corner Cases → Complex Traffic Flows → Extreme Weather → Multi-modal Real-time Sensor Data.
+- Support for Simulation Testing of Diverse Algorithm Models: 2D + CNN Lightweight Models → BEV + Transformer Large Models → One-stage End-to-End Models Based on VLA.
 
 ## Version Introduction
 
@@ -19,27 +19,23 @@ AutoDRRT is an autonomous driving framework developed based on the [Autoware ope
   <img src="./docs/imgs/2.0.png" alt="avatar">
   </p>
 
+### AutoDRRT V2.1
+<p style="text-align: center;">
+  <img src="./docs/imgs/2.1.png" alt="avatar">
+  </p>
 
 ## Features
 
-- Computation latency optimization
-  achieving low-latency computation from 2D+CNN to BEV+Transformer
+- BEV + Transformer Application Built upon AutoDRRT
   <p style="text-align: center;">
-  <img src="./docs/imgs/bev_time.png" alt="avatar" width="250">
+  <img src="./docs/imgs/bev_sim.png" alt="avatar" width="1050">
   </p>
 
-- Communication delay optimization
-  Implementing DDS from supporting Ethernet to PCIE
+- AutoDRRT-based Advanced AD HIL Solution
   <p style="text-align: center;">
-  <img src="./docs/imgs/dds_time.png" alt="avatar" width="250">
+  <img src="./docs/imgs/sim_arc.png" alt="avatar" width="1050">
   </p>
 
-- IO latency optimization
-  GPU data sharing between nodes to avoid CPU-GPU transfer
-
-  <p style="text-align: center;">
-  <img src="./docs/imgs/io_time.png" alt="avatar" width="250">
-  </p>
 
 ## Installation
 
