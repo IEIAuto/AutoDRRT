@@ -1,0 +1,2 @@
+source install/setup.bash
+ros2 launch cgi430_can_driver cgi430_can_driver_node.launch.xml

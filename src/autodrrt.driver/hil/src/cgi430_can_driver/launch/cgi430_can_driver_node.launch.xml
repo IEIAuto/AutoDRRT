@@ -1,0 +1,25 @@
+<launch>
+  <arg name="pub_imu_rate" default="1.0" description="[rad/s]"/>
+  <arg name="imu_topic_name" default="sensing/imu/tamagawa/imu_raw" description="imu topic name"/>
+  <arg name="pub_imu_dt" default="0.01" description="imu topic pub Time interval"/>
+  <arg name="gnss_topic_name" default="gnss_data"/>
+  <arg name="gnss_pose_topic_name" default="/sensing/gnss/pose"/>
+  <arg name="pub_gnss_rate" default="1.0" description="[rad/s]"/>
+  <arg name="pub_gnss_dt" default="0.1" description="imu topic pub Time interval"/>
+
+
+  <node pkg="cgi430_can_driver" exec="cgi430_can_driver_node" name="cgi430_can_driver_node" output="screen">
+    <param name="pub_imu_rate" value="$(var pub_imu_rate)"/>
+    <param name="imu_topic_name" value="$(var imu_topic_name)"/>
+    <param name="pub_imu_dt" value="$(var pub_imu_dt)"/>
+    <param name="gnss_topic_name" value="$(var gnss_topic_name)"/>
+    <param name="gnss_pose_topic_name" value="$(var gnss_pose_topic_name)"/>
+    <param name="pub_gnss_rate" value="$(var pub_gnss_rate)"/>
+    <param name="pub_gnss_dt" value="$(var pub_gnss_dt)"/>
+
+    <!--remap from="~/input/control_cmd" to="/control/command/control_cmd"/--> <!--form为订阅的名称，to为原发布的话题名称-->
+    <!--remap from="~/input/gear_cmd" to="/control/command/gear_cmd"/--> <!--form为订阅的名称，to为原发布的话题名称-->
+
+  </node>
+
+</launch>

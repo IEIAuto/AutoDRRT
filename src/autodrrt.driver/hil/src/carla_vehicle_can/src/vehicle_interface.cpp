@@ -1,0 +1,606 @@
+#include <chrono>
+#include <functional>
+#include <memory>
+#include <string>
+
+#include "rclcpp/rclcpp.hpp"
+#include <tier4_vehicle_msgs/msg/actuation_command_stamped.hpp>
+#include <autoware_auto_vehicle_msgs/msg/gear_command.hpp>
+#include <autoware_auto_vehicle_msgs/msg/velocity_report.hpp>
+#include <autoware_auto_vehicle_msgs/msg/control_mode_report.hpp>
+#include <autoware_auto_vehicle_msgs/msg/gear_report.hpp>
+#include <autoware_auto_vehicle_msgs/msg/steering_report.hpp>
+#include <tier4_control_msgs/msg/gate_mode.hpp>
+
+#include "agv_codec.h"
+
+#include <unistd.h>
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <bitset>
+
+#include "carla_vehicle_can/controlcan.h"
+
+
+using autoware_auto_vehicle_msgs::msg::ControlModeReport;
+using autoware_auto_vehicle_msgs::msg::GearCommand;
+using autoware_auto_vehicle_msgs::msg::GearReport;
+using autoware_auto_vehicle_msgs::msg::SteeringReport;
+using autoware_auto_vehicle_msgs::msg::VelocityReport;
+using tier4_vehicle_msgs::msg::ActuationCommandStamped;
+using tier4_control_msgs::msg::GateMode;
+
+double get_time_now()
+{
+  auto x = std::chrono::system_clock::now().time_since_epoch();
+  auto cnt = std::chrono::duration_cast<std::chrono::nanoseconds>(x).count();
+  return cnt * 1.0 / 1e9;
+}
+
+struct ActuationState {
+  double accel_cmd;
+  double brake_cmd;
+  double steer_cmd;
+  int gear;
+};
+
+
+class VehicleInterface : public rclcpp::Node
+{
+public:
+  VehicleInterface() : Node("carla_vehicle_interface")
+  {
+    can_if = declare_parameter("can_if", "can0");
+    can_if_aux = declare_parameter("can_if_aux", "");
+
+    debug = declare_parameter("debug", false);
+    sendchange = declare_parameter("sendchange", false);
+    enable_control = declare_parameter("enable_control", false);
+
+
+    aux_throttle_scale = declare_parameter("aux_throttle_scale", 1.0);
+
+    // publisher
+    velocity_report_publisher_ = this->create_publisher<VelocityReport>("output/velocity_status", 10);
+    control_mode_report_publisher_ = this->create_publisher<ControlModeReport>("output/control_mode", 10);
+    gear_publisher_ = this->create_publisher<GearReport>("output/gear_status", 10);
+    steering_publisher_ = this->create_publisher<SteeringReport>("output/steering_status", 10);
+
+    //modify 创新科技CAN卡状态初始化+启动CAN卡***********************
+    checkCanCardStatus();   
+
+    if (enable_control){
+      enable_vehicle_interface();
+    } 
+
+    actuation_command_subscription_ = this->create_subscription<ActuationCommandStamped>(
+        "input/actuation_cmd", 10, std::bind(&VehicleInterface::onActuationCommand, this, std::placeholders::_1));
+    gear_command_subscription_ = this->create_subscription<GearCommand>(
+        "input/gear_cmd", 10, std::bind(&VehicleInterface::onGearCommand, this, std::placeholders::_1));
+    
+    gate_mode_subscription_ = this->create_subscription<GateMode>(
+        "input/gate_mode", 10, std::bind(&VehicleInterface::onGateMode, this, std::placeholders::_1));
+
+    can_rec_thread_ = std::thread(&VehicleInterface::can_rec_func, this);
+  }
+
+  //modify**********************
+  int giveup_control(){
+      uint8_t data[8];
+      
+      //modify send can函数，将socket can替换为创新科技can send
+      int packlen = encode_throttle_command(data, 8, 0, 0);
+      int ret = send_can_card(AGV_THROTTLE_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending accel_cmd.");
+      }
+      //modify send can函数，将socket can替换为创新科技can send
+      packlen = encode_brake_command(data, 8, 70, 0);
+      ret = send_can_card(AGV_BRAKE_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending brake_cmd.");
+      }
+      //modify send can函数，将socket can替换为创新科技can send
+      packlen = encode_steer_command(data, 8, 0, 0);
+      ret = send_can_card(AGV_STEER_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending steer_cmd.");
+      }
+
+      return 0;
+  }
+  //modify**********************
+  int apply_control(){
+      uint8_t data[8];
+      //modify********************************
+      int packlen = encode_throttle_command(data, 8, 0);
+      int ret = send_can_card(AGV_THROTTLE_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending accel_cmd.");
+      }
+      //modify********************************
+      packlen = encode_brake_command(data, 8, 70);
+      ret = send_can_card(AGV_BRAKE_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending brake_cmd.");
+      }
+       //modify********************************
+      packlen = encode_steer_command(data, 8, 0);
+      ret = send_can_card(AGV_STEER_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending steer_cmd.");
+      }
+
+      return 0;
+  }
+
+  int enable_vehicle_interface(){
+     
+      RCLCPP_INFO(get_logger(), "applying control");
+
+      giveup_control();
+      sleep(2);
+
+      apply_control();
+
+      return 0;
+  }
+
+  //modify**************************
+  int send_can_card(int id, uint8_t *data, int len, bool copy=true)
+  {
+    vco[0].ID = id;
+    vco[0].RemoteFlag = 0;
+    vco[0].ExternFlag = 0;
+    vco[0].DataLen = len;
+    for(int j=0; j<len;j++)
+    {
+      if(debug)
+      {
+        RCLCPP_INFO(this->get_logger(),"Data[j] in binary: %s",std::bitset<8>(data[j]).to_string().c_str());
+      }
+      
+      vco[0].Data[j] = data[j]; 
+    }
+    
+    int dwRel = VCI_Transmit(VCI_USBCAN2, 0, 0, vco, 1);
+    return dwRel;
+  }
+
+  void checkCanCardStatus()
+  {
+    RCLCPP_INFO(this->get_logger(), ">> >> >> CAN card detection start << << <<");
+    int num=VCI_FindUsbDevice2(pInfo);
+    RCLCPP_INFO(this->get_logger(), "USBCAN DEVICE NUM: %d PCS", num);
+
+    for (int i = 0; i < num; i++)
+    {
+        RCLCPP_INFO(this->get_logger(), "Device: %d", i);
+        RCLCPP_INFO(this->get_logger(), "Serial_Num: %s", pInfo[i].str_Serial_Num);
+        RCLCPP_INFO(this->get_logger(), "hw_Type: %s", pInfo[i].str_hw_Type);
+        RCLCPP_INFO(this->get_logger(), "Firmware Version: V%x.%x%x",
+                    (pInfo[i].fw_Version & 0xF00) >> 8,
+                    (pInfo[i].fw_Version & 0xF0) >> 4,
+                     pInfo[i].fw_Version & 0xF);
+    }
+
+    if (VCI_OpenDevice(VCI_USBCAN2, 0, 0) == 1){
+        RCLCPP_INFO(this->get_logger(), "open device success!");
+    }else{
+        RCLCPP_ERROR(this->get_logger(), "open device error!");
+        exit(1);
+    }
+
+    // VCI_BOARD_INFO pInfo;
+    // if (VCI_ReadBoardInfo(VCI_USBCAN2, 0, &pInfo) == 1){
+    //     RCLCPP_INFO(this->get_logger(), "Get VCI_ReadBoardInfo success!");
+    //     RCLCPP_INFO(this->get_logger(), "Serial_Num: %s", pInfo.str_Serial_Num);
+    //     RCLCPP_INFO(this->get_logger(), "hw_Type: %s", pInfo.str_hw_Type);
+    //     RCLCPP_INFO(this->get_logger(), "Firmware Version: V%x.%x%x",
+    //                 (pInfo.fw_Version & 0xF00) >> 8,
+    //                 (pInfo.fw_Version & 0xF0) >> 4,
+    //                 pInfo.fw_Version & 0xF);
+    // }else{
+    //     RCLCPP_ERROR(this->get_logger(), "Get VCI_ReadBoardInfo error!");
+    //     exit(1);
+    // }
+
+    VCI_INIT_CONFIG can_param_config;
+    can_param_config.AccCode = 0;
+    can_param_config.AccMask = 0xFFFFFFFF; 
+    can_param_config.Filter = 1;
+    can_param_config.Timing0 = 0X00;
+    can_param_config.Timing1 = 0X1C;
+    can_param_config.Mode = 0;
+    if(VCI_InitCAN(VCI_USBCAN2, 0, 0, &can_param_config)!=1)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Init CAN1 failed");
+        VCI_CloseDevice(VCI_USBCAN2, 0);
+    }else{
+        RCLCPP_INFO(this->get_logger(), "Init CAN1 successfully! ");
+    }
+
+    if (VCI_StartCAN(VCI_USBCAN2, 0, 0) != 1)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Start CAN1 failed");
+        VCI_CloseDevice(VCI_USBCAN2, 0);
+    }else{
+        RCLCPP_INFO(this->get_logger(), "Start CAN1 successfully! ");
+    }
+
+    // if (VCI_InitCAN(VCI_USBCAN2, 0, 1, &can_param_config) != 1)
+    // {
+    //     RCLCPP_ERROR(this->get_logger(), "Init CAN2 error");
+    //     VCI_CloseDevice(VCI_USBCAN2, 0);
+    // }else{
+    //     RCLCPP_INFO(this->get_logger(), "Init CAN2 success! ");
+    // }
+
+    // if (VCI_StartCAN(VCI_USBCAN2, 0, 1) != 1)
+    // {
+    //     RCLCPP_ERROR(this->get_logger(), "Start CAN2 error");
+    //     VCI_CloseDevice(VCI_USBCAN2, 0);
+    // }else{
+    //     RCLCPP_INFO(this->get_logger(), "Start CAN2 success! ");
+    // }
+
+    RCLCPP_INFO(this->get_logger(), ">> >> >>  card detection end! << << <<");
+  }
+
+  void onGateMode(const GateMode::SharedPtr msg)
+  {
+    RCLCPP_INFO(get_logger(), "rx gate mode: %d", msg->data);
+    
+
+    if (msg->data == 0)
+    {
+      if (enable_control && !ctrl_enabled)
+      {
+        enable_vehicle_interface();
+      }
+    }
+
+  }
+  //modify*********************************************************
+  void onGearCommand(const GearCommand::SharedPtr msg)
+  {
+    if (debug)
+    {
+      RCLCPP_INFO(get_logger(), "rx gear command: %d", msg->command);
+    }
+
+    // if (enable_control && !ctrl_enabled)
+    // {
+    //   RCLCPP_ERROR_STREAM_THROTTLE(get_logger(), *get_clock(), 5000, "Error: ctrl not enabled.");
+    //   return;
+    // }
+
+    // 4 "DRIVE" 3 "NEUTRAL" 2 "REVERSE" 1 "PARK" ; carla
+    // 0 "NEUTRAL" 1 "DRIVE" 2 "REVERSE" 3 "PARK" ; simone
+
+
+    int gear;
+    // RCLCPP_INFO(this->get_logger(),"msg->command: %d", msg->command);
+
+    if (msg->command == 1) 
+    {
+      // msg->command == 1, autoware: NEUTRAL
+      gear = 1;
+    }
+    else if (msg->command == 2)
+    {
+      // msg->command == 2, autoware: DRIVE
+      gear = 1;
+    }
+    else if (msg->command == 20)
+    {
+      // msg->command == 20, autoware: REVERSE
+      gear = 2;
+    }
+    else if (msg->command == 22)
+    {
+      // msg->command == 22, autoware: PARK
+      gear = 3; 
+    }
+    RCLCPP_INFO(this->get_logger(),"gear: %d", gear);
+
+    if (!sendchange || actuation_state.gear != gear) {
+
+        uint8_t data[8];
+        int packlen = encode_gear_command(data, 8, gear);
+        int ret = send_can_card(AGV_GEAR_COMMAND_FRAME_ID, data, packlen);
+
+        if (ret < 0)
+        {
+          RCLCPP_ERROR(get_logger(), "Error sending gear command.");
+          actuation_state.gear = gear;
+        }
+    }
+   
+  }
+// modify  ***********************************************************
+  void onActuationCommand(const ActuationCommandStamped::SharedPtr msg)
+  {
+    if (debug)
+    {
+      RCLCPP_INFO(get_logger(), "Received actuation command: %f %f %f",
+                  msg->actuation.accel_cmd,
+                  msg->actuation.brake_cmd,
+                  msg->actuation.steer_cmd);
+    }
+    // RCLCPP_INFO(get_logger(), "Received actuation command: %f %f %f",
+    //               msg->actuation.accel_cmd,
+    //               msg->actuation.brake_cmd,
+    //               msg->actuation.steer_cmd);
+    std::cout<<"accel_cmd: "<<msg->actuation.accel_cmd<<" brake_cmd: "<<msg->actuation.brake_cmd<<" steer_cmd: "<<msg->actuation.steer_cmd<<std::endl;
+
+    // if (enable_control && !ctrl_enabled)
+    // {
+    //     RCLCPP_ERROR_STREAM_THROTTLE(get_logger(), *get_clock(), 5000, "Error: ctrl not enabled.");
+    //     return;
+    // }
+
+    if (!sendchange || actuation_state.accel_cmd != msg->actuation.accel_cmd) {
+     
+      uint8_t data[8];
+      int packlen = encode_throttle_command(data, 8, msg->actuation.accel_cmd * 100);
+      int ret = send_can_card(AGV_THROTTLE_COMMAND_FRAME_ID, data, packlen, false);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending accel_cmd.");
+      }
+      else {
+        actuation_state.accel_cmd = msg->actuation.accel_cmd;
+      }
+
+    }
+
+    if (!sendchange || actuation_state.brake_cmd != msg->actuation.brake_cmd) {
+
+      uint8_t data[8];
+      // RCLCPP_INFO(this->get_logger(), "*******brake_cmd: %f",msg->actuation.brake_cmd);
+      int packlen = encode_brake_command(data, 8, msg->actuation.brake_cmd * 100);
+      int ret = send_can_card(AGV_BRAKE_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending brake_cmd.");
+      }
+      else {
+        actuation_state.brake_cmd = msg->actuation.brake_cmd;
+      }
+    }
+
+    if (!sendchange || actuation_state.steer_cmd != msg->actuation.steer_cmd) {
+      uint8_t data[8];
+      // RCLCPP_INFO(this->get_logger(), "*******steer_cmd: %f",msg->actuation.steer_cmd);
+      int packlen = encode_steer_command(data, 8, -msg->actuation.steer_cmd);
+      int ret = send_can_card(AGV_STEER_COMMAND_FRAME_ID, data, packlen);
+
+      if (ret < 0)
+      {
+        RCLCPP_ERROR(get_logger(), "Error sending steer_cmd.");
+      }
+      else {
+        actuation_state.steer_cmd = msg->actuation.steer_cmd;
+      }
+    }
+  }
+
+/*modify 创芯科技can 报文接收线程********************************************/
+  void can_rec_func()
+  {
+    while(rclcpp::ok())
+    {
+      receive_length_ = VCI_Receive(VCI_USBCAN2, 0, 0, rec, len_, 0);
+      // std::cout<<"********receive_length_"<<receive_length_<<std::endl;
+      if(receive_length_>0)
+      { 
+        for(int i=0; i<receive_length_; i++)
+        { 
+          if (rec[i].ID == AGV_ECU_STATUS_1_FRAME_ID)
+          {
+            // uint8_t* data = rec[i].Data;
+            // int16_t speed_raw = static_cast<int16_t>((data[1] << 8) | data[0]);
+            // float speed = speed_raw *0.01;
+            ecu_status s;
+            decode_ecu_status_1(rec[i].Data, 8, s);
+
+            // publish velocity report
+            VelocityReport report;
+            report.longitudinal_velocity = s.speed;
+            report.lateral_velocity = 0; // TBD
+            report.heading_rate = 0;     // TBD
+            // RCLCPP_INFO(get_logger(), "speed: %f", s.speed);
+            std::cout<<"speed: "<<s.speed<<std::endl;
+            report.header.frame_id = "base_link";
+            report.header.stamp = this->now();
+
+            velocity_report_publisher_->publish(report);
+
+            // control mode
+            ControlModeReport control_mode;
+            control_mode.mode = ControlModeReport::AUTONOMOUS;
+            control_mode.stamp = this->now();
+            control_mode_report_publisher_->publish(control_mode);
+          }
+          else if (rec[i].ID == AGV_STEER_STATUS__FRAME_ID)
+          {
+            double steer_angle;
+            int en_sts;
+            decode_steer_status(rec[i].Data, 8, steer_angle, en_sts);
+
+
+
+            SteeringReport steering_msg;
+            steering_msg.stamp = this->now();
+            // steering_msg.steering_tire_angle = steer_angle*18.07;
+            steering_msg.steering_tire_angle = -steer_angle;
+            // RCLCPP_INFO(this->get_logger(),"steer report value is %f, deg: %f",steer_angle, (steer_angle/3.1415926)*180.0);
+            steering_publisher_->publish(steering_msg);
+
+            ctrl_enabled = en_sts==1;
+
+            if (debug)
+            {
+              RCLCPP_INFO(get_logger(), "steer: %d, %f, %x %x %x ", en_sts, steer_angle, rec[i].Data[0], rec[i].Data[1], rec[i].Data[2]);
+            }
+          }
+          else if (rec[i].ID == AGV_THROTTLE_STATUS__FRAME_ID){
+            double throttle;
+            int en_sts;
+            decode_throttle_status(rec[i].Data, 8, throttle, en_sts);
+
+            ctrl_enabled = en_sts==1;
+
+            if (debug)
+            {
+              RCLCPP_INFO(get_logger(), "throttle status: %f %d", throttle, en_sts);
+            }
+          }
+          else if (rec[i].ID == AGV_BRAKE_STATUS__FRAME_ID){
+            double brake;
+            int en_sts;
+            decode_brake_status(rec[i].Data, 8, brake, en_sts);
+
+            ctrl_enabled = en_sts==1;
+
+            if (debug)
+            {
+              RCLCPP_INFO(get_logger(), "brake status: %f %d", brake, en_sts);
+            }
+          }
+          else if (rec[i].ID == AGV_GEAR_STATUS_FRAME_ID)
+          {
+            // tdb
+            int gear;
+            decode_gear_status(rec[i].Data, 8, gear);
+
+            GearReport gear_msg;
+            gear_msg.stamp = this->now();
+
+            switch (gear)
+            {
+            // case AGV_GEAR_STATUS_GEAR_STS_PARK_CHOICE:
+            case 0:
+              gear_msg.report = autoware_auto_vehicle_msgs::msg::GearReport::NEUTRAL;
+              break;
+            // case AGV_GEAR_STATUS_GEAR_STS_REVERSE_CHOICE:
+            case 1:
+              gear_msg.report = autoware_auto_vehicle_msgs::msg::GearReport::DRIVE;
+              break;
+            // case AGV_GEAR_STATUS_GEAR_STS_NEUTRAL_CHOICE:
+            case 2:
+              gear_msg.report = autoware_auto_vehicle_msgs::msg::GearReport::REVERSE;
+              break;
+            // case AGV_GEAR_STATUS_GEAR_STS_DRIVE_CHOICE:
+            case 3:
+              gear_msg.report = autoware_auto_vehicle_msgs::msg::GearReport::PARK;
+              break;
+            default:
+              gear_msg.report = autoware_auto_vehicle_msgs::msg::GearReport::NONE;
+              break;
+            }
+
+            if (debug)
+            {
+              RCLCPP_INFO(get_logger(), "gear status: %d -> %d", gear, gear_msg.report);
+            }
+
+            gear_publisher_->publish(gear_msg);
+          }
+          else
+          {
+            if (debug)
+            {
+              RCLCPP_INFO(get_logger(), "Unknown CAN ID: %x", rec[i].ID);
+            }
+          }
+
+        }
+      }
+      else if(receive_length_ == -1){
+        VCI_CloseDevice(VCI_USBCAN2,0);
+        RCLCPP_ERROR(this->get_logger(),"The CAN card disconnect,please check it!");
+      }else{
+        // RCLCPP_INFO(this->get_logger(), "this in can_rec_thread<<<");
+        if(!(rclcpp::ok())){
+          break;
+        }  
+      }
+    }
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+
+private:
+  std::string can_if;
+  std::string can_if_aux;
+  bool debug;
+  bool sendchange;
+
+  double aux_throttle_scale = 1.0;
+
+  bool ctrl_enabled = true;
+  bool enable_control = false;
+
+  // subscriber
+  rclcpp::Subscription<ActuationCommandStamped>::SharedPtr actuation_command_subscription_;
+  rclcpp::Subscription<GearCommand>::SharedPtr gear_command_subscription_;
+  rclcpp::Subscription<GateMode>::SharedPtr gate_mode_subscription_;
+
+  // publisher
+  rclcpp::Publisher<VelocityReport>::SharedPtr velocity_report_publisher_;
+
+  // control mode
+  rclcpp::Publisher<ControlModeReport>::SharedPtr control_mode_report_publisher_;
+
+  rclcpp::Publisher<GearReport>::SharedPtr gear_publisher_;
+  rclcpp::Publisher<SteeringReport>::SharedPtr steering_publisher_;
+
+  int can_socket = -1;
+  int can_socket_aux = -1;
+
+  // modify thread*****************************
+  // std::thread socket_thread_;
+
+
+  ActuationState actuation_state;
+
+  //Modify  CAN Card***************************
+  VCI_BOARD_INFO pInfo[5];
+
+  int receive_length_;
+  VCI_CAN_OBJ rec[300];    //CAN帧结构体
+  int len_=299;           //设定用来接收的帧结构体数组长度
+
+  VCI_CAN_OBJ vco[3];
+
+  std::thread can_rec_thread_;
+  //modify***************************************
+};
+
+int main(int argc, char *argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<VehicleInterface>());
+  rclcpp::shutdown();
+
+  return 0;
+}

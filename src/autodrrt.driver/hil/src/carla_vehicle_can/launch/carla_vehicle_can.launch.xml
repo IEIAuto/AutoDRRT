@@ -1,0 +1,23 @@
+<launch>
+  <arg name="can_if" default="can1"/>
+  <arg name="can_if_aux" default=""/>
+  <arg name="aux_throttle_scale" default="1.0"/>
+  <arg name="enable_control" default="true"/>
+  <arg name="debug" default="false"/>
+
+  
+  <node pkg="carla_vehicle_can" exec="carla_vehicle_can" name="carla_vehicle_can" output="screen">
+    <remap from="input/actuation_cmd" to="/control/command/actuation_cmd"/>
+    <remap from="input/gear_cmd" to="/control/command/gear_cmd"/>
+    <remap from="input/gate_mode" to="/control/gate_mode_cmd"/>
+    <remap from="output/velocity_status" to="/vehicle/status/velocity_status"/>
+    <remap from="output/control_mode" to="/vehicle/status/control_mode"/>
+    <remap from="output/steering_status" to="/vehicle/status/steering_status"/>
+    <remap from="output/gear_status" to="/vehicle/status/gear_status"/>
+    <param name="can_if" value="$(var can_if)"/>
+    <param name="can_if_aux" value="$(var can_if_aux)"/>
+    <param name="debug" value="$(var debug)"/>
+    <param name="enable_control" value="$(var enable_control)"/>
+    <param name="aux_throttle_scale" value="$(var aux_throttle_scale)"/>
+  </node>
+</launch>

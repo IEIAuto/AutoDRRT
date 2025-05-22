@@ -165,3 +165,8 @@ The parameters mean:
 * `raw` - the transport to use for output. If omitted, all available
   transports are provided.
 * `out:=image_raw/uncompressed` - remapping of the output topic.
+
+
+
+ros2 launch v4l2_camera v4l2_camera.launch.py
+ros2 run v4l2_camera v4l2_camera_node --ros-args --params-file /home/orin/driver/config/camera0/v4l2_camera.param.yaml -p "camera_info_url:=/home/orin/driver/config/camera0/camera_info.yaml"

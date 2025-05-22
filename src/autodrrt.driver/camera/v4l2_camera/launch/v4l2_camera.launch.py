@@ -64,6 +64,9 @@ def launch_setup(context, *args, **kwargs):
                         '/camera_info'
                     ],
                 ),
+                (
+                    "video_device","video_device"
+                ),
             ],
             parameters=[
                 load_composable_node_param("v4l2_camera_param_path"),
@@ -73,6 +76,7 @@ def launch_setup(context, *args, **kwargs):
                     "publish_rate": LaunchConfiguration("publish_rate"),
                     "use_v4l2_buffer_timestamps": LaunchConfiguration("use_v4l2_buffer_timestamps"),
                     "use_image_transport": LaunchConfiguration("use_image_transport"),
+                    "video_device": LaunchConfiguration("video_device"),
                 },
             ],
             extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
@@ -110,19 +114,19 @@ def generate_launch_description():
     add_launch_arg('container', '',
                    description='container name to load composable nodes into it. '
                    'If it is not specified, a new container will be created')
-    add_launch_arg('image_topic',
+    add_launch_arg('image_topic','image_raw',
                    description='image topic name to be published')
-    add_launch_arg('camera_name',
+    add_launch_arg('camera_name','camera7',
                    description='prefix to be added to the head of topic name')
     add_launch_arg('v4l2_camera_namespace', '/sensing/camera',
                    description='namespace in which the nodes launched')
-    add_launch_arg('v4l2_camera_param_path',
+    add_launch_arg('v4l2_camera_param_path','/home/orin/driver/config/camera1/v4l2_camera.param.yaml',
                    description='path to the yaml file that contains parameters for v4l2_camera node')
-    add_launch_arg('camera_info_url',
+    add_launch_arg('camera_info_url','/home/orin/driver/config/camera1/camera_info.yaml',
                    description='url to the yaml file that contains camera\'s intrinsic paramters')
     add_launch_arg('use_intra_process', 'False',
                    description='flag to use ROS2 intra process')
-    add_launch_arg('use_sensor_data_qos', 'False',
+    add_launch_arg('use_sensor_data_qos', 'True',
                    description='flag to use sensor data QoS. '
                    'If true, the reliability of image topic QoS will be BEST_EFFORT, '
                    'otherwise be RELIABLE')
@@ -134,6 +138,9 @@ def generate_launch_description():
                    'otherwise, will be the system time when the buffer is read')
     add_launch_arg('use_image_transport', 'true',
                    description='flag to launch image_transport node')
+    
+    add_launch_arg('video_device','/dev/video1',
+                   description='')
 
     return LaunchDescription(
         [

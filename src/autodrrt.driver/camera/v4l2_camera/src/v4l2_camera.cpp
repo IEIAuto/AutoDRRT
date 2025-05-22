@@ -66,8 +66,7 @@ V4L2Camera::V4L2Camera(rclcpp::NodeOptions const & options)
   use_image_transport_ = declare_parameter("use_image_transport", true);
 
   if (use_image_transport_) {
-    camera_transport_pub_ = image_transport::create_camera_publisher(this, "image_raw",
-                                                                    qos.get_rmw_qos_profile());
+    camera_transport_pub_ = image_transport::create_camera_publisher(this, "image_raw", qos.get_rmw_qos_profile());
   } else {
     image_pub_ = create_publisher<sensor_msgs::msg::Image>("image_raw", qos);
     info_pub_ = create_publisher<sensor_msgs::msg::CameraInfo>("camera_info", qos);
@@ -172,7 +171,8 @@ void V4L2Camera::createParameters()
   output_encoding_description.additional_constraints =
     "Currently supported: 'rgb8', 'yuv422' or 'mono'";
   output_encoding_ = declare_parameter(
-    "output_encoding", std::string{"rgb8"},
+    "output_encoding", std::string{"yuv422"},
+    //"output_encoding", std::string{"rgb8"},
     output_encoding_description);
 
   // Camera info parameters
@@ -208,7 +208,8 @@ void V4L2Camera::createParameters()
   str = str.substr(0, str.size() - 2);
   pixel_format_descriptor.additional_constraints = str;
   auto pixel_format =
-    declare_parameter<std::string>("pixel_format", "YUYV", pixel_format_descriptor);
+    declare_parameter<std::string>("pixel_format", "UYVY", pixel_format_descriptor);
+    //declare_parameter<std::string>("pixel_format", "YUYV", pixel_format_descriptor);
   requestPixelFormat(pixel_format);
 
   // Image size
@@ -255,7 +256,8 @@ void V4L2Camera::createParameters()
   }
 
   image_size_descriptor.additional_constraints = image_sizes_constraints.str();
-  image_size = declare_parameter<ImageSize>("image_size", {640, 480}, image_size_descriptor);
+  image_size = declare_parameter<ImageSize>("image_size", {1920, 1080}, image_size_descriptor);
+  //image_size = declare_parameter<ImageSize>("image_size", {640, 480}, image_size_descriptor);
   requestImageSize(image_size);
 
   // Time per frame
