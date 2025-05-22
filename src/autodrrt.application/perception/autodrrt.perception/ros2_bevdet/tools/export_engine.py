@@ -4,7 +4,7 @@ from typing import Dict, Optional, Sequence, Union
 
 import numpy as np
 import onnx
-from ruamel import yaml
+from ruamel.yaml import YAML
 
 import tensorrt as trt
 
@@ -74,7 +74,7 @@ def from_onnx(onnx_model: Union[str, onnx.ModelProto],
 
     if fp16_mode:
         config.set_flag(trt.BuilderFlag.FP16)
-        
+
     if tf32 is False:
         config.clear_flag(trt.BuilderFlag.TF32)
 
@@ -117,8 +117,10 @@ if __name__ == '__main__':
     else:
         print(f'{args.bev_encoder_onnx} ONNX Model Correct')
 
+    yaml = YAML()
+    with open(args.config, 'r', encoding='utf-8') as file:
+        yaml_cfg = yaml.load(file)
 
-    yaml_cfg = yaml.load(open(args.config, 'r', encoding='utf-8'), Loader=yaml.Loader)
     use_depth = yaml_cfg['use_depth']
     img_H, img_W = yaml_cfg['data_config']['input_size']
     downsample_factor = yaml_cfg['model']['down_sample']
@@ -128,9 +130,8 @@ if __name__ == '__main__':
     D = len(np.arange(*yaml_cfg['grid_config']['depth']))  
     bev_h = len(np.arange(*yaml_cfg['grid_config']['x']))
     bev_w = len(np.arange(*yaml_cfg['grid_config']['y']))
-    
-    
-    bev_inchannels = (yaml_cfg['adj_num'] + 1) * yaml_cfg['model']['bevpool_channels']
+
+    bev_inchannels = yaml_cfg['model']['bevpool_channels']
 
     img_shape = [6, 3, img_H, img_W]
     img_input_shape = dict(

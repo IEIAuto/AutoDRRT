@@ -1,0 +1,3 @@
+source;share/gpudirect-dds/environment/ament_prefix_path.sh
+source;share/gpudirect-dds/environment/library_path.sh
+source;share/gpudirect-dds/environment/path.sh

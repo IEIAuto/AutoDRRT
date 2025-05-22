@@ -1,0 +1,2 @@
+gpudirect::Talker;lib/libtalker_component.so
+gpudirect::Listener;lib/liblistener_component.so

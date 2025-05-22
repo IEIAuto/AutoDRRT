@@ -1,0 +1,84 @@
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found autoware_cmake: 0.1.0 (/home/orin/disk/autodrrt_v2.0/install/autoware_cmake/share/autoware_cmake/cmake)
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- Found OpenCV: /usr (found version "4.5.4")
+-- Found cv_bridge: 3.4.0 (/home/orin/disk/autodrrt_v2.0/install/cv_bridge/share/cv_bridge/cmake)
+-- Found rosidl_generator_c: 3.1.4 (/home/orin/disk/autodrrt_v2.0/install/rosidl_generator_c/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.4 (/home/orin/disk/autodrrt_v2.0/install/rosidl_adapter/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.4 (/home/orin/disk/autodrrt_v2.0/install/rosidl_generator_cpp/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_introspection_c;rosidl_typesupport_fastrtps_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_introspection_cpp;rosidl_typesupport_fastrtps_cpp
+-- Found rmw_implementation_cmake: 6.1.1 (/home/orin/disk/autodrrt_v2.0/install/rmw_implementation_cmake/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.2 (/home/orin/disk/autodrrt_v2.0/install/rmw_fastrtps_cpp/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/aarch64-linux-gnu/libcrypto.so (found version "1.1.1f")
+-- Found FastRTPS: /home/orin/disk/autodrrt_v2.0/install/fastrtps/include
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE
+-- Found ament_lint_auto: 0.12.5 (/home/orin/disk/autodrrt_v2.0/install/ament_lint_auto/share/ament_lint_auto/cmake)
+-- Added test 'copyright' to check source files copyright and LICENSE
+-- Added test 'cppcheck' to perform static code analysis on C / C++ code
+-- Configured cppcheck include dirs: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/include
+-- Configured cppcheck exclude dirs and/or files: 
+-- Added test 'lint_cmake' to check CMake code style
+-- Added test 'xmllint' to check XML markup files
+-- Configuring done (29.6s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer
+[ 42%] [32mBuilding CXX object CMakeFiles/dma_transfer.dir/src/recv.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/demo_node2.dir/rclcpp_components/node_main_demo_node2.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/demo_node1.dir/rclcpp_components/node_main_demo_node1.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/dma_transfer.dir/src/send.cpp.o[0m
+[ 71%] [32m[1mLinking CXX executable demo_node1[0m
+[ 85%] [32m[1mLinking CXX executable demo_node2[0m
+[ 85%] Built target demo_node1
+[ 85%] Built target demo_node2
+[100%] [32m[1mLinking CXX shared library libdma_transfer.so[0m
+[100%] Built target dma_transfer
+-- Install configuration: ""
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/lib/dma_transfer/demo_node1
+-- Set non-toolchain portion of runtime path of "/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/lib/dma_transfer/demo_node1" to ""
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/lib/dma_transfer/demo_node2
+-- Set non-toolchain portion of runtime path of "/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/lib/dma_transfer/demo_node2" to ""
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/include
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/include/dma_adapter.hpp
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/include/demo_node.hpp
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/environment/library_path.sh
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/environment/library_path.dsv
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/lib/libdma_transfer.so
+-- Set non-toolchain portion of runtime path of "/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/lib/libdma_transfer.so" to ""
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/ament_index/resource_index/package_run_dependencies/dma_transfer
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/ament_index/resource_index/parent_prefix_path/dma_transfer
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/environment/ament_prefix_path.sh
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/environment/ament_prefix_path.dsv
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/environment/path.sh
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/environment/path.dsv
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/local_setup.bash
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/local_setup.sh
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/local_setup.zsh
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/local_setup.dsv
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/package.dsv
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/ament_index/resource_index/packages/dma_transfer
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/ament_index/resource_index/rclcpp_components/dma_transfer
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/cmake/ament_cmake_export_libraries-extras.cmake
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/cmake/dma_transferConfig.cmake
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/cmake/dma_transferConfig-version.cmake
+-- Installing: /home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/install/dma_transfer/share/dma_transfer/package.xml

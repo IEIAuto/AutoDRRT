@@ -1,0 +1,4 @@
+source;share/dma_transfer/local_setup.bash
+source;share/dma_transfer/local_setup.dsv
+source;share/dma_transfer/local_setup.sh
+source;share/dma_transfer/local_setup.zsh

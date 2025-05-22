@@ -1,0 +1,11 @@
+source;share/dma_transfer/hook/cmake_prefix_path.ps1
+source;share/dma_transfer/hook/cmake_prefix_path.dsv
+source;share/dma_transfer/hook/cmake_prefix_path.sh
+source;share/dma_transfer/hook/ld_library_path_lib.ps1
+source;share/dma_transfer/hook/ld_library_path_lib.dsv
+source;share/dma_transfer/hook/ld_library_path_lib.sh
+source;share/dma_transfer/local_setup.bash
+source;share/dma_transfer/local_setup.dsv
+source;share/dma_transfer/local_setup.ps1
+source;share/dma_transfer/local_setup.sh
+source;share/dma_transfer/local_setup.zsh

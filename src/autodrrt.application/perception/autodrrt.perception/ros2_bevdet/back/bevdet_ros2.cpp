@@ -1,0 +1,407 @@
+#include <chrono>
+#include "bevdet_ros2.h"
+
+using Label = autoware_auto_perception_msgs::msg::ObjectClassification;
+
+std::map< int, std::vector<int>> colormap { 
+            {0, {0, 0, 255}},  // dodger blue 
+            {1, {0, 201, 87}},   // 青色
+            {2, {0, 201, 87}},
+            {3, {160, 32, 240}},
+            {4, {3, 168, 158}},
+            {5, {255, 0, 0}},
+            {6, {255, 97, 0}},
+            {7, {30,  0, 255}},
+            {8, {255, 0, 0}},
+            {9, {0, 0, 255}},
+            {10, {0, 0, 0}}
+};
+
+void Getinfo(void) {
+    cudaDeviceProp prop;
+
+    int count = 0;
+    cudaGetDeviceCount(&count);
+    printf("\nGPU has cuda devices: %d\n", count);
+    for (int i = 0; i < count; ++i) {
+        cudaGetDeviceProperties(&prop, i);
+        printf("----device label: %d info----\n", i);
+        printf("  GPU : %s \n", prop.name);
+        printf("  Capbility: %d.%d\n", prop.major, prop.minor);
+        printf("  Global memory: %luMB\n", prop.totalGlobalMem >> 20);
+        printf("  Const memory: %luKB\n", prop.totalConstMem >> 10);
+        printf("  Shared memory in a block: %luKB\n", prop.sharedMemPerBlock >> 10);
+        printf("  warp size: %d\n", prop.warpSize);
+        printf("  threads in a block: %d\n", prop.maxThreadsPerBlock);
+        printf("  block dim: (%d,%d,%d)\n", prop.maxThreadsDim[0],
+                prop.maxThreadsDim[1], prop.maxThreadsDim[2]);
+        printf("  grid dim: (%d,%d,%d)\n", prop.maxGridSize[0], prop.maxGridSize[1],
+                prop.maxGridSize[2]);
+    }
+    printf("\n");
+}
+
+void Boxes2Txt(const std::vector<Box> &boxes, std::string file_name, bool with_vel=false) {
+    std::ofstream out_file;
+    out_file.open(file_name, std::ios::out);
+    if (out_file.is_open()) {
+        for (const auto &box : boxes) {
+            out_file << box.x << " ";
+            out_file << box.y << " ";
+            out_file << box.z << " ";
+            out_file << box.l << " ";
+            out_file << box.w << " ";
+            out_file << box.h << " ";
+            out_file << box.r << " ";
+            if (with_vel) {
+                out_file << box.vx << " ";
+                out_file << box.vy << " ";
+            }
+            out_file << box.score << " ";
+            out_file << box.label << "\n";
+        }
+    }
+    out_file.close();
+    return;
+};
+
+void Egobox2Lidarbox(const std::vector<Box>& ego_boxes, std::vector<Box> &lidar_boxes,
+                     const Eigen::Quaternion<float> &lidar2ego_rot, const Eigen::Translation3f &lidar2ego_trans) { 
+    for (size_t i = 0; i < ego_boxes.size(); i++) {
+        Box b = ego_boxes[i];
+        Eigen::Vector3f center(b.x, b.y, b.z);
+        center -= lidar2ego_trans.translation();         
+        center = lidar2ego_rot.inverse().matrix() * center;
+        b.r -= lidar2ego_rot.matrix().eulerAngles(0, 1, 2).z();
+        b.x = center.x();
+        b.y = center.y();
+        b.z = center.z();
+        lidar_boxes.push_back(b);
+    }
+}
+
+
+void box3DToDetectedObject(const std::vector<Box>& ego_boxes, 
+                           autoware_auto_perception_msgs::msg::DetectedObjects & output_msg) {
+    for (auto & box3d: ego_boxes) {
+        autoware_auto_perception_msgs::msg::DetectedObject obj;
+        obj.existence_probability = box3d.score;
+
+        // classification
+        autoware_auto_perception_msgs::msg::ObjectClassification classification;
+        classification.probability = 1.0f;
+    
+        if (box3d.label == 0) {
+            classification.label = Label::PEDESTRIAN;
+        } else if (box3d.label == 1) {
+            classification.label = Label::CAR;
+        } else if (box3d.label == 2) {
+            classification.label = Label::BICYCLE;
+        } else if (box3d.label == 3) {
+            classification.label = Label::UNKNOWN;
+        } else if (box3d.label == 4) {
+            classification.label = Label::TRUCK;
+        } else if (box3d.label == 5) {
+            classification.label = Label::BUS;
+        } else if (box3d.label == 6) {
+            classification.label = Label::MOTORCYCLE;
+        }
+
+        obj.classification.emplace_back(classification);
+
+        // float yaw = -box3d.r - tier4_autoware_utils::pi / 2;
+        float yaw = -box3d.r;
+        obj.kinematics.pose_with_covariance.pose.position =
+            tier4_autoware_utils::createPoint(box3d.x, box3d.y, (box3d.z + box3d.h * 0.5));
+        obj.kinematics.pose_with_covariance.pose.orientation =
+            tier4_autoware_utils::createQuaternionFromYaw(yaw);
+        obj.shape.type = autoware_auto_perception_msgs::msg::Shape::BOUNDING_BOX;
+        obj.shape.dimensions =
+            tier4_autoware_utils::createTranslation(box3d.l, box3d.w, box3d.h);
+
+        // twist
+        float vel_x = box3d.vx;
+        float vel_y = box3d.vy;
+        geometry_msgs::msg::Twist twist;
+        twist.linear.x = std::sqrt(std::pow(vel_x, 2) + std::pow(vel_y, 2));
+        twist.angular.z = 2 * (std::atan2(vel_y, vel_x) - yaw);
+        obj.kinematics.twist_with_covariance.twist = twist;
+        obj.kinematics.has_twist = "true";
+        output_msg.objects.emplace_back(obj);
+    }
+}
+
+std::string vectorToString(const std::vector<Eigen::VectorXd>& vec) {
+    std::stringstream ss;
+    ss << "Vector contains " << vec.size() << " elements:\n";
+    for (size_t i = 0; i < vec.size(); ++i) {
+        ss << "  [" << vec[i].transpose() << "]";
+        if (i != vec.size() - 1) ss << "\n";
+    }
+    return ss.str();
+}
+
+// 常量定义
+const std::vector<std::string> CAM_TYPES = {"CAM_FRONT_RIGHT", "CAM_FRONT_LEFT", "CAM_BACK_RIGHT", "CAM_FRONT", "CAM_BACK_LEFT", "CAM_BACK"};
+
+const std::map<std::string, Matrix4d> CAM_TRANSFORMS = {
+    {"CAM_FRONT_RIGHT", (Matrix4d() <<
+        -0.76604,  0.64279,  0.0,  1.48544,
+             0.0,      0.0, -1.0, -0.9,
+        -0.64279, -0.76604,  0.0, -0.05898,
+             0.0,      0.0,  0.0,  1.0).finished()},
+    {"CAM_FRONT_LEFT", (Matrix4d() <<
+        0.76604,  0.64279,  0.0,  -1.54972,
+            0.0,      0.0, -1.0,  -0.9,
+       -0.64279,  0.76604,  0.0,  -0.13558,
+            0.0,      0.0,  0.0,   1.0).finished()},
+    // 其他相机类型变换矩阵...
+};
+
+const Matrix3d INTRINSICS_1 = (Matrix3d() <<
+    1144.08,     0.0, 960,
+        0.0, 1144.08, 540,
+        0.0,     0.0, 1.0).finished();
+
+// 读取边界框数据
+MatrixXd read_boxes(const std::string& path) {
+    MatrixXd boxes;
+    std::ifstream fin(path);
+    // 读取并解析数据...
+    return boxes;
+}
+
+void inference_result(const std::string& box_path) {
+    const std::string base_path = "/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/";
+    std::ifstream bbox_file("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/sample0/sample0_lidarbox.txt");
+    std::vector<Eigen::VectorXd> bbox;
+    std::string line;
+    while (std::getline(bbox_file, line)) {
+        std::istringstream iss(line);
+        Eigen::VectorXd obj(7);
+        for (int i = 0; i < 7; ++i) {
+            iss >> obj(i);
+        }
+        obj(2) = obj(2) + 0.5 * obj(5);
+        bbox.push_back(obj);
+    }
+    //std::cout << vectorToString(bbox)<<std::endl;
+
+    for (const auto& cam_type : CAM_TYPES) {
+        // 构造图像路径
+        std::string img_path = "/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/" + cam_type + ".png";
+        Mat camera_image = imread(img_path, IMREAD_COLOR);
+
+        Eigen::Matrix4d transformation_matrix;
+        if (cam_type == "CAM_FRONT_RIGHT") {
+            transformation_matrix << -0.76604,  0.64279,  0.0,  1.48544,
+                                          0.0,      0.0, -1.0, -0.90000,
+                                     -0.64279, -0.76604,  0.0, -0.05898,
+                                          0.0,      0.0,  0.0,  1.0;
+        } else if (cam_type == "CAM_FRONT_LEFT") {
+            transformation_matrix << 0.76604,  0.64279,  0.0, -1.54972,
+                                         0.0,      0.0, -1.0, -0.90000,
+                                    -0.64279,  0.76604,  0.0, -0.13558,
+                                         0.0,      0.0,  0.0,  1.0;
+        } else if (cam_type == "CAM_BACK_RIGHT") {
+            transformation_matrix << -0.70711, -0.70711,  0.00000, -1.27279,
+                                      0.00000,  0.00000, -1.00000, -0.90000,
+                                      0.70711, -0.70711,  0.00000, -0.14142,
+                                      0.00000,  0.00000,  0.00000,  1.00000;
+        } else if (cam_type == "CAM_FRONT") {
+            transformation_matrix << 0.00000, -1.00000,  0.00000,  0.00000,
+                                     0.00000,  0.00000, -1.00000, -0.90000,
+                                     1.00000,  0.00000,  0.00000, -2.90000,
+                                     0.00000,  0.00000,  0.00000,  1.00000;
+        } else if (cam_type == "CAM_BACK_LEFT") {
+            transformation_matrix << 0.70711, -0.70711,  0.00000,  1.27279,
+                                     0.00000,  0.00000, -1.00000, -0.90000,
+                                     0.70711,  0.70711,  0.00000, -0.14142,
+                                     0.00000,  0.00000,  0.00000,  1.00000;
+        } else if (cam_type == "CAM_BACK") {
+            transformation_matrix << -0.00000,  1.00000,  0.00000, -0.00000,
+                                      0.00000,  0.00000, -1.00000, -0.90000,
+                                     -1.00000, -0.00000,  0.00000, -2.05000,
+                                      0.00000,  0.00000,  0.00000,  1.00000;
+        }
+        Eigen::Matrix4d cam2img = Eigen::Matrix4d::Identity();
+        cam2img.block<3, 3>(0, 0) = INTRINSICS_1;
+
+        Eigen::Matrix4d transform = cam2img * transformation_matrix;
+        camera_image = visualize_camera(camera_image, bbox, transform);
+
+        // 保存结果
+        std::string output_dir = "/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/result/" + cam_type +".png";
+        imwrite(output_dir, camera_image);
+    }
+}
+
+
+BevDetNode::BevDetNode(): Node("ros2_bevdet") {
+    
+    pkg_path_ = ament_index_cpp::get_package_share_directory("ros2_bevdet");
+
+    const auto img_N_ = static_cast<size_t>(this->declare_parameter<int64_t>("N"));
+    const auto img_w_ = static_cast<size_t>(this->declare_parameter<int64_t>("W"));
+    const auto img_h_ = static_cast<size_t>(this->declare_parameter<int64_t>("H"));
+
+    uchar_images = new unsigned char*[img_N_];
+
+    for (size_t i = 0; i < img_N_; i++) {
+        uchar_images[i] = new unsigned char[img_w_ * img_h_ * 3];
+    }
+
+    const std::string model_config_= pkg_path_ + "/" + this->declare_parameter<std::string>("ModelConfig");
+    const std::string imgstage_file_= pkg_path_ + "/" + this->declare_parameter<std::string>("ImgStageEngine");
+    const std::string bevstage_file_= pkg_path_ + "/" + this->declare_parameter<std::string>("BEVStageEngine");
+    
+    const std::string output_lidarbox_= pkg_path_ + "/" + this->declare_parameter<std::string>("OutputLidarBox");
+     
+    camconfig_ = YAML::LoadFile(pkg_path_ + "/" + this->declare_parameter<std::string>("CamConfig")); 
+
+    sample_= this->declare_parameter<std::vector<std::string>>("cams");
+
+    for(auto file : sample_) {
+        // imgs_file_.push_back(pkg_path_ +"/"+ file.second.as<std::string>());
+        imgs_name_.push_back(file.as<std::string>()); 
+    }
+
+    // 读取图像参数
+    sampleData_.param = camParams(camconfig_, img_N_, imgs_name_);
+
+    // 模型配置文件，图像数量，cam内参，cam2ego的旋转和平移，模型权重文件
+    bevdet_ = std::make_shared<BEVDet>(model_config_, img_N_, sampleData_.param.cams_intrin, sampleData_.param.cams2ego_rot, 
+                                      sampleData_.param.cams2ego_trans, imgstage_file_, bevstage_file_);
+    
+    // gpu分配内参， cuda上分配6张图的大小 每个变量sizeof(uchar)个字节，并用imgs_dev指向该gpu上内存, sizeof(uchar) =1
+    CHECK_CUDA(cudaMalloc((void**)&imgs_dev_, img_N_ * 3 * img_w_ * img_h_ * sizeof(uchar)));
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
+    using std::placeholders::_4;
+    using std::placeholders::_5;
+    using std::placeholders::_6;
+        
+    rmw_qos_profile_t image_rmw_qos(rclcpp::SensorDataQoS().get_rmw_qos_profile());
+    image_rmw_qos.depth = 2;
+    image_rmw_qos.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
+
+    //Front_Right
+    image_sub_sync[0].subscribe(this, "/sensing/camera/camera3/image3", image_rmw_qos);
+    //Front_Left
+    image_sub_sync[1].subscribe(this, "/sensing/camera/camera2/image2", image_rmw_qos);
+    //Back_Right
+    image_sub_sync[2].subscribe(this, "/sensing/camera/camera1/image1", image_rmw_qos);
+    //Front
+    image_sub_sync[3].subscribe(this, "/sensing/camera/camera5/image5", image_rmw_qos);
+    //Back_Left
+    image_sub_sync[4].subscribe(this, "/sensing/camera/camera0/image0", image_rmw_qos);
+    //Back
+    image_sub_sync[5].subscribe(this, "/sensing/camera/camera4/image4", image_rmw_qos);
+
+    sync_stream.reset(new message_filters::Synchronizer<approximate_policy_stream>(approximate_policy_stream(30), image_sub_sync[0], image_sub_sync[1], image_sub_sync[2], image_sub_sync[3], image_sub_sync[4], image_sub_sync[5]));
+
+    sync_stream->registerCallback(std::bind(&BevDetNode::sync_stream_callback, this, _1, _2, _3, _4, _5, _6, img_N_, img_w_, img_h_));
+
+    objects_pub_ = this->create_publisher<autoware_auto_perception_msgs::msg::DetectedObjects>("/perception/object_recognition/detection/centerpoint/objects", rclcpp::QoS(1));
+    //objects_pub_ = this->create_publisher<autoware_auto_perception_msgs::msg::DetectedObjects>("/perception/object_recognition/detection/centerpoint/validation/objects", rclcpp::QoS(1));
+    //objects_pub_ = this->create_publisher<autoware_auto_perception_msgs::msg::DetectedObjects>("/perception/object_recognition/detection/objects", rclcpp::QoS(1));
+}
+
+void BevDetNode::image_trans_to_uncharptr_to_gpu(const std::vector<sensor_msgs::msg::Image> & msg_total, uchar* out_imgs, size_t img_N_, size_t img_w_, size_t img_h_) {
+    
+    cv::Mat cv_image[img_N_];
+    // unsigned char* image_ptr[msg_num] = {(unsigned char*) "0"};
+    // 定义一个变量指向gpu
+    uchar* temp_gpu = nullptr;
+    uchar* temp = new uchar[img_w_ * img_h_ * 3];
+    // gpu分配内存 存储1张图像的大小 sizeof(uchar) = 1
+    CHECK_CUDA(cudaMalloc(&temp_gpu, img_h_ * img_w_ * 3));
+
+    for (size_t i = 0; i < img_N_; i++) {
+        cv_image[i] = cv_bridge::toCvCopy(msg_total[i], sensor_msgs::image_encodings::BGR8)->image;
+        cv::resize(cv_image[i], cv_image[i], cv::Size(img_w_, img_h_)); 
+        std::memcpy(uchar_images[i], cv_image[i].data, img_w_ * img_h_ * 3 * sizeof(uchar));
+        cv::Mat test_img(img_h_,img_w_,CV_8UC3,uchar_images[i]);
+
+        if (i == 0) {
+            cv::imwrite("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/CAM_FRONT_RIGHT.png", test_img);
+        } else if (i == 1) {
+            cv::imwrite("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/CAM_FRONT_LEFT.png", test_img);
+        } else if (i == 2) {
+            cv::imwrite("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/CAM_BACK_RIGHT.png", test_img);
+        } else if (i == 3) {
+            cv::imwrite("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/CAM_FRONT.png", test_img);
+        } else if (i == 4) {
+            cv::imwrite("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/CAM_BACK_LEFT.png", test_img);
+        } else if (i == 5) {
+            cv::imwrite("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/bevdet_tools/CAM_BACK.png", test_img);
+        }
+
+        CHECK_CUDA(cudaMemcpy(temp_gpu, uchar_images[i], img_w_ * img_h_ * 3, cudaMemcpyHostToDevice));
+        convert_RGBHWC_to_BGRCHW(temp_gpu, out_imgs + i * img_w_ * img_h_ * 3, 3, img_h_, img_w_);
+    }
+
+    CHECK_CUDA(cudaDeviceSynchronize());
+    CHECK_CUDA(cudaFree(temp_gpu));
+    delete[] temp;
+}
+
+
+void BevDetNode::sync_stream_callback(const sensor_msgs::msg::Image::ConstSharedPtr &msg0, const sensor_msgs::msg::Image::ConstSharedPtr &msg1, const sensor_msgs::msg::Image::ConstSharedPtr &msg2, const sensor_msgs::msg::Image::ConstSharedPtr &msg3, const sensor_msgs::msg::Image::ConstSharedPtr &msg4, const sensor_msgs::msg::Image::ConstSharedPtr &msg5, size_t img_N_, size_t img_w_, size_t img_h_) {
+    
+    std::cout << "I get sth. from Camera" << std::endl;
+    std::cout << "msg0->header =" << msg0->header.frame_id << " " << msg0->header.stamp.sec << "\n";
+
+    std::vector<sensor_msgs::msg::Image> msg_total;
+    msg_total.emplace_back(*msg0);
+    msg_total.emplace_back(*msg1);
+    msg_total.emplace_back(*msg2);
+    msg_total.emplace_back(*msg3);
+    msg_total.emplace_back(*msg4);
+    msg_total.emplace_back(*msg5);        
+/*
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto time1 = std::chrono::duration_cast<std::chrono::microseconds>(currentTime.time_since_epoch());
+*/
+    image_trans_to_uncharptr_to_gpu(msg_total, imgs_dev_, img_N_, img_w_, img_h_);
+/*
+    currentTime = std::chrono::high_resolution_clock::now();
+    auto time2 = std::chrono::duration_cast<std::chrono::microseconds>(currentTime.time_since_epoch());
+    std::cout << "==prepare time is :" << std::to_string(time2.count() - time1.count()) << " us==" << std::endl;
+*/
+    sampleData_.imgs_dev = imgs_dev_;
+
+    std::vector<Box> ego_boxes;
+    ego_boxes.clear();
+    float time = 0.f;
+
+    bevdet_->DoInfer(sampleData_, ego_boxes, time);
+
+    Boxes2Txt(ego_boxes, "/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/sample0/sample0_lidarbox.txt", false);
+    inference_result("/home/orin/disk/autodrrt_v2.0/src/autodrrt.application/perception/autodrrt.perception/ros2_bevdet/sample0/sample0_lidarbox.txt");
+
+    autoware_auto_perception_msgs::msg::DetectedObjects output_msg;
+    box3DToDetectedObject(ego_boxes, output_msg);
+    //std::cout << "msg0->header =" << msg0->header.frame_id << " " << msg0->header.stamp.sec << "\n";
+    output_msg.header = msg0->header;
+    output_msg.header.frame_id = "velodyne_top_base_link";
+    objects_pub_->publish(output_msg);
+    exit(0);
+}
+
+
+BevDetNode::~BevDetNode() {
+    delete imgs_dev_;
+    for (size_t i = 0; i < img_N_; i++) {
+        delete uchar_images[i];
+    }
+    delete uchar_images;
+}
+
+int main(int argc, char **argv) {   
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<BevDetNode>());
+    rclcpp::shutdown();
+    return 0;
+}

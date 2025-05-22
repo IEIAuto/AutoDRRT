@@ -1,2 +1,0 @@
-BACKGROUND
-traffic_light

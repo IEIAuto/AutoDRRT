@@ -134,63 +134,78 @@ GyroOdometer::~GyroOdometer()
 
 void GyroOdometer::callbackVehicleTwist(
   const geometry_msgs::msg::TwistWithCovarianceStamped::ConstSharedPtr vehicle_twist_ptr)
-{
+{ //RCLCPP_INFO(this->get_logger(),"twist msg callbak 1");
   vehicle_twist_arrived_ = true;
   if (!imu_arrived_) {
     RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 1000, "Imu msg is not subscribed");
     vehicle_twist_queue_.clear();
     gyro_queue_.clear();
+    // RCLCPP_INFO(this->get_logger(),"twist msg callbak 2");
     return;
   }
 
   const double twist_dt = std::abs((this->now() - vehicle_twist_ptr->header.stamp).seconds());
+  // RCLCPP_INFO(this->get_logger(), "vehicle timestamp: %ld.%ld", vehicle_twist_ptr->header.stamp.sec, vehicle_twist_ptr->header.stamp.nanosec);
+  // RCLCPP_INFO(this->get_logger(), "Current time: %ld.%ld", this->now().seconds(), this->now().nanoseconds());
+  // RCLCPP_INFO(this->get_logger(), "imu_dt: %.3f, message_timeout_sec_: %.3f", twist_dt, message_timeout_sec_);
   if (twist_dt > message_timeout_sec_) {
     const std::string error_msg = fmt::format(
       "Twist msg is timeout. twist_dt: {}[sec], tolerance {}[sec]", twist_dt, message_timeout_sec_);
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 1000, error_msg.c_str());
     vehicle_twist_queue_.clear();
     gyro_queue_.clear();
+    // RCLCPP_INFO(this->get_logger(),"twist msg callbak 3");
     return;
   }
 
   vehicle_twist_queue_.push_back(*vehicle_twist_ptr);
+  // RCLCPP_INFO(this->get_logger(),"twist msg callbak 4");
 
   if (gyro_queue_.empty()) return;
   const double imu_dt = std::abs((this->now() - gyro_queue_.back().header.stamp).seconds());
+  // RCLCPP_INFO(this->get_logger(),"twist msg callbak 5");
   if (imu_dt > message_timeout_sec_) {
     const std::string error_msg = fmt::format(
       "Imu msg is timeout. twist_dt: {}[sec], tolerance {}[sec]", imu_dt, message_timeout_sec_);
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 1000, error_msg.c_str());
     vehicle_twist_queue_.clear();
     gyro_queue_.clear();
+    // RCLCPP_INFO(this->get_logger(),"twist msg callbak 6");
     return;
   }
 
   const geometry_msgs::msg::TwistWithCovarianceStamped twist_with_cov_raw =
     concatGyroAndOdometer(vehicle_twist_queue_, gyro_queue_);
+    // RCLCPP_INFO(this->get_logger(),"twist msg callbak 7");
   publishData(twist_with_cov_raw);
   vehicle_twist_queue_.clear();
   gyro_queue_.clear();
 }
 
 void GyroOdometer::callbackImu(const sensor_msgs::msg::Imu::ConstSharedPtr imu_msg_ptr)
-{
+{//RCLCPP_INFO(this->get_logger(),"Imu msg callbak 1");
   imu_arrived_ = true;
   if (!vehicle_twist_arrived_) {
     RCLCPP_WARN_THROTTLE(
       this->get_logger(), *this->get_clock(), 1000, "Twist msg is not subscribed");
     vehicle_twist_queue_.clear();
     gyro_queue_.clear();
+    RCLCPP_INFO(this->get_logger(),"Imu msg callbak 2");
     return;
   }
 
   const double imu_dt = std::abs((this->now() - imu_msg_ptr->header.stamp).seconds());
+  // RCLCPP_INFO(this->get_logger(),"Imu msg callbak 3");
+  // RCLCPP_INFO(this->get_logger(), "IMU timestamp: %ld.%ld", imu_msg_ptr->header.stamp.sec, imu_msg_ptr->header.stamp.nanosec);
+  // RCLCPP_INFO(this->get_logger(), "Current time: %ld.%ld", this->now().seconds(), this->now().nanoseconds());
+  // RCLCPP_INFO(this->get_logger(), "imu_dt: %.3f, message_timeout_sec_: %.3f", imu_dt, message_timeout_sec_);
   if (imu_dt > message_timeout_sec_) {
     const std::string error_msg = fmt::format(
       "Imu msg is timeout. imu_dt: {}[sec], tolerance {}[sec]", imu_dt, message_timeout_sec_);
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 1000, error_msg.c_str());
     vehicle_twist_queue_.clear();
     gyro_queue_.clear();
+    // RCLCPP_INFO(this->get_logger(),"Imu msg callbak 4");
     return;
   }
 
@@ -202,6 +217,7 @@ void GyroOdometer::callbackImu(const sensor_msgs::msg::Imu::ConstSharedPtr imu_m
       (imu_msg_ptr->header.frame_id).c_str());
     vehicle_twist_queue_.clear();
     gyro_queue_.clear();
+    // RCLCPP_INFO(this->get_logger(),"Imu msg callbak 5");
     return;
   }
 
@@ -221,8 +237,9 @@ void GyroOdometer::callbackImu(const sensor_msgs::msg::Imu::ConstSharedPtr imu_m
     transformCovariance(imu_msg_ptr->angular_velocity_covariance);
 
   gyro_queue_.push_back(gyro_base_link);
-
+  // RCLCPP_INFO(this->get_logger(),"Imu msg callbak 6");
   if (vehicle_twist_queue_.empty()) return;
+  // RCLCPP_INFO(this->get_logger(),"Imu msg callbak 7");
   const double twist_dt =
     std::abs((this->now() - vehicle_twist_queue_.back().header.stamp).seconds());
   if (twist_dt > message_timeout_sec_) {
@@ -231,11 +248,13 @@ void GyroOdometer::callbackImu(const sensor_msgs::msg::Imu::ConstSharedPtr imu_m
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 1000, error_msg.c_str());
     vehicle_twist_queue_.clear();
     gyro_queue_.clear();
+    // RCLCPP_INFO(this->get_logger(),"Imu msg callbak 8");
     return;
   }
 
   const geometry_msgs::msg::TwistWithCovarianceStamped twist_with_cov_raw =
     concatGyroAndOdometer(vehicle_twist_queue_, gyro_queue_);
+    // RCLCPP_INFO(this->get_logger(),"Imu msg callbak 9");
   publishData(twist_with_cov_raw);
   vehicle_twist_queue_.clear();
   gyro_queue_.clear();
@@ -268,4 +287,5 @@ void GyroOdometer::publishData(
 
   twist_pub_->publish(twist);
   twist_with_covariance_pub_->publish(twist_with_covariance);
+  // RCLCPP_INFO(this->get_logger(),"gyro_odometer_core has pub data");
 }

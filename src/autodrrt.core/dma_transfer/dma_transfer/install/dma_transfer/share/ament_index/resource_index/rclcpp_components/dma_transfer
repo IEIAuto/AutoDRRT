@@ -1,0 +1,2 @@
+dma_transfer::DemoNode1;lib/libdma_transfer.so
+dma_transfer::DemoNode2;lib/libdma_transfer.so

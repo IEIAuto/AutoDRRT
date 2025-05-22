@@ -1,0 +1,47 @@
+[0.018s] Invoking command in '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds': /usr/bin/cmake /home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds -DCMAKE_INSTALL_PREFIX=/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds
+[0.193s] -- The C compiler identification is GNU 9.4.0
+[0.329s] -- The CXX compiler identification is GNU 9.4.0
+[0.353s] -- Detecting C compiler ABI info
+[0.463s] -- Detecting C compiler ABI info - done
+[0.500s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.500s] -- Detecting C compile features
+[0.501s] -- Detecting C compile features - done
+[0.512s] -- Detecting CXX compiler ABI info
+[0.628s] -- Detecting CXX compiler ABI info - done
+[0.667s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.668s] -- Detecting CXX compile features
+[0.669s] -- Detecting CXX compile features - done
+[0.671s] [33mCMake Warning (dev) at CMakeLists.txt:13 (find_package):
+[0.671s]   Policy CMP0146 is not set: The FindCUDA module is removed.  Run "cmake
+[0.672s]   --help-policy CMP0146" for policy details.  Use the cmake_policy command to
+[0.672s]   set the policy and suppress this warning.
+[0.672s] 
+[0.672s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.672s] [0m
+[0.703s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[0.819s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+[0.820s] -- Looking for pthread_create in pthreads
+[0.922s] -- Looking for pthread_create in pthreads - not found
+[0.923s] -- Looking for pthread_create in pthread
+[1.038s] -- Looking for pthread_create in pthread - found
+[1.041s] -- Found Threads: TRUE
+[1.101s] -- Found CUDA: /usr/local/cuda (found version "11.4")
+[1.144s] [31mCMake Error at CMakeLists.txt:14 (find_package):
+[1.144s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[1.144s]   has asked CMake to find a package configuration file provided by
+[1.145s]   "ament_cmake", but CMake did not find one.
+[1.145s] 
+[1.145s]   Could not find a package configuration file provided by "ament_cmake" with
+[1.145s]   any of the following names:
+[1.146s] 
+[1.146s]     ament_cmakeConfig.cmake
+[1.146s]     ament_cmake-config.cmake
+[1.146s] 
+[1.146s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[1.147s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[1.147s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[1.147s]   has been installed.
+[1.147s] 
+[1.147s] [0m
+[1.148s] -- Configuring incomplete, errors occurred!
+[1.152s] Invoked command in '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds' returned '1': /usr/bin/cmake /home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds -DCMAKE_INSTALL_PREFIX=/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds

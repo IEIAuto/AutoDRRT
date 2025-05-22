@@ -71,11 +71,11 @@ int decode_cpu(const std::vector<std::vector<char>> &files_data, uchar* out_imgs
         }
         CHECK_CUDA(cudaMemcpy(temp_gpu, temp, width * height * 3, cudaMemcpyHostToDevice));
         convert_RGBHWC_to_BGRCHW(temp_gpu, out_imgs + i * width * height * 3, 3, height, width);
-
+/*
         CHECK_CUDA(cudaMemcpy(temp, out_imgs + width * height * 3 * i , width * height * 3 * sizeof(uchar), cudaMemcpyDeviceToHost));
         cv::Mat test_img(height,width,CV_8UC3,temp);
         cv::imwrite("/data/source/bevnet/bevdet_yutong/bevdet-tensorrt-cpp-master/after_jpg.jpg",test_img);
-        
+*/        
         CHECK_CUDA(cudaDeviceSynchronize());
     }
     CHECK_CUDA(cudaFree(temp_gpu));

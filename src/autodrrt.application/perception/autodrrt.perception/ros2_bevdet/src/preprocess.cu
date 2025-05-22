@@ -10,14 +10,14 @@
 //                                     int dst_row_step, int src_img_step, int dst_img_step,
 //                                     int src_h, int src_w, float radio_h, float radio_w, 
 //                                     float offset_h, float offset_w, triplet mean, triplet std){
-// 	int i = blockIdx.x;
-// 	int j = blockIdx.y;
-//     int k = threadIdx.x;
+//         int i = blockIdx.x;
+//         int j = blockIdx.y;
+//         int k = threadIdx.x;
 
-// 	int pX = (int) roundf((i / radio_h) + offset_h);
-// 	int pY = (int) roundf((j / radio_w) + offset_w);
+//         int pX = (int) roundf((i / radio_h) + offset_h);
+//         int pY = (int) roundf((j / radio_w) + offset_w);
  
-// 	if (pX < src_h && pX >= 0 && pY < src_w && pY >= 0){
+//         if (pX < src_h && pX >= 0 && pY < src_w && pY >= 0){
 //         int s1 = k * src_img_step + 0 * src_img_step / 3 + pX * src_row_step + pY;
 //         int s2 = k * src_img_step + 1 * src_img_step / 3 + pX * src_row_step + pY;
 //         int s3 = k * src_img_step + 2 * src_img_step / 3 + pX * src_row_step + pY;
@@ -26,10 +26,10 @@
 //         int d2 = k * dst_img_step + 1 * dst_img_step / 3 + i * dst_row_step + j;
 //         int d3 = k * dst_img_step + 2 * dst_img_step / 3 + i * dst_row_step + j;
 
-// 		*(dst_dev + d1) = ((float)*(src_dev + s1) - mean.x) / std.x;
-// 		*(dst_dev + d2) = ((float)*(src_dev + s2) - mean.y) / std.y;
-// 		*(dst_dev + d3) = ((float)*(src_dev + s3) - mean.z) / std.z;
-// 	}
+//         *(dst_dev + d1) = ((float)*(src_dev + s1) - mean.x) / std.x;
+//         *(dst_dev + d2) = ((float)*(src_dev + s2) - mean.y) / std.y;
+//         *(dst_dev + d3) = ((float)*(src_dev + s3) - mean.z) / std.z;
+//         }
 // }
 
 __global__ void preprocess_nearest_kernel(const uchar* __restrict__ src_dev, 
@@ -105,12 +105,12 @@ __device__ double Weight(double x, double a = -0.5){
 //     */
 
 
-// 	int i = blockIdx.x;
-// 	int j = blockIdx.y;
+//     int i = blockIdx.x;
+//     int j = blockIdx.y;
 //     int k = threadIdx.x;
 
-// 	double pX = (i / radio_h) + offset_h;
-// 	double pY = (j / radio_w) + offset_w;
+//     double pX = (i / radio_h) + offset_h;
+//     double pY = (j / radio_w) + offset_w;
 
 //     double val[3] = {0.0, 0.0, 0.0};
 
@@ -168,13 +168,13 @@ __global__ void preprocess_bicubic_kernel(const uchar* __restrict__ src_dev,
     offset_w : 同上
     */
     
-	int i = blockIdx.x;
-	int j = blockIdx.y;
+    int i = blockIdx.x;
+    int j = blockIdx.y;
     int k = threadIdx.x;
     int l = threadIdx.y;
 
-	double pX = (i / radio_h) + offset_h;
-	double pY = (j / radio_w) + offset_w;
+    double pX = (i / radio_h) + offset_h;
+    double pY = (j / radio_w) + offset_w;
 
     int u = l / 4 - 1;
     int v = l % 4 - 1;
@@ -222,7 +222,6 @@ int preprocess(const uchar* src_imgs, float* dst_imgs, int n_img, int src_img_h,
     crop_w : 为0
     */
 
-
     int src_row_step = src_img_w;
     int dst_row_step = dst_img_w;
     int src_img_step = src_img_w * src_img_h * 3;
@@ -246,7 +245,11 @@ int preprocess(const uchar* src_imgs, float* dst_imgs, int n_img, int src_img_h,
     }
     else if(sample == Sampler::nearest){
         // printf("sampler : nearest\n");
-        block = dim3(n_img);
+        // block = dim3(n_img);
+        
+        block = dim3(512,1,1);
+        grid = dim3(2112,1,1);
+
         preprocess_nearest_kernel<<<grid, block>>>(src_imgs, dst_imgs, src_row_step, dst_row_step, 
                         src_img_step, dst_img_step, src_img_h, src_img_w, resize_radio_h,
                         resize_radio_w, offset_h, offset_w, mean, std);
@@ -254,7 +257,6 @@ int preprocess(const uchar* src_imgs, float* dst_imgs, int n_img, int src_img_h,
 
     return EXIT_SUCCESS;
 }
-
 
 
 __global__ void convert_RGBHWC_to_BGRCHW_kernel(uchar *input, uchar *output, 
@@ -268,6 +270,7 @@ __global__ void convert_RGBHWC_to_BGRCHW_kernel(uchar *input, uchar *output,
         output[c * height * width + y * width + x] = input[index];
     }
 }
+
 // RGBHWC to BGRCHW
 void convert_RGBHWC_to_BGRCHW(uchar *input, uchar *output, 
                                                         int channels, int height, int width){

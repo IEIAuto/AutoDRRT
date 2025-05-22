@@ -1,7 +1,7 @@
 <launch>
-  <arg name="param_file" default="$(find-pkg-share ndt_scan_matcher)/config/ndt_scan_matcher.param.yaml"/>
+  <!--arg name="param_file" default="$(find-pkg-share ndt_scan_matcher)/config/ndt_scan_matcher.param.yaml"/>
 
-  <!-- Topics -->
+
   <arg name="input/pointcloud" default="/points_raw" description="Sensor points topic"/>
   <arg name="input_initial_pose_topic" default="/ekf_pose_with_covariance" description="Initial position topic to align"/>
   <arg name="input_map_points_topic" default="/pointcloud_map" description="Map points topic"/>
@@ -30,5 +30,5 @@
     <remap from="ekf_odom" to="$(var input_ekf_odom)"/>
 
     <param from="$(var param_file)"/>
-  </node>
+  </node-->
 </launch>

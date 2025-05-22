@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <group>
+  <!-- <group>
     <include file="$(find-pkg-share ndt_scan_matcher)/launch/ndt_scan_matcher.launch.xml">
       <arg name="input_map_points_topic" value="/map/pointcloud_map"/>
       <arg name="input/pointcloud" value="/localization/util/downsample/pointcloud"/>
@@ -11,5 +11,5 @@
 
       <arg name="param_file" value="$(var ndt_scan_matcher_param_path)"/>
     </include>
-  </group>
+  </group> -->
 </launch>

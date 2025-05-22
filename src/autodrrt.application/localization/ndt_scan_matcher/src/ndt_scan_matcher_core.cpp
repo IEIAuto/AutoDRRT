@@ -370,11 +370,12 @@ void NDTScanMatcher::publish_diagnostic()
 
 void NDTScanMatcher::callback_initial_pose(
   const geometry_msgs::msg::PoseWithCovarianceStamped::ConstSharedPtr initial_pose_msg_ptr)
-{
+{ //RCLCPP_INFO(get_logger(), "initial pose callback! ");
   if (!is_activated_) return;
 
   if (initial_pose_msg_ptr->header.frame_id == map_frame_) {
     initial_pose_buffer_->push_back(initial_pose_msg_ptr);
+    
   } else {
     RCLCPP_ERROR_STREAM_THROTTLE(
       get_logger(), *this->get_clock(), 1000,
@@ -421,6 +422,7 @@ void NDTScanMatcher::callback_sensor_points(
   std::lock_guard<std::mutex> lock(ndt_ptr_mtx_);
 
   const auto exe_start_time = std::chrono::system_clock::now();
+  // RCLCPP_INFO(this->get_logger(), "NDT scan matcher Current time: %ld.%ld", this->now().seconds(), this->now().nanoseconds());
 
   // preprocess input pointcloud
   pcl::shared_ptr<pcl::PointCloud<PointSource>> sensor_points_in_sensor_frame(
@@ -438,6 +440,8 @@ void NDTScanMatcher::callback_sensor_points(
   // calculate initial pose
   std::optional<SmartPoseBuffer::InterpolateResult> interpolation_result_opt =
     initial_pose_buffer_->interpolate(sensor_ros_time);
+    // RCLCPP_INFO(get_logger(), "ndt node find ininial pose! ");
+    
   if (!interpolation_result_opt) {
     RCLCPP_WARN_STREAM_THROTTLE(this->get_logger(), *this->get_clock(), 1, "No interpolated pose!");
     return;

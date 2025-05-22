@@ -1,5 +1,0 @@
-source;share/bevfusion/local_setup.bash
-source;share/bevfusion/local_setup.dsv
-source;share/bevfusion/local_setup.ps1
-source;share/bevfusion/local_setup.sh
-source;share/bevfusion/local_setup.zsh

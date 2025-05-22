@@ -50,7 +50,8 @@ set(CMAKE_BUILD_TYPE "RELEASE")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wno-deprecated-declarations -O2")
 
 add_compile_options(-W)
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++17)
+#add_compile_options(-std=c++14)
 
 set( SMS 30 32 35 37 50 52 53 60 61 62 70 72 75 86 87)
 foreach(sm ${SMS})
@@ -95,10 +96,11 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
   ${message_filters_INCLUDE_DIRS}
   ${cv_bridge_INCLUDE_DIRS}
+  /usr/include/opencv4/opencv2
 )
 
 link_directories(
-	${TENSORRT_LIBRARY_DIRS}
+  ${TENSORRT_LIBRARY_DIRS}
   ${PCL_LIBRARIES}
   ${message_filters_LIBRARIES}
   ${libcv_bridge_LIBRARIES}
@@ -107,6 +109,7 @@ link_directories(
 
 cuda_add_executable(bevdet_node
     bevdet_ros2.cpp 
+    #bevdet_ros2_lidar.cpp 
     src/bevdet.cpp 
     src/preprocess.cu 
     src/bevpool.cu 
@@ -116,6 +119,7 @@ cuda_add_executable(bevdet_node
     src/grid_sampler.cu
     src/cpu_jpegdecoder.cpp
     src/nvjpegdecoder.cpp
+    src/vis.cpp
 )
 
 target_link_libraries(bevdet_node 
@@ -124,9 +128,6 @@ target_link_libraries(bevdet_node
     libjpeg.so
 )
 ament_target_dependencies(bevdet_node rclcpp std_msgs autoware_auto_perception_msgs tier4_autoware_utils sensor_msgs message_filters pcl_conversions cv_bridge ament_index_cpp) 
-
-
-
 
 ament_auto_package(
   INSTALL_TO_SHARE

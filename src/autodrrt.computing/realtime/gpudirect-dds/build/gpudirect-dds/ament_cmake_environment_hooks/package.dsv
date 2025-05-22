@@ -1,0 +1,4 @@
+source;share/gpudirect-dds/local_setup.bash
+source;share/gpudirect-dds/local_setup.dsv
+source;share/gpudirect-dds/local_setup.sh
+source;share/gpudirect-dds/local_setup.zsh

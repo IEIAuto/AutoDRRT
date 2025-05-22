@@ -1,0 +1,12 @@
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/uninstall.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/dma_transfer_uninstall.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/dma_transfer.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/demo_node1.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/demo_node2.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/test.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/edit_cache.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/rebuild_cache.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/list_install_components.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/install.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/install/local.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/build/dma_transfer/CMakeFiles/install/strip.dir

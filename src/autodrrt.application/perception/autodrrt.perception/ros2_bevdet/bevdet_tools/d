@@ -1,0 +1,15 @@
+rm CAM_FRONT.png
+rm CAM_FRONT_LEFT.png
+rm CAM_FRONT_RIGHT.png
+rm CAM_BACK.png
+rm CAM_BACK_LEFT.png
+rm CAM_BACK_RIGHT.png
+
+rm result/CAM_FRONT.png
+rm result/CAM_FRONT_LEFT.png
+rm result/CAM_FRONT_RIGHT.png
+rm result/CAM_BACK.png
+rm result/CAM_BACK_LEFT.png
+rm result/CAM_BACK_RIGHT.png
+
+

@@ -1,0 +1,17 @@
+<launch>
+  <arg name="base_link_frame_id" default="base_link"/>
+
+
+  <node pkg="localization_gnss" exec="localization_gnss" name="localization_gnss">
+    <param name="base_link_frame_id" value="$(var base_link_frame_id)"/>
+    <remap from="input/gnss/pose" to="/sensing/gnss/pose"/>
+    <remap from="input/imu" to="/sensing/imu/tamagawa/imu_raw"/>
+    <remap from="input/velocity_status" to="/vehicle/status/velocity_status"/>
+    
+    <remap from="output/accel" to="/localization/acceleration"/>
+    <remap from="output/kinematic" to="/localization/kinematic_state"/>
+    <remap from="output/pose" to="/localization/pose_twist_fusion_filter/pose" />       
+    <remap from="output/localization_init_state"  to="/localization/initialization_state"/>
+    <remap from="output/initial_pose_3d" to="/initialpose3d"/>
+  </node>
+</launch>

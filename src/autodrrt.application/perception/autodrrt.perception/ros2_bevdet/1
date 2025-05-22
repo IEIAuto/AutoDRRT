@@ -1,0 +1,5 @@
+rm build -rf
+rm install -rf
+rm log -rf
+colcon build
+source install/local_setup.bash

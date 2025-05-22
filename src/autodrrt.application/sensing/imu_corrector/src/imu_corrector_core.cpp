@@ -75,10 +75,12 @@ ImuCorrector::ImuCorrector()
     "input", rclcpp::QoS{1}, std::bind(&ImuCorrector::callbackImu, this, std::placeholders::_1));
 
   imu_pub_ = create_publisher<sensor_msgs::msg::Imu>("output", rclcpp::QoS{10});
+  // RCLCPP_INFO(this->get_logger(), "this is in imu corrector class");
 }
 
 void ImuCorrector::callbackImu(const sensor_msgs::msg::Imu::ConstSharedPtr imu_msg_ptr)
 {
+  // RCLCPP_INFO(this->get_logger(), "this is in imu callback");
   sensor_msgs::msg::Imu imu_msg;
   imu_msg = *imu_msg_ptr;
 

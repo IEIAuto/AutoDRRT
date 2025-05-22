@@ -1,0 +1,196 @@
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake_auto: 1.3.3 (/home/orin/disk/autodrrt_v2.0/install/ament_cmake_auto/share/ament_cmake_auto/cmake)
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- Found rosidl_generator_c: 3.1.4 (/home/orin/disk/autodrrt_v2.0/install/rosidl_generator_c/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.4 (/home/orin/disk/autodrrt_v2.0/install/rosidl_adapter/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.4 (/home/orin/disk/autodrrt_v2.0/install/rosidl_generator_cpp/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_introspection_c;rosidl_typesupport_fastrtps_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_introspection_cpp;rosidl_typesupport_fastrtps_cpp
+-- Found rmw_implementation_cmake: 6.1.1 (/home/orin/disk/autodrrt_v2.0/install/rmw_implementation_cmake/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.2 (/home/orin/disk/autodrrt_v2.0/install/rmw_fastrtps_cpp/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/aarch64-linux-gnu/libcrypto.so (found version "1.1.1f")
+-- Found FastRTPS: /home/orin/disk/autodrrt_v2.0/install/fastrtps/include
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE
+-- Checking for module 'eigen3'
+--   Found eigen3, version 3.3.7
+-- Found Eigen: /usr/include/eigen3 (Required is at least version "3.1")
+-- Eigen found (include: /usr/include/eigen3, version: 3.3.7)
+-- Checking for module 'flann'
+--   Found flann, version 1.9.1
+-- Found FLANN: /usr/lib/aarch64-linux-gnu/libflann_cpp.so
+-- The imported target "vtkParseOGLExt" references the file
+   "/usr/bin/vtkParseOGLExt-7.1"
+but this file does not exist.  Possible reasons include:
+* The file was deleted, renamed, or moved to another location.
+* An install or uninstall procedure did not complete successfully.
+* The installation package was faulty and contained
+   "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+but not all the files it references.
+
+-- The imported target "vtkRenderingPythonTkWidgets" references the file
+   "/usr/lib/aarch64-linux-gnu/libvtkRenderingPythonTkWidgets.so"
+but this file does not exist.  Possible reasons include:
+* The file was deleted, renamed, or moved to another location.
+* An install or uninstall procedure did not complete successfully.
+* The installation package was faulty and contained
+   "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+but not all the files it references.
+
+-- The imported target "vtk" references the file
+   "/usr/bin/vtk"
+but this file does not exist.  Possible reasons include:
+* The file was deleted, renamed, or moved to another location.
+* An install or uninstall procedure did not complete successfully.
+* The installation package was faulty and contained
+   "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+but not all the files it references.
+
+-- The imported target "pvtk" references the file
+   "/usr/bin/pvtk"
+but this file does not exist.  Possible reasons include:
+* The file was deleted, renamed, or moved to another location.
+* An install or uninstall procedure did not complete successfully.
+* The installation package was faulty and contained
+   "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+but not all the files it references.
+
+-- Checking for module 'libusb-1.0'
+--   No package 'libusb-1.0' found
+-- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR) 
+-- OpenNI disabled because libusb-1.0 not found.
+-- Checking for module 'libusb-1.0'
+--   No package 'libusb-1.0' found
+-- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR) 
+-- OpenNI 2 disabled because libusb-1.0 not found.
+-- LIBUSB_1_LIBRARY (missing: LIBUSB_1_INCLUDE_DIR) 
+-- Checking for module 'libusb-1.0'
+--   No package 'libusb-1.0' found
+-- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR) 
+-- OpenNI disabled because libusb-1.0 not found.
+-- Checking for module 'libusb-1.0'
+--   No package 'libusb-1.0' found
+-- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR) 
+-- OpenNI 2 disabled because libusb-1.0 not found.
+-- Found Qhull: optimized;/usr/lib/aarch64-linux-gnu/libqhull.so;debug;/usr/lib/aarch64-linux-gnu/libqhull.so
+-- QHULL found (include: /usr/include, lib: optimized;/usr/lib/aarch64-linux-gnu/libqhull.so;debug;/usr/lib/aarch64-linux-gnu/libqhull.so)
+-- Checking for module 'libusb-1.0'
+--   No package 'libusb-1.0' found
+-- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR) 
+-- OpenNI disabled because libusb-1.0 not found.
+-- Found PCL_COMMON: /usr/lib/aarch64-linux-gnu/libpcl_common.so
+-- Found PCL_KDTREE: /usr/lib/aarch64-linux-gnu/libpcl_kdtree.so
+-- Found PCL_OCTREE: /usr/lib/aarch64-linux-gnu/libpcl_octree.so
+-- Found PCL_SEARCH: /usr/lib/aarch64-linux-gnu/libpcl_search.so
+-- Found PCL_SAMPLE_CONSENSUS: /usr/lib/aarch64-linux-gnu/libpcl_sample_consensus.so
+-- Found PCL_FILTERS: /usr/lib/aarch64-linux-gnu/libpcl_filters.so
+-- Found PCL_2D: /usr/include/pcl-1.10
+-- Found PCL_GEOMETRY: /usr/include/pcl-1.10
+-- Found PCL_IO: /usr/lib/aarch64-linux-gnu/libpcl_io.so
+-- Found PCL_FEATURES: /usr/lib/aarch64-linux-gnu/libpcl_features.so
+-- Found PCL_ML: /usr/lib/aarch64-linux-gnu/libpcl_ml.so
+-- Found PCL_SEGMENTATION: /usr/lib/aarch64-linux-gnu/libpcl_segmentation.so
+-- Found PCL_VISUALIZATION: /usr/lib/aarch64-linux-gnu/libpcl_visualization.so
+-- Found PCL_SURFACE: /usr/lib/aarch64-linux-gnu/libpcl_surface.so
+-- Found PCL_REGISTRATION: /usr/lib/aarch64-linux-gnu/libpcl_registration.so
+-- Found PCL_KEYPOINTS: /usr/lib/aarch64-linux-gnu/libpcl_keypoints.so
+-- Found PCL_TRACKING: /usr/lib/aarch64-linux-gnu/libpcl_tracking.so
+-- Found PCL_RECOGNITION: /usr/lib/aarch64-linux-gnu/libpcl_recognition.so
+-- Found PCL_STEREO: /usr/lib/aarch64-linux-gnu/libpcl_stereo.so
+-- Found PCL_APPS: /usr/lib/aarch64-linux-gnu/libpcl_apps.so
+-- Found PCL_IN_HAND_SCANNER: /usr/include/pcl-1.10
+-- Found PCL_POINT_CLOUD_EDITOR: /usr/include/pcl-1.10
+-- Found PCL_OUTOFCORE: /usr/lib/aarch64-linux-gnu/libpcl_outofcore.so
+-- Found PCL_PEOPLE: /usr/lib/aarch64-linux-gnu/libpcl_people.so
+-- Found eigen3_cmake_module: 0.1.1 (/home/orin/disk/autodrrt_v2.0/install/eigen3_cmake_module/share/eigen3_cmake_module/cmake)
+-- Found Eigen3: TRUE (found version "3.3.7")
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Found CUDA: /usr/local/cuda (found version "11.4")
+-- Found OpenCV: /usr (found version "4.5.4")
+-- Configuring done (44.3s)
+-- Generating done (0.6s)
+-- Build files have been written to: /home/orin/disk/ros2_bevdet/build/ros2_bevdet
+[  8%] [34m[1mBuilding NVCC (Device) object CMakeFiles/bevdet_node.dir/src/bevdet_node_generated_preprocess.cu.o[0m
+[ 16%] [34m[1mBuilding NVCC (Device) object CMakeFiles/bevdet_node.dir/src/bevdet_node_generated_postprocess.cu.o[0m
+[ 25%] [34m[1mBuilding NVCC (Device) object CMakeFiles/bevdet_node.dir/src/bevdet_node_generated_iou3d_nms.cu.o[0m
+[ 33%] [34m[1mBuilding NVCC (Device) object CMakeFiles/bevdet_node.dir/src/bevdet_node_generated_grid_sampler.cu.o[0m
+[ 41%] [34m[1mBuilding NVCC (Device) object CMakeFiles/bevdet_node.dir/src/bevdet_node_generated_bevpool.cu.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/bevdet_node.dir/bevdet_ros2.cpp.o[0m
+[ 58%] [32mBuilding CXX object CMakeFiles/bevdet_node.dir/src/vis.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/bevdet_node.dir/src/nvjpegdecoder.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/bevdet_node.dir/src/cpu_jpegdecoder.cpp.o[0m
+[ 83%] [32mBuilding CXX object CMakeFiles/bevdet_node.dir/src/data.cpp.o[0m
+[ 91%] [32mBuilding CXX object CMakeFiles/bevdet_node.dir/src/bevdet.cpp.o[0m
+[100%] [32m[1mLinking CXX executable bevdet_node[0m
+[100%] Built target bevdet_node
+-- Install configuration: "RELEASE"
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/cpu_jpegdecoder.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/common.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/preprocess.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/bevdet.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/iou3d_nms.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/nvjpegdecoder.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/grid_sampler.cuh
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/bevpool.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/postprocess.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/bevdet_ros2.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/include/data.h
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/model
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/model/bev_stage_lt_d_fp16.engine
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/model/img_stage_lt_d_fp16.engine
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cfgs
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cfgs/config.yaml
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cfgs/bevdet_6camera_old.yaml
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cfgs/bevdet_6camera.yaml
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/imgs
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/imgs/CAM_BACK.jpg
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/imgs/CAM_FRONT_RIGHT.jpg
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/imgs/CAM_FRONT.jpg
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/imgs/CAM_FRONT_LEFT.jpg
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/imgs/CAM_BACK_RIGHT.jpg
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/imgs/CAM_BACK_LEFT.jpg
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/0.bin
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/sample0000.yaml
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/sample0/sample0_lidarbox.txt
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/launch
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/launch/bevdet.launch.xml
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/config
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/config/bevdet.param.yaml
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ament_index/resource_index/package_run_dependencies/ros2_bevdet
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ament_index/resource_index/parent_prefix_path/ros2_bevdet
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/environment/ament_prefix_path.sh
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/environment/ament_prefix_path.dsv
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/environment/path.sh
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/environment/path.dsv
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/local_setup.bash
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/local_setup.sh
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/local_setup.zsh
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/local_setup.dsv
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/package.dsv
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ament_index/resource_index/packages/ros2_bevdet
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cmake/ros2_bevdetConfig.cmake
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/cmake/ros2_bevdetConfig-version.cmake
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/share/ros2_bevdet/package.xml
+-- Installing: /home/orin/disk/ros2_bevdet/install/ros2_bevdet/lib/ros2_bevdet/bevdet_node
+-- Set non-toolchain portion of runtime path of "/home/orin/disk/ros2_bevdet/install/ros2_bevdet/lib/ros2_bevdet/bevdet_node" to ""

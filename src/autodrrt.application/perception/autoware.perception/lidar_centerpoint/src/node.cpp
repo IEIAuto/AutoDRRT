@@ -110,7 +110,8 @@ LidarCenterPointNode::LidarCenterPointNode(const rclcpp::NodeOptions & node_opti
     "~/input/pointcloud", rclcpp::SensorDataQoS{}.keep_last(1),
     std::bind(&LidarCenterPointNode::pointCloudCallback, this, std::placeholders::_1));
   objects_pub_ = this->create_publisher<autoware_auto_perception_msgs::msg::DetectedObjects>(
-    "~/output/objects", rclcpp::QoS{1});
+    "~/output/objects_123", rclcpp::QoS{1});
+    //"~/output/objects", rclcpp::QoS{1});
 
   // initialize debug tool
   {

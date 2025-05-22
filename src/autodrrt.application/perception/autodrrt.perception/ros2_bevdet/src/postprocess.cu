@@ -121,12 +121,12 @@ PostprocessGPU::PostprocessGPU(const int _class_num,
 
     iou3d_nms.reset(new Iou3dNmsCuda(output_h, output_w, nms_thresh));
 
-
     for(auto i = 0; i < nms_rescale_factor.size(); i++){
         printf("%.2f%c", nms_rescale_factor[i], i == nms_rescale_factor.size() - 1 ? '\n' : ' ');
     }
 
 }
+
 PostprocessGPU::~PostprocessGPU(){
     CHECK_CUDA(cudaFree(boxes_dev));
     CHECK_CUDA(cudaFree(score_dev));
@@ -143,11 +143,10 @@ PostprocessGPU::~PostprocessGPU(){
 }
 
 
-
-
 void PostprocessGPU::DoPostprocess(void ** const bev_buffer, std::vector<Box>& out_detections){
 
     // bev_buffer : BEV_feat, reg_0, hei_0, dim_0, rot_0, vel_0, heatmap_0, reg_1 ...
+   
     const int task_num = class_num_pre_task.size();
     int cur_start_label = 0;
     for(int i = 0; i < task_num; i++){
@@ -160,17 +159,6 @@ void PostprocessGPU::DoPostprocess(void ** const bev_buffer, std::vector<Box>& o
 
         dim3 grid(DIVUP(map_size, NUM_THREADS));
         CHECK_CUDA(cudaMemset(valid_box_num, 0, sizeof(int)));
-        std::cout << "map_size:" << map_size << \
-        " score_thresh:" << score_thresh << \
-        " x_start:" << map_size << \
-        " y_start:" << y_start << \
-        " x_step:" << x_step << \
-        " output_h:" << output_h << \
-        " output_w:" << output_w << \
-        " down_sample:" << down_sample << \
-        " class_num_pre_task[i]:" << class_num_pre_task[i] << \
-        std::endl;
-        // CHECK_CUDA(cudaDeviceSynchronize());
         BEVDecodeObjectKernel<<<grid, NUM_THREADS>>>(map_size, score_thresh, 
                                          x_start, y_start, x_step, y_step, output_h,
                                          output_w, down_sample, class_num_pre_task[i],
@@ -179,28 +167,22 @@ void PostprocessGPU::DoPostprocess(void ** const bev_buffer, std::vector<Box>& o
                                          heatmap,
                                          boxes_dev, score_dev, cls_dev, valid_box_num,
                                          nms_rescale_factor_dev);
-        CHECK_CUDA(cudaDeviceSynchronize());
-        // std::cout << "valid_box_num:" << valid_box_num << std::endl;
+        //ECK_CUDA(cudaDeviceSynchronize());
         /*
         此时 boxes_dev, score_dev, cls_dev 有 valid_box_num 个元素，可能大于nms_pre_maxnum, 而且是无序排列的
         */ 
         int box_num_pre = 0;
         CHECK_CUDA(cudaMemcpy(&box_num_pre, valid_box_num, sizeof(int), cudaMemcpyDeviceToHost));
-        std::cout << "box_num_pre:" << box_num_pre << std::endl;
+
         thrust::sequence(thrust::device, sorted_indices_dev, sorted_indices_dev + box_num_pre);
         thrust::sort_by_key(thrust::device, score_dev, score_dev + box_num_pre, 
                             sorted_indices_dev, thrust::greater<float>());
-        // 此时 score_dev 是降序排列的，而 sorted_indices_dev 索引着原顺序，
-        // 即 sorted_indices_dev[i] = j; i:现在的位置，j:原索引;  j:[0, map_size)
-
 
         box_num_pre = std::min(box_num_pre, nms_pre_maxnum);
 
-        int box_num_post = iou3d_nms->DoIou3dNms(box_num_pre, boxes_dev, 
-                                                        sorted_indices_dev, keep_data_host);
+        int box_num_post = iou3d_nms->DoIou3dNms(box_num_pre, boxes_dev, sorted_indices_dev, keep_data_host);
 
         box_num_post = std::min(box_num_post, nms_post_maxnum);
-
 
         CHECK_CUDA(cudaMemcpy(sorted_indices_host, sorted_indices_dev, box_num_pre * sizeof(int),
                                                                     cudaMemcpyDeviceToHost));
@@ -210,7 +192,6 @@ void PostprocessGPU::DoPostprocess(void ** const bev_buffer, std::vector<Box>& o
                                                                     cudaMemcpyDeviceToHost));
         CHECK_CUDA(cudaMemcpy(cls_host, cls_dev, map_size * sizeof(float), 
                                                                     cudaMemcpyDeviceToHost));
-
 
         for (auto j = 0; j < box_num_post; j++) {
             int k = keep_data_host[j];
@@ -231,7 +212,7 @@ void PostprocessGPU::DoPostprocess(void ** const bev_buffer, std::vector<Box>& o
             box.z -= box.h * 0.5; // bottom height
             out_detections.push_back(box);
         }
-        
+       
         cur_start_label += class_num_pre_task[i];
     }
 }

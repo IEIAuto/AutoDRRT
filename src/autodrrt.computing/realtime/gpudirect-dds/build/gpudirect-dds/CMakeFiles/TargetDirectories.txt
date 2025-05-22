@@ -1,0 +1,11 @@
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/uninstall.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/gpudirect-dds_uninstall.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/talker_component.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/listener_component.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/test.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/edit_cache.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/rebuild_cache.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/list_install_components.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/install.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/install/local.dir
+/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds/CMakeFiles/install/strip.dir

@@ -1,0 +1,16 @@
+In file included from [01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/include/dma_adapter.hpp:22[m[K,
+                 from [01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/include/demo_node.hpp:35[m[K,
+                 from [01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/src/send.cpp:15[m[K:
+[01m[K/home/orin/disk/autodrrt_v2.0/install/cv_bridge/include/cv_bridge/cv_bridge/cv_bridge.h:42:2:[m[K [01;35m[Kwarning: [m[K#warning This header is obsolete, please include cv_bridge/cv_bridge.hpp instead [[01;35m[K-Wcpp[m[K]
+   42 | #[01;35m[Kwarning[m[K This header is obsolete, please include cv_bridge/cv_bridge.hpp instead
+      |  [01;35m[K^~~~~~~[m[K
+In file included from [01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/include/dma_adapter.hpp:22[m[K,
+                 from [01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/include/demo_node.hpp:35[m[K,
+                 from [01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/src/recv.cpp:15[m[K:
+[01m[K/home/orin/disk/autodrrt_v2.0/install/cv_bridge/include/cv_bridge/cv_bridge/cv_bridge.h:42:2:[m[K [01;35m[Kwarning: [m[K#warning This header is obsolete, please include cv_bridge/cv_bridge.hpp instead [[01;35m[K-Wcpp[m[K]
+   42 | #[01;35m[Kwarning[m[K This header is obsolete, please include cv_bridge/cv_bridge.hpp instead
+      |  [01;35m[K^~~~~~~[m[K
+[01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/src/recv.cpp:[m[K In function ‘[01m[Kvoid dma_transfer::string_callback(const Image&)[m[K’:
+[01m[K/home/orin/disk/autodrrt_v2.0/src/autodrrt.core/dma_transfer/dma_transfer/src/recv.cpp:40:57:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmsg[m[K’ [[01;35m[K-Wunused-parameter[m[K]
+   40 |     void string_callback([01;35m[Kconst sensor_msgs::msg::Image& msg[m[K)
+      |                          [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~[m[K

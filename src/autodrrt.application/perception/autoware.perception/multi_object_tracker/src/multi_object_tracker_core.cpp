@@ -236,6 +236,14 @@ MultiObjectTracker::MultiObjectTracker(const rclcpp::NodeOptions & node_options)
 void MultiObjectTracker::onMeasurement(
   const autoware_auto_perception_msgs::msg::DetectedObjects::ConstSharedPtr input_objects_msg)
 {
+
+  /**swpld added**/
+  int64_t msg_timestamp_ns = input_objects_msg->header.stamp.sec * 1'000'000'000LL + input_objects_msg->header.stamp.nanosec;
+  int64_t receive_timestamp_ns = this->now().nanoseconds();
+  int64_t latency_ns = receive_timestamp_ns - msg_timestamp_ns;
+  RCLCPP_INFO(this->get_logger(), "swpld added to calculate latency: %ld ns (%.6f ms)", latency_ns, latency_ns / 1e6);
+  /**swpld added**/
+
   /* keep the latest input stamp and check transform*/
   debugger_->startMeasurementTime(rclcpp::Time(input_objects_msg->header.stamp));
   const auto self_transform = getTransformAnonymous(

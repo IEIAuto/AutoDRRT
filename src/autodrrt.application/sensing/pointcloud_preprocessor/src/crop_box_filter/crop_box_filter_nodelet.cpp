@@ -138,7 +138,7 @@ void CropBoxFilterComponent::faster_filter(
     point[3] = 1;
 
     if (!std::isfinite(point[0]) || !std::isfinite(point[1]) || !std::isfinite(point[2])) {
-      RCLCPP_WARN(this->get_logger(), "Ignoring point containing NaN values");
+      // RCLCPP_WARN(this->get_logger(), "Ignoring point containing NaN values");
       continue;
     }
 

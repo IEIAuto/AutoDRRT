@@ -1,0 +1,81 @@
+[0.653s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.653s] DEBUG:colcon:Parsed command line arguments: Namespace(allow_overriding=[], ament_cmake_args=None, base_paths=['.'], build_base='build', catkin_cmake_args=None, catkin_skip_building_tests=False, cmake_args=None, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, cmake_target=None, cmake_target_skip_unavailable=False, continue_on_error=False, event_handlers=None, executor='parallel', ignore_user_meta=False, install_base='install', log_base=None, log_level=None, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0xffff9e37d9a0>>, merge_install=False, metas=['./colcon.meta'], mixin=None, mixin_files=None, mixin_verb=('build',), packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_end=None, packages_ignore=None, packages_ignore_regex=None, packages_select=None, packages_select_build_failed=False, packages_select_by_dep=None, packages_select_regex=None, packages_select_test_failures=False, packages_skip=None, packages_skip_build_finished=False, packages_skip_by_dep=None, packages_skip_regex=None, packages_skip_test_passed=False, packages_skip_up_to=None, packages_start=None, packages_up_to=None, packages_up_to_regex=None, parallel_workers=12, paths=None, symlink_install=False, test_result_base=None, verb_extension=<colcon_core.verb.build.BuildVerb object at 0xffff9e37d9a0>, verb_name='build', verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0xffff9e0e0340>)
+[0.792s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.793s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.793s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.793s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.793s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.793s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.793s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds'
+[0.793s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.793s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.793s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.794s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.794s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.794s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.794s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.794s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.794s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.822s] DEBUG:colcon.colcon_core.package_identification:Package '.' with type 'ros.ament_cmake' and name 'gpudirect-dds'
+[0.822s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.822s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.822s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.822s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.822s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.857s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.857s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.860s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'cmake_args' from command line to 'None'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'cmake_target' from command line to 'None'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'cmake_clean_cache' from command line to 'False'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'cmake_clean_first' from command line to 'False'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'cmake_force_configure' from command line to 'False'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'ament_cmake_args' from command line to 'None'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'catkin_cmake_args' from command line to 'None'
+[0.862s] Level 5:colcon.colcon_core.verb:set package 'gpudirect-dds' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.862s] DEBUG:colcon.colcon_core.verb:Building package 'gpudirect-dds' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds', 'merge_install': False, 'path': '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds', 'symlink_install': False, 'test_result_base': None}
+[0.862s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.866s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.866s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds' with build type 'ament_cmake'
+[0.866s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds'
+[0.872s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.873s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.873s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.885s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds': /usr/bin/cmake /home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds -DCMAKE_INSTALL_PREFIX=/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds
+[2.019s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/build/gpudirect-dds' returned '1': /usr/bin/cmake /home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds -DCMAKE_INSTALL_PREFIX=/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds
+[2.034s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(gpudirect-dds)
+[2.044s] Level 1:colcon.colcon_core.environment:checking '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds' for CMake module files
+[2.045s] Level 1:colcon.colcon_core.environment:checking '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds' for CMake config files
+[2.045s] Level 1:colcon.colcon_core.environment:checking '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/bin'
+[2.045s] Level 1:colcon.colcon_core.environment:checking '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/lib/pkgconfig/gpudirect-dds.pc'
+[2.049s] Level 1:colcon.colcon_core.environment:checking '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/lib/python3.8/site-packages'
+[2.049s] Level 1:colcon.colcon_core.environment:checking '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/bin'
+[2.050s] INFO:colcon.colcon_core.shell:Creating package script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/share/gpudirect-dds/package.ps1'
+[2.052s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/share/gpudirect-dds/package.dsv'
+[2.054s] INFO:colcon.colcon_core.shell:Creating package script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/share/gpudirect-dds/package.sh'
+[2.055s] INFO:colcon.colcon_core.shell:Creating package script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/share/gpudirect-dds/package.bash'
+[2.057s] INFO:colcon.colcon_core.shell:Creating package script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/share/gpudirect-dds/package.zsh'
+[2.059s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/gpudirect-dds/share/colcon-core/packages/gpudirect-dds)
+[2.070s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[2.070s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[2.071s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[2.071s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[2.090s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[2.090s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[2.091s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[2.091s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[2.107s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.Spawn.ExecFailed: /usr/bin/dbus-launch terminated abnormally with the following error: No protocol specified
+Autolaunch error: X11 initialization failed.
+
+[2.108s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[2.109s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/local_setup.ps1'
+[2.112s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/_local_setup_util_ps1.py'
+[2.116s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/setup.ps1'
+[2.118s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/local_setup.sh'
+[2.120s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/_local_setup_util_sh.py'
+[2.121s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/setup.sh'
+[2.123s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/local_setup.bash'
+[2.124s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/setup.bash'
+[2.125s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/local_setup.zsh'
+[2.127s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/orin/disk/autodrrt_v2.0/src/autodrrt.computing/realtime/gpudirect-dds/install/setup.zsh'

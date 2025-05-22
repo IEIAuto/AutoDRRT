@@ -1,0 +1,1 @@
+ros2 launch ros2_bevdet bevdet.launch.xml 
