@@ -27,9 +27,10 @@ AutoDRRT is an autonomous driving framework developed based on the [Autoware ope
 ## Features
 
 - BEV + Transformer Application Built upon AutoDRRT
-  <p style="text-align: center;">
+  <!-- <p style="text-align: center;">
   <img src="./docs/imgs/bev_sim.png" alt="avatar" width="1050">
-  </p>
+  </p> -->
+![Demo](docs/imgs/demo.gif)
 
 - AutoDRRT-based Advanced AD HIL Solution
   <p style="text-align: center;">
