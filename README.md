@@ -5,7 +5,7 @@ AutoDRRT is an autonomous driving framework developed based on the [Autoware ope
 
 - Closed-loop End-to-End Development Based on Simulation Data: Data Collection → Data Processing → Model Training → Simulation Testing → On-vehicle Validation.
 - Support for Various Scenarios and Real-time Data Simulation: Corner Cases → Complex Traffic Flows → Extreme Weather → Multi-modal Real-time Sensor Data.
-- Support for Simulation Testing of Diverse Algorithm Models: 2D + CNN Lightweight Models → BEV + Transformer Large Models → One-stage End-to-End Models Based on VLA.
+- Support for Simulation Testing of Diverse Algorithm Models: 2D + CNN Lightweight Models → BEV + Transformer Large Models 
 
 ## Version Introduction
 
@@ -36,6 +36,7 @@ AutoDRRT is an autonomous driving framework developed based on the [Autoware ope
   <img src="./docs/imgs/sim_arc.png" alt="avatar" width="1050">
   </p>
 
+**Interested users can access the remote testing platform Hermes+AutoDRRT for trial and testing. An account must be requested via official email.**
 
 ## Installation
 
