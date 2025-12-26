@@ -72,9 +72,9 @@
 
 ## Detailed Examples of New Features
 
--  [Full pipeline for BEV model training and efficient inference.](bev_example.md)
+-  [Full pipeline for VLA model training and efficient inference.](vla.md)
 
--  [pipeline schedule: heterogeneous computing scheduling framework.](schedule.md)
+-  [pipeline scheduling: heterogeneous computing scheduling framework.](scheduling.md)
 
 -  [comm_lib: high-performance communication framework.](comm_lib.md)
 
