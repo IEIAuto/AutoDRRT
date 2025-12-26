@@ -74,6 +74,12 @@
 
 -  [Full pipeline for BEV model training and efficient inference.](bev_example.md)
 
+-  [pipeline schedule: heterogeneous computing scheduling framework.](schedule.md)
+
+-  [comm_lib: high-performance communication framework.](comm_lib.md)
+
+-  [Full pipeline for BEV model training and efficient inference.](bev_example.md)
+
 -  [DDS_Opt: High-efficiency data communication based on DMA and DDS.](dds_dma.md)
 
 -  [IO_Opt: GPU data sharing between nodes.](gpu_dds.md)
