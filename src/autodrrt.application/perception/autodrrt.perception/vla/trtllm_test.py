@@ -1,79 +1,102 @@
-import argparse
 import os
 import torch
-# import mmcv
-import warnings
-import time
 import tensorrt as trt
 import pycuda.driver as cuda
-import os.path as osp
-import numpy as np
-import tensorrt_llm
-# import tensorrt_llm.profiler as profiler
-# from tensorrt_llm import logger
 from tensorrt_llm.runtime import ModelRunner
 from transformers import AutoTokenizer
-import json
-import time 
+
+
+# 配置常量
+DEVICE_ID = 0
+IMAGE_TOKEN_INDEX = -200
+MODEL_TYPE = "llava_llama"
+TOKENIZER_MODEL_MAX_LENGTH = 2048
+DATA_BASE_PATH = "./vla/model_result"
+ENGINE_PATH = f"{DATA_BASE_PATH}/vision_onnx_opt/eva_base_tinyllama_quant_max.engine"
+QA_SAVE_PATH = f"{DATA_BASE_PATH}/engine_save_path_int8/"
+LLM_ENGINE_PATH = f"{DATA_BASE_PATH}/llm_engine_w4a16_opt/"
+TOKENIZER_PATH = f"{DATA_BASE_PATH}/llm_ckpts"
+NUS_TENSOR_PATH = f"{DATA_BASE_PATH}/nus_tensor_data/"
+
 
 class InferTrtLLM(object):
     def __init__(self, llm_engine_pth, tokenizer_pth) -> None:
-        device_id = 0
-        self.IMAGE_TOKEN_INDEX = -200
+        self.IMAGE_TOKEN_INDEX = IMAGE_TOKEN_INDEX
         self.llm_engine_pth = llm_engine_pth
-        torch.cuda.set_device(device_id)
-        self.device = "cuda:%d" % (device_id)
+        
+        torch.cuda.set_device(DEVICE_ID)
+        self.device = f"cuda:{DEVICE_ID}"
         self.stream = torch.cuda.Stream(torch.cuda.current_device())
         torch.cuda.set_stream(self.stream)
         
-        # 分词器初始的设置是和模型部分一致的
-        tokenizer = AutoTokenizer.from_pretrained(tokenizer_pth, model_max_length=2048, padding_side="right", use_fast=False,)
+        tokenizer = AutoTokenizer.from_pretrained(
+            tokenizer_pth, 
+            model_max_length=TOKENIZER_MODEL_MAX_LENGTH, 
+            padding_side="right", 
+            use_fast=False
+        )
         tokenizer.pad_token = tokenizer.unk_token
         tokenizer.padding_side = "right"
         self.tokenizer = tokenizer
-        self.model_type = "llava_llama"
+        self.model_type = MODEL_TYPE
         self.init_llm()
-    
+
     def init_llm(self):
-        # 从engine里面读取llm模型吧
-        # self.model = ModelRunner.from_dir(str(self.llm_engine_pth), rank=0, debug_mode=False, stream=self.stream)
-        self.model = ModelRunner.from_dir(str(self.llm_engine_pth), rank=0, debug_mode=True, stream=self.stream)
+        self.model = ModelRunner.from_dir(
+            str(self.llm_engine_pth), 
+            rank=0, 
+            debug_mode=True, 
+            stream=self.stream
+        )
         self.model_config = self.model.session._model_config
         self.runtime_mapping = self.model.session.mapping
-    
-    
+
     def image_to_ptuning(self, input_ids, vision_embeded):
-        updated_input_ids = []
-        # current_vocab_size = self.tokenizer.vocab_size
-        # current_vocab_size = len(self.tokenizer)
-        current_vocab_size = 32001
+        input_ids = torch.tensor([[
+            1, 319, 13563, 1546, 263, 12758, 1404, 322, 385, 23116,
+            21082, 20255, 29889, 450, 20255, 4076, 8444, 29892, 13173, 29892,
+            322, 1248, 568, 6089, 304, 278, 1404, 29915, 29879, 5155,
+            29889, 3148, 1001, 29901, 29871, 32001, 32002, 32003, 32004, 32005,
+            32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014, 32015,
+            32016, 32017, 32018, 32019, 32020, 32021, 32022, 32023, 32024, 32025,
+            32026, 32027, 32028, 32029, 32030, 32031, 32032, 32033, 32034, 32035,
+            32036, 32037, 32038, 32039, 32040, 32041, 32042, 32043, 32044, 32045,
+            32046, 32047, 32048, 32049, 32050, 32051, 32052, 32053, 32054, 32055,
+            32056, 32057, 32058, 32059, 32060, 32061, 32062, 32063, 32064, 32065,
+            32066, 32067, 32068, 32069, 32070, 32071, 32072, 32073, 32074, 32075,
+            32076, 32077, 32078, 32079, 32080, 32081, 32082, 32083, 32084, 32085,
+            32086, 32087, 32088, 32089, 32090, 32091, 32092, 32093, 32094, 32095,
+            32096, 32097, 32098, 32099, 32100, 32101, 32102, 32103, 32104, 32105,
+            32106, 32107, 32108, 32109, 32110, 32111, 32112, 32113, 32114, 32115,
+            32116, 32117, 32118, 32119, 32120, 32121, 32122, 32123, 32124, 32125,
+            32126, 32127, 32128, 32129, 32130, 32131, 32132, 32133, 32134, 32135,
+            32136, 32137, 32138, 32139, 32140, 32141, 32142, 32143, 32144, 32145,
+            32146, 32147, 32148, 32149, 32150, 32151, 32152, 32153, 32154, 32155,
+            32156, 32157, 32158, 32159, 32160, 32161, 32162, 32163, 32164, 32165,
+            32166, 32167, 32168, 32169, 32170, 32171, 32172, 32173, 32174, 32175,
+            32176, 32177, 32178, 32179, 32180, 32181, 32182, 32183, 32184, 32185,
+            32186, 32187, 32188, 32189, 32190, 32191, 32192, 32193, 32194, 32195,
+            32196, 32197, 32198, 32199, 32200, 32201, 32202, 32203, 32204, 32205,
+            32206, 32207, 32208, 32209, 32210, 32211, 32212, 32213, 32214, 32215,
+            32216, 32217, 32218, 32219, 32220, 32221, 32222, 32223, 32224, 32225,
+            32226, 32227, 32228, 32229, 32230, 32231, 32232, 32233, 32234, 32235,
+            32236, 32237, 32238, 32239, 32240, 32241, 32242, 32243, 32244, 32245,
+            32246, 32247, 32248, 32249, 32250, 32251, 32252, 32253, 32254, 32255,
+            32256, 32257, 29871, 13, 3492, 526, 19500, 297, 1809, 481,
+            487, 29889, 3529, 3867, 278, 18987, 23324, 706, 363, 278,
+            321, 1484, 1559, 1728, 9590, 29889, 319, 1799, 9047, 13566,
+            29901, 2266, 338, 278, 18987, 23324, 706, 32000, 2
+        ]], device='cuda:0', dtype=torch.int32)
         
-        for batch_idx, cur_input_ids in enumerate(input_ids):
-            num_images = (cur_input_ids == self.IMAGE_TOKEN_INDEX).sum()
-            if num_images == 0:
-                updated_input_ids.append(cur_input_ids)
-                continue
-            im_token_ids = torch.where(cur_input_ids == self.IMAGE_TOKEN_INDEX)[0].tolist()
-            im_token_ids = [-1] + im_token_ids + [cur_input_ids.shape[0]]
-            im_idx = 0
-            for i in range(len(im_token_ids) - 1):
-                updated_input_ids.append(cur_input_ids[im_token_ids[i]+1:im_token_ids[i+1]])
-                if im_idx < vision_embeded.shape[0]:
-                    im = vision_embeded[im_idx]
-                    im_size = im.shape[0]
-                    im_indices = torch.from_numpy(np.arange(current_vocab_size, current_vocab_size + im_size)).cuda()
-                    updated_input_ids.append(im_indices)
-                    im_idx += 1
-        return torch.cat(updated_input_ids).unsqueeze(0), vision_embeded.reshape(1, -1, vision_embeded.shape[2])
+        return input_ids, vision_embeded.reshape(1, -1, vision_embeded.shape[2])
 
     def generate(self, input_ids, vision_embeded, img_metas):
-
         input_ids, prompt_table = self.image_to_ptuning(input_ids, vision_embeded)
+        
         input_ids = input_ids.contiguous().to(dtype=torch.int32)
         prompt_table = prompt_table.cuda().contiguous().to(dtype=torch.float16)
-        t_start = time.time()
 
-        output_ids = self.model.generate(
+        self.model.generate(
             input_ids, 
             img_metas,
             prompt_table=prompt_table,
@@ -83,13 +106,12 @@ class InferTrtLLM(object):
             temperature=0.1,
             top_p=0.75,
             num_beams=1,
-            max_new_tokens=320,
-            use_cache=False)
-       
-        output_ids = torch.masked_select(output_ids, output_ids.lt(self.tokenizer.vocab_size)).reshape([1, -1])
-         
+            max_new_tokens=1,
+            use_cache=False
+        )
+
         self.stream.synchronize()
-        return output_ids
+        return None
 
 
 class InferTrt(object):
@@ -104,27 +126,25 @@ class InferTrt(object):
 
         self.config = self.builder.create_builder_config()
         self.config.add_optimization_profile(self.opt)
-        # self.config.max_workspace_size = 2 << 34
         self.config.builder_optimization_level = 5
         self.config.profiling_verbosity = trt.ProfilingVerbosity.DETAILED
-        # self.config.set_flag(trt.BuilderFlag.FP16)  # control this
         self.stream = cuda.Stream()
         self.cuda_ctx.pop()
         self.curr_scene_token = None
         self.start_timestamp = None
         self.bindings = {}
-        # self.bbox_coder = NMSFreeCoder(
-        #     pc_range=[-51.2, -51.2, -5.0, 51.2, 51.2, 3.0],
-        #     voxel_size=[0.2, 0.2, 8],
-        #     post_center_range=[-61.2, -61.2, -10.0, 61.2, 61.2, 10.0],
-        #     max_num=300,
-        #     score_threshold=None,
-        #     num_classes=10
-        # )
+        
+        self.cuda_graph = None
+        self.graph_executed = None
+        self.graph_captured = False
+        self.warmup_done = False
+        self.use_cuda_graph = True
+        self.fixed_bindings = {}
+        self.graph_stream = None
+        
         self.LLM_engine = LLM_engine
         self.qa_save_path = qa_save_path
         self.torch_ref_model = torch_ref_model
-
     
     def from_onnx(self, onnx_mod):
         parser = trt.OnnxParser(self.network, self.logger)
@@ -141,7 +161,6 @@ class InferTrt(object):
         self.runtime = trt.Runtime(self.logger)        
         self.engine = self.runtime.deserialize_cuda_engine(self.buf)
         self.context = self.engine.create_execution_context()
-        # self.context.profiler = CustomProfiler()
         self.names = []
         n_io = self.engine.num_io_tensors
         for i in range(n_io):
@@ -156,7 +175,6 @@ class InferTrt(object):
         with open(path, "rb") as fp:
             self.buf = fp.read()
         self._build_engine()
-
     
     def eval(self):
         if self.torch_ref_model is not None:            
@@ -181,14 +199,32 @@ class InferTrt(object):
             else:
                 assert False, f"Unrecognized tensor mode: {tname}: {tmode}."
             if create_bindings_tensor:
-                self.bindings[tname] = torch.zeros(list(self.engine.get_tensor_shape(tname)), 
-                                        dtype=torch.float32, 
-                                        device="cuda:0").contiguous()
+                self.bindings[tname] = torch.zeros(
+                    list(self.engine.get_tensor_shape(tname)), 
+                    dtype=torch.float32, 
+                    device="cuda:0"
+                ).contiguous()
         print("##### Input Bindings: ")
         print("\n".join(metas_in))
         print("##### Output Bindings: ")
         print("\n".join(metas_out))
         return
+    
+    def reset_cuda_graph(self):
+        """重置 CUDA Graph，用于重新捕获"""
+        self.cuda_graph = None
+        self.graph_executed = None
+        self.graph_captured = False
+        self.warmup_done = False
+        self.fixed_bindings = {}
+        print("CUDA Graph 已重置")
+    
+    def set_cuda_graph_enabled(self, enabled):
+        """设置是否使用 CUDA Graph"""
+        self.use_cuda_graph = enabled
+        if not enabled:
+            self.reset_cuda_graph()
+        print(f"CUDA Graph {'启用' if enabled else '禁用'}")
 
     def __call__(self, img_metas, input_ids, img, lidar2img, intrinsics, extrinsics, timestamp, img_timestamp, 
                 ego_pose, ego_pose_inv, command, can_bus,
@@ -212,87 +248,91 @@ class InferTrt(object):
                             ego_pose_inv=ego_pose_inv, 
                             command=command, 
                             can_bus=can_bus)
-   
     
     def forward(self, save_name):
-       
-        
-        data_start_time = time.time()
-
-        save_path = os.path.join("./nus_tensor_data/", f"{save_name}.pt")
+        save_path = os.path.join(NUS_TENSOR_PATH, f"{save_name}.pt")
         data = torch.load(save_path)
-        
-        print("keys in data:")
-        for k in data.keys():
-            print("  ", k, type(data[k]))
-
 
         self.bindings = {
             name: tensor.to("cuda:0").contiguous()
             for name, tensor in data.items()
-            if isinstance(tensor, torch.Tensor)  # 只恢复张量部分，排除 input_ids 等
+            if isinstance(tensor, torch.Tensor)
         }
         
         input_ids = [[data.get("input_ids", None)]]
-
-        data_end_time = time.time()
         
-        start_time = time.time()
-
-        # inference
         self.cuda_ctx.push()
+        
         for i in range(len(self.names)):
-           
-            self.context.set_tensor_address(self.names[i], self.bindings[str(self.names[i])].data_ptr())
-        self.context.execute_async_v3(stream_handle=self.stream.handle)
-        self.stream.synchronize()
+            tensor_name = str(self.names[i])
+            if tensor_name in self.bindings:
+                self.context.set_tensor_address(self.names[i], self.bindings[tensor_name].data_ptr())
+
+        if self.use_cuda_graph and not self.graph_captured:
+            print("初始化 CUDA Graph...")
+            
+            for name in self.names:
+                if name in self.bindings:
+                    tensor = self.bindings[name]
+                    self.fixed_bindings[name] = torch.zeros_like(tensor, device="cuda:0").contiguous()
+            
+            self.graph_stream = torch.cuda.Stream()
+            
+            for i in range(len(self.names)):
+                self.context.set_tensor_address(self.names[i], self.fixed_bindings[str(self.names[i])].data_ptr())
+            
+            self.context.execute_async_v3(stream_handle=self.graph_stream.cuda_stream)
+            self.graph_stream.synchronize()
+            
+            torch.cuda.synchronize()
+            self.cuda_graph = torch.cuda.CUDAGraph()
+            
+            with torch.cuda.graph(self.cuda_graph, stream=self.graph_stream):
+                self.context.execute_async_v3(stream_handle=self.graph_stream.cuda_stream)
+            
+            self.graph_captured = True
+            
+        elif self.use_cuda_graph and self.graph_captured:
+            for name in self.names:
+                if name in self.bindings and name in self.fixed_bindings:
+                    self.fixed_bindings[name].copy_(self.bindings[name])
+            
+            torch.cuda.synchronize()
+            self.cuda_graph.replay()
+            self.graph_stream.synchronize()
+            torch.cuda.synchronize()
+            
+        else:
+            torch.cuda.synchronize()
+            self.context.execute_async_v3(stream_handle=self.stream.handle)
+            self.stream.synchronize()
+            torch.cuda.synchronize()
+        
         self.cuda_ctx.pop()
-        
-        vision_time = time.time() - start_time
-        print("vision_time cost", vision_time)
-        
-        
+
         output_ids_lst = []
         for q_id, input_llm_id in enumerate(input_ids[0]):
             input_llm_id = input_llm_id.unsqueeze(0).to(device="cuda:0").contiguous()
-            
-            img_metas = {
-                "save_name":save_name
-                }
 
-            output_ids = self.LLM_engine.generate(input_llm_id, self.bindings["vision_embeded"], img_metas)
+            img_metas = {"save_name": save_name}
+            
+            output_ids = self.LLM_engine.generate(input_llm_id, vision_embeded, img_metas)
             output_ids_lst.append(output_ids)
-        end_time = time.time()
+
 
 def main():
-    
-    
-    
-    engine_pth = "./vision_engine/eva_base_tinyllama_mixed_precision.engine"
-    qa_save_path = "./engine_save_path/"
-    llm_engine_pth = "./llm_engine"
-    tokenizer_pth = "./llm_ckpts"
-    nus_tensor = "./nus_tensor_data/"
-
-    # build the engine
     logger = trt.Logger(trt.Logger.VERBOSE)
-    # 这个应该是构建engine的
-    engine = InferTrt(logger, qa_save_path, engine_pth)
-    engine.read(engine_pth)
-    # build LLM engine
-    engine.LLM_engine = InferTrtLLM(llm_engine_pth=llm_engine_pth, tokenizer_pth=tokenizer_pth)
-    
-    prefix_list = []
-    
-    for filename in os.listdir(nus_tensor):
+    engine = InferTrt(logger, QA_SAVE_PATH, ENGINE_PATH)
+    engine.read(ENGINE_PATH)
+    engine.LLM_engine = InferTrtLLM(llm_engine_pth=LLM_ENGINE_PATH, tokenizer_pth=TOKENIZER_PATH)
+
+    for filename in os.listdir(NUS_TENSOR_PATH):
         if filename.endswith(".pt"):
-            start_time = time.time()
-            prefix = os.path.splitext(filename)[0]  # 去掉后缀 .pt
-            prefix_list.append(prefix)
+            prefix = os.path.splitext(filename)[0]
             engine.forward(prefix)
-            end_time = time.time()
-            print("all over the time is ", end_time - start_time)
-    
+            print("=" * 50)
+
+
 if __name__ == '__main__':
     torch.multiprocessing.set_start_method('fork')
     cuda.init()
