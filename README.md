@@ -28,8 +28,8 @@ AutoDRRT is an autonomous driving framework developed based on the [Autoware ope
 
 
 - Comparison of AutoDRRT computational optimization technology's effect on reducing inference latency for large VLA models
-  <p style="text-align: center;">
-  <img src="./docs/imgs/vla_e2e_latency.png" alt="avatar" width="500">
+  <p align="center">
+    <img src="./docs/imgs/vla_e2e_latency.png" alt="avatar" width="500">
   </p>
 
 - Latency comparison under heterogeneous computing power scheduling framework

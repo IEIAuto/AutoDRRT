@@ -14,6 +14,8 @@
 
 #include "ndt_scan_matcher/ndt_scan_matcher_core.hpp"
 
+#include "ndt_scan_matcher/scheduler_ndt.hpp"
+
 #include <rclcpp/rclcpp.hpp>
 
 #include <glog/logging.h>
@@ -27,7 +29,13 @@ int main(int argc, char ** argv)
   auto ndt_scan_matcher = std::make_shared<NDTScanMatcher>();
   rclcpp::executors::MultiThreadedExecutor exec;
   exec.add_node(ndt_scan_matcher);
-  exec.spin();
+   //modify:add
+  std::thread exec_thread {[&]() {
+    set_rt_properties(60,{1,2});
+    exec.spin();
+  }};
+  // exec.spin();
+  exec_thread.join();   //modify:add
   rclcpp::shutdown();
   return 0;
 }

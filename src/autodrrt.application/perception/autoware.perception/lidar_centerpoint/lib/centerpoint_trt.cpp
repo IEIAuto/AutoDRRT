@@ -56,7 +56,8 @@ CenterPointTRT::CenterPointTRT(
 
   initPtr();
 
-  cudaStreamCreate(&stream_);
+  // cudaStreamCreate(&stream_);
+  stream_ = GPUStreamManager::instance().high();
 }
 
 CenterPointTRT::~CenterPointTRT()

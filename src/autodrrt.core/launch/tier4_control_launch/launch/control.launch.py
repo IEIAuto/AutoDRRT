@@ -348,6 +348,7 @@ def launch_setup(context, *args, **kwargs):
         name="control_container",
         namespace="",
         package="rclcpp_components",
+        # package=LaunchConfiguration("container_package"), 
         executable=LaunchConfiguration("container_executable"),
         composable_node_descriptions=[
             controller_component,
@@ -410,22 +411,38 @@ def generate_launch_description():
 
     # component
     add_launch_arg("use_intra_process", "false", "use ROS 2 component container communication")
-    add_launch_arg("use_multithread", "false", "use multithread")
+    add_launch_arg("use_multithread", "false", "use multithread")   ###modify:custom is true
     set_container_executable = SetLaunchConfiguration(
         "container_executable",
         "component_container",
         condition=UnlessCondition(LaunchConfiguration("use_multithread")),
     )
+    # set_container_package = SetLaunchConfiguration(
+    #     "container_package",
+    #     "rclcpp_components",
+    #     condition=UnlessCondition(LaunchConfiguration("use_multithread")),
+    # )
+
     set_container_mt_executable = SetLaunchConfiguration(
         "container_executable",
-        "component_container_mt",
+        # "component_container_mt",
+        "custom_control_container",
         condition=IfCondition(LaunchConfiguration("use_multithread")),
     )
+    
+    # set_container_mt_package = SetLaunchConfiguration(
+    #     "container_package",
+    #     "custom_control_container",
+    #     condition=IfCondition(LaunchConfiguration("use_multithread")),
+    # )
+
     return launch.LaunchDescription(
         launch_arguments
         + [
             set_container_executable,
             set_container_mt_executable,
+            # set_container_package,
+            # set_container_mt_package,
         ]
         + [OpaqueFunction(function=launch_setup)]
     )

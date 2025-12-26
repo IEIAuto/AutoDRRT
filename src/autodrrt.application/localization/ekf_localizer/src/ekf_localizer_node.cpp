@@ -13,12 +13,15 @@
 // limitations under the License.
 
 #include "ekf_localizer/ekf_localizer.hpp"
+#include "ekf_localizer/scheduler_ekf.hpp"
 
 #include <memory>
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
+
+  set_rt_properties(60,{5,6});
   rclcpp::NodeOptions node_options;
   auto node = std::make_shared<EKFLocalizer>("ekf_localizer", node_options);
 
