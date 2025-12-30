@@ -1,0 +1,9 @@
+<launch>
+  <arg name="network_card_id" default="wlan0" description="the network card name"/>
+
+  <node pkg="system_monitor" exec="system_monitor_node" name="system_monitor_node" output="screen">
+    <param name="network_card_id" value="$(var network_card_id)"/>
+
+  </node>
+
+</launch>

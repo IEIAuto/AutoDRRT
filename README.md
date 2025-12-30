@@ -1,4 +1,13 @@
 # Autonomous Driving Computing Framework AutoDRRT
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=IEIAuto-AutoDRRT&label=Views&color=brightgreen">
+  <img src="https://img.shields.io/github/followers/IEIAuto?style=flat&label=Followers&color=blueviolet">
+  <img src="https://img.shields.io/github/languages/top/IEIAuto/AutoDRRT?style=flat&color=blue">
+  <img src="https://img.shields.io/github/stars/IEIAuto/AutoDRRT?style=flat&label=Stars&color=yellow">
+  <img src="https://img.shields.io/github/forks/IEIAuto/AutoDRRT?style=flat&label=Forks&color=orange">
+  <img src="https://img.shields.io/github/last-commit/IEIAuto/AutoDRRT?style=flat&label=Last%20Update&color=blueviolet">
+</p>
+
 AutoDRRT is an autonomous driving framework developed based on the [Autoware open-source framework](https://github.com/autowarefoundation/autoware/tree/main), with targeted optimizations for the onboard domain controller. These optimizations enhance the framework's real-time performance, distributability, and fault tolerance. A set of tools is provided to facilitate users in making use of these new features more easily. This framework is built upon the Robot Operating System 2 (ROS2). It encompasses all necessary functionalities from localization and target detection to path planning and control, striving to lower the entry barrier and aiming to involve as many individuals and organizations as possible in the open innovation of autonomous driving technology.
 
 ## Key Updates(v3.0)
