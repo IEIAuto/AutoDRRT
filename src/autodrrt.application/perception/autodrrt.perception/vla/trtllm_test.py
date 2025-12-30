@@ -316,6 +316,12 @@ class InferTrt(object):
 
             img_metas = {"save_name": save_name}
             
+            vision_embeded = self.bindings["vision_embeded"].clone()
+            original_vision_count = vision_embeded.shape[1]
+            if original_vision_count > 0:
+                start_idx = original_vision_count // 2  
+                vision_embeded = vision_embeded[:, start_idx:, :]  
+
             output_ids = self.LLM_engine.generate(input_llm_id, vision_embeded, img_metas)
             output_ids_lst.append(output_ids)
 

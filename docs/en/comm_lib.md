@@ -1,4 +1,4 @@
-## comm_lib overview
+## High-Performance Communication Framework Overview
 
 This repository is a **ROS2 + CUDA + POSIX shared memory** sample project for high performance data transfer.
 It demonstrates how to keep ROS2 nodes loosely coupled while using shared memory + CUDA mapped memory to transfer large data (e.g. GPU images) efficiently across processes.

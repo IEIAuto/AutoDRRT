@@ -74,9 +74,11 @@
 
 -  [Full pipeline for VLA model training and efficient inference.](vla.md)
 
--  [pipeline scheduling: heterogeneous computing scheduling framework.](scheduling.md)
+-  [Pipeline scheduling: heterogeneous computing scheduling framework.](scheduling.md)
 
--  [comm_lib: high-performance communication framework.](comm_lib.md)
+-  [Comm_lib: high-performance communication framework.](comm_lib.md)
+
+-  [Autoware Adaptation for the Horizon Journey 6 Platform.](j6_autoware.md)
 
 -  [Full pipeline for BEV model training and efficient inference.](bev_example.md)
 
