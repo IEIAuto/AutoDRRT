@@ -16,6 +16,17 @@ AutoDRRT is an autonomous driving framework developed based on the [Autoware ope
 - Unified heterogeneous scheduling framework for multi-compute units, achieving a dual breakthrough in task determinism and resource utilization through fine-grained orchestration of CPU, and AI accelerators.
 - Reconfigured high-performance communication middleware covering all-scenario data paths, eliminating transmission bottlenecks to fully unleash the real-time response potential of VLA models.
 
+## Other Features
+- Seamlessly transform single-node applications into distributed ones with zero code changes.
+- Significant Reduction in End-to-End Latency Achieved Through Multi-Faceted Optimization Strategies and Hardware-Software Co-design.
+- High Availability with Millisecond Failover: Supports concurrent algorithm nodes and seamless data takeover during primary node faults.
+- Integrating multiple BEV + Transformer perception algorithm libraries.
+- Integrating various latency optimization functions for computation, communication, and I/O.
+- Integrating multiple development tools and low-level drivers.
+- Closed-loop End-to-End Development Based on Simulation Data: Data Collection → Data Processing → Model Training → Simulation Testing → On-vehicle Validation.
+- Support for Various Scenarios and Real-time Data Simulation: Corner Cases → Complex Traffic Flows → Extreme Weather → Multi-modal Real-time Sensor Data.
+- Support for Simulation Testing of Diverse Algorithm Models: 2D + CNN Lightweight Models → BEV + Transformer Large Models
+
 ## Version Introduction
 
 ### AutoDRRT V1.0

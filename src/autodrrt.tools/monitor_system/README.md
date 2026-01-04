@@ -14,15 +14,10 @@ All monitoring results are published through ROS2 diagnostic messages (diagnosti
 ## 🚀 Quick Start
 
 ### Building the Project
-
+```
 rosdep update
 rosdep install --from-paths src --ignore-src -r -y
-
-# Build project
 colcon build --symlink-install
-
-# Source environment
-source install/setup.bash
 ```
 
 ## 📦 Module Description
