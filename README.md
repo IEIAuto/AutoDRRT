@@ -3,8 +3,6 @@
   <img src="https://komarev.com/ghpvc/?username=IEIAuto-AutoDRRT&label=Views&color=brightgreen">
   <img src="https://img.shields.io/github/followers/IEIAuto?style=flat&label=Followers&color=blueviolet">
   <img src="https://img.shields.io/github/languages/top/IEIAuto/AutoDRRT?style=flat&color=blue">
-  <img src="https://img.shields.io/github/stars/IEIAuto/AutoDRRT?style=flat&label=Stars&color=yellow">
-  <img src="https://img.shields.io/github/forks/IEIAuto/AutoDRRT?style=flat&label=Forks&color=orange">
   <a href='https://github.com/MShawon/github-clone-count-badge'><img alt='GitHub Clones' src='https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url=https://gist.githubusercontent.com/IEIAuto/4e49b2dd6dcd75c169ea850bec2dca1b/raw/clone.json&logo=github'></a>
   <img src="https://img.shields.io/github/last-commit/IEIAuto/AutoDRRT?style=flat&label=Last%20Update&color=blueviolet">
 </p>
