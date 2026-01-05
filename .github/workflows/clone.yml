@@ -10,19 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: gh login
-        run: echo "${{ secrets.SECRET_TOKEN }}" | gh auth login --with-token
+      - name: Authenticate with GitHub CLI using GH_TOKEN
+        run: echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
 
-      - name: parse latest clone count
+      - name: Parse latest clone count
         run: |
-          curl --user "${{ github.actor }}:${{ secrets.SECRET_TOKEN }}" \
+          curl --user "${{ github.actor }}:${{ secrets.GH_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/traffic/clones \
             > clone.json
 
-      - name: create gist and download previous count
+      - name: Create gist and download previous count
         id: set_id
         run: |
           if gh secret list | grep -q "GIST_ID"
@@ -44,9 +45,8 @@ jobs:
               echo $gist_id | gh secret set GIST_ID
               echo "GIST=$gist_id" >> $GITHUB_OUTPUT
               cp clone.json clone_before.json
-          fi
 
-      - name: update clone.json
+      - name: Update clone.json
         run: |
           curl https://raw.githubusercontent.com/MShawon/github-clone-count-badge/master/main.py > main.py
           python3 main.py
@@ -56,7 +56,7 @@ jobs:
           content=$(sed -e 's/\\/\\\\/g' -e 's/\t/\\t/g' -e 's/\"/\\"/g' -e 's/\r//g' "clone.json" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g')
           echo '{"description": "${{ github.repository }} clone statistics", "files": {"clone.json": {"content": "'"$content"'"}}}' > post_clone.json
           curl -s -X PATCH \
-            --user "${{ github.actor }}:${{ secrets.SECRET_TOKEN }}" \
+            --user "${{ github.actor }}:${{ secrets.GH_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d @post_clone.json https://api.github.com/gists/${{ steps.set_id.outputs.GIST }} > /dev/null 2>&1
 
